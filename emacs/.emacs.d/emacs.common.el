@@ -17,6 +17,8 @@
 ;;; modes if the mode itself does not define it
 
 (setq-default indent-tabs-mode t ;; indent with tabs
+	      ;; set tab width. override in mode if needed
+	      tab-width 4
               )
 
 ;;; basics, Emacs native
@@ -33,8 +35,6 @@
       ;; seems disable cursor blinking.
       ;; used instead of blink-cursor-mode
       visible-cursor nil
-      ;; set tab width. override in mode if needed
-      tab-width 4
       ;; no backup files
       backup-inhibited t
       ;; if accidentally enabled, copyx files in dirx
@@ -92,6 +92,21 @@
 
 ;; change directory immediately to make sure it is enabled
 (ispell-change-dictionary "en_US")
+
+
+
+;; --- gnus
+(require 'mml)
+
+(setq
+      ;; 'gnus-w3m seems to disable colouring in mails
+      ;; mm-text-html-renderer 'gnus-w3m
+      mm-default-directory "~/dwl"
+      mm-tmp-directory "~/tmp")
+
+
+
+
 
 
 ;; --- projectile
@@ -240,6 +255,14 @@
 (add-hook 'prog-mode-hook #'indent-tools-minor-mode)
 
 
+;; --- yasnippet
+;; useful to have and recommended by LSP defaults
+(ensure-package 'yasnippet)
+(require 'yasnippet)
+(yas-reload-all)
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+
+
 ;; lsp-mode
 ;; LSP compatibility
 (ensure-package 'lsp-mode)
@@ -251,6 +274,30 @@
 ;; no use for it anyway for now.
 (setq lsp-diagnostics-provider :flycheck)
 
+(define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
+(define-key lsp-mode-map (kbd "C-c C-i") #'lsp-format-buffer)
+(define-key lsp-mode-map (kbd "C-c C-v r") #'lsp-rename)
+
+
+
+
+;; --- golang
+(ensure-package 'go-mode)
+(require 'go-mode)
+
+(defun init-go-mode()
+  ;; go-vet disabled because its command "go tool vet" is deprecated
+  ;; on newer golang platforms
+  (setq flycheck-disabled-checkers '(go-vet go-test))
+  (setq-local projectile-globally-ignored-directories
+              ;; 'vendor' dir is made by go modules
+              (append '("vendor") projectile-globally-ignored-directories))
+  )
+
+(add-hook 'go-mode-hook #'init-go-mode)
+(add-hook 'go-mode-hook #'lsp)
+
+
 
 ;; --- yaml mode
 (ensure-package 'yaml-mode)
@@ -258,6 +305,8 @@
 
 (add-hook 'yaml-mode-hook #'lsp)
 (add-hook 'yaml-mode-hook #'indent-tools-minor-mode)
+
+
 
 
 (provide 'emacs.common)
