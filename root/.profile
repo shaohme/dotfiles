@@ -19,9 +19,10 @@ export LIBVIRT_DEFAULT_URI=qemu:///system
 export QEMU_AUDIO_DRV=pa
 export JAVA_HOME=/usr/lib/jvm/default-java
 export NAME="Martin Kjær Jørgensen"
+export GOPRIVATE=bitbucket.shijidev.com
 
 HN=$(hostname -s)
-if [ "$HN" = "mkjws" ] || [ "$HN" = "rw" ]; then
+if [ "$HN" = "ws" ] || [ "$HN" = "rw" ]; then
     export GPGKEY=FD439D24F94DAA68631957D3C57BA9E100588495
     export EMAIL="mkj@gotu.dk"
 fi

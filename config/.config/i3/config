@@ -25,7 +25,9 @@ for_window [class="ibus*"] floating enable
 for_window [class="Steam"] floating enable
 for_window [class="flameshot*"] floating enable
 for_window [class="Blueman*"] floating enable
-
+for_window [class="Vncviewer"] floating enable
+for_window [class="TigerVNC*"] floating enable
+for_window [class="Pavucontrol"] floating enable
 
 
 

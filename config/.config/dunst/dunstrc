@@ -1,5 +1,5 @@
 [global]
-    font                 = Monospace 14
+    font                 = Monospace 16
     markup               = yes
     plain_text           = no
     format               = "%s\n%b"
@@ -18,7 +18,7 @@
     idle_threshold       = 120
 
     # geometry             = "300x100-0+30"
-    geometry             = "600x100-30+45"
+    geometry             = "900x100-30+45"
     shrink               = no
     line_height          = 0
     notification_height  = 100
@@ -35,7 +35,7 @@
     history_length       = 20
 
     icon_position        = left
-    icon_path            = /usr/share/icons/Adwaita/48x48/status/:usr/share/icons/Adwaita/48x48/devices/
+    icon_path            = /usr/share/icons/Adwaita/48x48/legacy/:/usr/share/icons/Adwaita/48x48/devices/
 
     startup_notification = false
     browser = /usr/bin/firefox -new-tab
@@ -49,14 +49,14 @@
 [urgency_low]
     background = "#586e75"
     foreground = "#eee8d5"
-    timeout = 10
+    timeout = 2
 
 [urgency_normal]
     background = "#073642"
     foreground = "#eee8d5"
-    timeout = 5
+    timeout = 4
 
 [urgency_critical]
     background = "#dc322f"
     foreground = "#eee8d5"
-    timeout = 0
+    timeout = 12

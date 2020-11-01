@@ -47,6 +47,14 @@ if command -v kubectl &> /dev/null; then
     source <(kubectl completion bash)
 fi
 
+if command -v kind &> /dev/null; then
+    source <(kind completion bash)
+fi
+
+if command -v minikube &> /dev/null; then
+    source <(minikube completion bash)
+fi
+
 if command -v aws_completer &> /dev/null; then
     complete -C 'aws_completer' aws
 fi
