@@ -1,0 +1,8 @@
+[Settings]
+gtk-theme-name = NumixSolarized
+gtk-font-name = 18
+gtk-icon-theme-name = Numix
+gtk-cursor-theme-name = Vanilla-DMZ
+gtk-decoration-layout = menu:
+gtk-enable-event-sounds=0
+gtk-enable-input-feedback-sounds=0

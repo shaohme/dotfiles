@@ -1,0 +1,9 @@
+sub on_user_command {
+    my ($self, $cmd) = @_;
+
+	if ($cmd eq 'dynamiccolors:next') {
+		$self->cmd_parse(`dynamic-colors cycle`);
+	}
+
+
+}	

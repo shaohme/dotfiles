@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# . /etc/profile
+. $HOME/.profile
+
+# export TERM=xterm-256color
+export GTK_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+export QT_IM_MODULE=ibus
+
+# export GTK_CSD=0
+# export LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libgtk3-nocsd.so.0"
+# export GDK_SCALE=1.3
+# export GDK_DPI_SCALE=1.3
+
+# export QT_STYLE_OVERRIDE=GTK+
+# this is for making programs like "vlc" not guessing HiDPI settings
+# like QT_SCALE_FACTOR.
+# export QT_AUTO_SCREEN_SCALE_FACTOR=0
+# manually set this because some programs doesn't do "QT_AUTO_SCREEN_SCALE_FACTOR"
+# zoom seems to scale too much up
+# export QT_SCALE_FACTOR=0.5
+export QT_QPA_PLATFORMTHEME=qt5ct
+
+export _JAVA_AWT_WM_NONREPARENTING=1
+# export AWT_TOOLKIT=XToolkit
+
+# making xdg-open Terminal=true .desktop applications in correct terminal program
+# export TERMINAL="urxvt -e "
+# export XSESSION="i3"
+
+# export QT_QPA_PLATFORM=wayland
+# export STUDIO_JDK=/usr/lib/jvm/default-java
+# export MOZ_ENABLE_WAYLAND=1
+# export SDL_VIDEODRIVER=wayland

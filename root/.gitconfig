@@ -1,0 +1,38 @@
+[user]
+	name = Martin Kjær Jørgensen
+	email = mkj@gotu.dk
+	signingkey = C57BA9E100588495
+[core]
+	editor = "emacs"
+	excludesfile = ~/.gitignore_global
+[color]
+	status = auto
+	branch = auto
+	interactive = auto
+	diff = auto
+
+[credential]
+    helper = store
+
+[diff]
+	tool = emacs
+
+[difftool "emacs"]
+
+    cmd = emacs --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+[merge]
+    tool = ediff
+
+[mergetool "ediff"]
+    cmd = emacs --eval \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\")\"
+
+[includeIf "gitdir:work/"]
+	path = .gitconfig-work
+
+[includeIf "gitdir:touchpeak.com/"]
+	path = .gitconfig-work
+
+[includeIf "gitdir:shiji.com/"]
+	path = .gitconfig-work
+[pull]
+	rebase = false

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=GNU Emacs Dired
+GenericName=Emacs File Browser
+Comment=View and edit files
+MimeType=inode/directory;application/x-directory;
+# Exec=emacsclient -c --eval '(dired "%f")'
+Exec=emacsclient -c
+Icon=/usr/share/icons/hicolor/scalable/apps/emacs.svg
+Type=Application
+Terminal=false
+Categories=GTK;System;Filesystem;
+StartupWMClass=Emacs
