@@ -75,6 +75,8 @@
 (add-hook 'flyspell-mode-hook #'after-init-flyspell-mode)
 ;; enable flyspell in all prog-modes only for comments and strings
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+;; add eletric pair on all prog modes. should not be intruding any modes.
+(add-hook 'prog-mode-hook 'electric-pair-mode)
 ;; might as well delete trailing whitespace
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
