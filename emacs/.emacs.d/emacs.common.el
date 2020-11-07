@@ -88,11 +88,21 @@
 (menu-bar-mode -1)
 ;; remember file positions
 (save-place-mode 1)
-
+;; show matching parenthesis
+(show-paren-mode 1)
 
 ;; change directory immediately to make sure it is enabled
 (ispell-change-dictionary "en_US")
 
+
+
+;; --- basic editing
+(ensure-package 'iedit)
+(require 'iedit)
+
+(global-set-key (kbd "C-c C-r") 'iedit-mode)
+(setq iedit-toggle-key-default nil
+      )
 
 
 ;; --- gnus
@@ -147,10 +157,12 @@
 ;; basic completion
 (ensure-package 'company)
 (require 'company)
+(require 'company-dabbrev)
 
 
 (setq company-selection-wrap-around t   ;wrap around
-      company-minimum-prefix-length 2) ;shorter prefix
+      company-minimum-prefix-length 2 ;shorter prefix
+	  company-dabbrev-downcase nil)	  ; make dabbrev completions case sensitive
 
 (add-hook 'after-init-hook 'global-company-mode)
 
@@ -263,11 +275,35 @@
 (add-hook 'prog-mode-hook #'yas-minor-mode)
 
 
+;; --- git
+;; Git
+;; basic tools for handling git files and git repos
+(ensure-package 'magit)
+(require 'magit)
+
+;; (add-hook 'git-commit-mode-hook #'turn-on-flyspell)
+;; (add-hook 'git-commit-mode-hook 'turn-on-auto-fill)
+
+
+(ensure-package 'gitattributes-mode)
+(require 'gitattributes-mode)
+
+(ensure-package 'gitconfig-mode)
+(require 'gitconfig-mode)
+
+(ensure-package 'gitignore-mode)
+(require 'gitignore-mode)
+
+
+
 ;; lsp-mode
 ;; LSP compatibility
 (ensure-package 'lsp-mode)
 (require 'lsp-clients)
 (require 'lsp-diagnostics)
+;; enable lsp-ui for more fancy UI features, like docs and flycheck errors
+;; shown in buffer
+(ensure-package 'lsp-ui)
 ;; disable lsp diagnostics (flycheck) for now.
 ;; it sets lsp as sole or default flycheck provider
 ;; and makes errors when idle if enabled.
@@ -299,6 +335,14 @@
 
 
 
+;; --- groovy mode
+(ensure-package 'groovy-mode)
+(require 'groovy-mode)
+
+
+;; (add-hook 'groovy-mode-hook #'lsp)
+
+
 ;; --- yaml mode
 (ensure-package 'yaml-mode)
 (require 'yaml-mode)
@@ -307,6 +351,53 @@
 (add-hook 'yaml-mode-hook #'indent-tools-minor-mode)
 
 
+;; --- xml
+(require 'nxml-mode)
+
+(defun init-nxml-mode()
+  (set (make-local-variable 'company-backends)
+       '((company-nxml :with company-dabbrev-code)
+         company-files))
+  )
+
+(add-hook 'nxml-mode-hook #'init-nxml-mode)
+
+(define-key nxml-mode-map (kbd "C-c C-i") #'nxml-pretty-format)
+
+(add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.scxml\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.xsd\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.sch\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.rng\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.svg\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.rss\\'" . nxml-mode))
+
+
+;; --- markdown
+(ensure-package 'markdown-mode)
+(require 'markdown-mode)
+
+
+;; use perl markdown
+(setq markdown-command "multimarkdown")
+
+;; (defun init-markdown-mode()
+;;   (set (make-local-variable 'company-backends)
+;;        '((company-abbrev company-keywords company-ispell)
+;;          company-capf company-files))
+;;   )
+
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+;; use github markdown for readmes
+(add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+
+
+;; --- dockerfile
+(ensure-package 'dockerfile-mode)
+(require 'dockerfile-mode)
+
+(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
 
 (provide 'emacs.common)
