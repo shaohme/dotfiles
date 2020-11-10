@@ -349,7 +349,7 @@
 (ensure-package 'yaml-mode)
 (require 'yaml-mode)
 
-(add-hook 'yaml-mode-hook #'lsp)
+;; (add-hook 'yaml-mode-hook #'lsp)
 (add-hook 'yaml-mode-hook #'indent-tools-minor-mode)
 
 
