@@ -342,8 +342,31 @@
 (require 'groovy-mode)
 
 
-;; (add-hook 'groovy-mode-hook #'lsp)
+;; --- python mode
+(ensure-package 'elpy)
+(require 'elpy)
 
+(elpy-enable)
+
+
+;; replace flymake with flycheck
+(when (load "flycheck" t t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  )
+
+;; rpc needs its own virtualenv
+(setq elpy-rpc-virtualenv-path "~/.virtualenvs/elpyrpc3")
+;; remap to standard format key stroke
+(define-key elpy-mode-map (kbd "C-c C-i") 'elpy-format-code)
+
+(defun init-elpy-mode()
+  ;; it seems we need to disable checkers on elpy-mode-hook, otherwise
+  ;; they are re-enabled. disable flake8 and pycompile
+  (setq flycheck-disabled-checkers (quote (python-flake8 python-pycompile))
+		)
+  )
+
+(add-hook 'elpy-mode-hook 'init-elpy-mode)
 
 ;; --- yaml mode
 (ensure-package 'yaml-mode)
