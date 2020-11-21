@@ -245,6 +245,24 @@
 (define-key global-map [remap execute-extended-command] #'counsel-M-x)
 
 
+;; --- gnus
+;; (require 'gnus-art)
+;; (require 'gnus-async)
+(require 'gnus)
+(require 'gnus-cache)
+
+
+(setq gnus-directory "~/.emacs.d/gnus/" ; gnus new home
+	  ;; set new cache directories
+	  gnus-cache-directory (concat gnus-directory "cache/")
+      gnus-cache-active-file (concat gnus-directory "cache/active") ; no slash! this is a file, not a directory!
+	  ;; move gnus related files into its dir
+      gnus-article-save-directory (concat gnus-directory "save/")
+      gnus-kill-files-directory (concat gnus-directory "killfiles/")
+      mail-user-agent 'gnus-user-agent
+
+      )
+
 ;; --- counsel-projectile
 ;; Counsel-projectile provides further ivy integration into projectile
 ;; by taking advantage of ivy's support for selecting from a list of
@@ -379,7 +397,6 @@
 ;; --- markdown
 (ensure-package 'markdown-mode)
 (require 'markdown-mode)
-
 
 ;; use perl markdown
 (setq markdown-command "multimarkdown")
