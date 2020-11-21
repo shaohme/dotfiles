@@ -13,6 +13,9 @@ HISTFILESIZE=2000
 shopt -s histappend
 shopt -s checkwinsize
 
+# do not set tab width. break emacs when deleting below column 4
+
+# tabs 4
 
 if [ "$(id -u)" -eq 0 ]; then
   PS1='\w # '

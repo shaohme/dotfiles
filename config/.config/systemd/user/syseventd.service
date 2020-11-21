@@ -1,0 +1,12 @@
+[Unit]
+Description=System event daemon
+Requires=pulseaudio.service
+After=pulseaudio.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/%u/.virtualenvs/syseventd
+ExecStart=/home/%u/.virtualenvs/syseventd/bin/syseventd
+
+[Install]
+WantedBy=multi-user.target
