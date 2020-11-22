@@ -442,5 +442,16 @@
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
 
+;; --- nginx mode
+(ensure-package 'nginx-mode)
+(require 'nginx-mode)
+
+(ensure-package 'company-nginx)
+(require 'company-nginx)
+
+(add-hook 'nginx-mode-hook #'company-nginx-keywords)
+(add-to-list 'auto-mode-alist '("/nginx/sites-\\(?:available\\|enabled\\)/" . nginx-mode))
+
+
 (provide 'emacs.common)
 ;;; emacs.common.el ends here
