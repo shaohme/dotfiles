@@ -97,6 +97,18 @@
 (ispell-change-dictionary "en_US")
 
 
+;; --- exec-path-from-shell
+(ensure-package 'exec-path-from-shell)
+(require 'exec-path-from-shell)
+
+;; added to aid emacs in setting environment vars
+;; correct and according to user shell
+(when (daemonp)
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-env "SSH_AGENT_PID")
+  (exec-path-from-shell-copy-env "SSH_AUTH_SOCK")
+  )
+
 
 ;; --- basic editing
 (ensure-package 'iedit)
@@ -115,9 +127,6 @@
       ;; mm-text-html-renderer 'gnus-w3m
       mm-default-directory "~/dwl"
       mm-tmp-directory "~/tmp")
-
-
-
 
 
 
@@ -220,6 +229,9 @@
 (setq ivy-use-virtual-buffers t
       ivy-rich-path-style 'abbrev
       ivy-count-format "(%d/%d) "
+	  ;; make prompt selectable. for instance, while saving buffer to a new
+	  ;; file and not wanting to select any of the suggestions
+	  ivy-use-selectable-prompt t
       enable-recursive-minibuffers t)
 (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
 
@@ -385,6 +397,21 @@
   )
 
 (add-hook 'elpy-mode-hook 'init-elpy-mode)
+
+
+;; --- php mode
+(ensure-package 'php-mode)
+(require 'php-mode)
+(ensure-package 'company-php)
+(require 'company-php)
+
+(defun init-php-mode()
+  ;; enable to navigate camelCase words smarter
+  (subword-mode 1)
+  )
+
+(add-hook 'php-mode-hook 'init-php-mode)
+
 
 ;; --- yaml mode
 (ensure-package 'yaml-mode)

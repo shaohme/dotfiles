@@ -1,7 +1,8 @@
 [Unit]
 Description=System event daemon
-Requires=pulseaudio.service
+BindsTo=pulseaudio.service
 After=pulseaudio.service
+
 
 [Service]
 Type=simple

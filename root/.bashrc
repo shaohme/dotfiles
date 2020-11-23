@@ -2,9 +2,9 @@
 [[ $- == *i* ]] || return
 
 # return if not executed in terminal
-if ! [ -t 1 ] ; then
-    return
-fi
+# if ! [ -t 1 ] ; then
+#     return
+# fi
 
 HISTCONTROL=ignoreboth
 HISTSIZE=1000

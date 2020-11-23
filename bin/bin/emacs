@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -t 1 ] ; then
+    emacsclient -nw "$@"
+else
+    urxvt -e "emacsclient -nw $@"
+fi

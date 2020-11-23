@@ -41,6 +41,7 @@ export GST_VAAPI_ALL_DRIVERS=1
 
 export VISUAL="${HOME}/bin/emacs"
 export EDITOR="${HOME}/bin/emacs"
+export ALTERNATE_EDITOR=/usr/bin/emacs
 
 if [ -f ${HOME}/.profile.local ]; then
     . ${HOME}/.profile.local
