@@ -8,6 +8,8 @@ After=pulseaudio.service
 Type=simple
 WorkingDirectory=/home/%u/.virtualenvs/syseventd
 ExecStart=/home/%u/.virtualenvs/syseventd/bin/syseventd
+Restart=on-failure
+RestartSec=1s
 
 [Install]
 WantedBy=multi-user.target

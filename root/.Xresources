@@ -7,9 +7,10 @@ Xcursor.size: 32
 Xft*antialias: 1
 Xft*hinting: 1
 
-XTerm*faceName: Inconsolata
+! XTerm*faceName: Inconsolata
+XTerm*faceName: DejaVu Sans Mono
 XTerm*renderFont: true
-XTerm*faceSize: 16
+XTerm*faceSize: 14
 
 ! let’s be 8bit-clean
 XTerm*utf8            : 1
@@ -19,6 +20,8 @@ XTerm*eightBitOutput  : true
 
 ! copy to CLIPBOARD
 XTerm*selectToClipboard: true
+
+XTerm*termName: xterm-256color
 
 URxvt*font:     xft:DejaVu Sans Mono:size=14:antialias=true
 URxvt*boldFont: xft:DejaVu Sans Mono:bold:size=14:antialias=true

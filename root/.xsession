@@ -1,7 +1,6 @@
 #!/bin/bash
 
 pkill picom
-pkill urxvtd
 pkill steam
 pkill syncthing-gtk
 pkill nm-applet
@@ -17,10 +16,6 @@ fi
 
 if command -v picom &> /dev/null; then
     picom -CGb
-fi
-
-if command -v urxvtd &> /dev/null; then
-    urxvtd -q -o -f
 fi
 
 if command -v xsetroot  &> /dev/null; then

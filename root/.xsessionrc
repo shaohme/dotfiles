@@ -3,7 +3,6 @@
 . /etc/profile
 . $HOME/.profile
 
-export TERM=xterm-256color
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
@@ -26,5 +25,5 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 export AWT_TOOLKIT=XToolkit
 
 # making xdg-open Terminal=true .desktop applications in correct terminal program
-export TERMINAL="urxvt -e "
+export TERMINAL="xterm -e "
 export XSESSION="i3"

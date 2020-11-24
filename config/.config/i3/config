@@ -65,7 +65,7 @@ floating_modifier $mod
 # bindsym $mod+button3 floating toggle
 
 # start a terminal
-bindsym $mod+Return exec urxvt
+bindsym $mod+Return exec xterm
 
 # kill focused window
 bindsym $mod+Shift+q kill
