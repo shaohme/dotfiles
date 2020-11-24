@@ -101,6 +101,12 @@
 (ensure-package 'exec-path-from-shell)
 (require 'exec-path-from-shell)
 
+
+;; --- rainbow mode
+;; nice to have
+(ensure-package 'rainbow-mode)
+(require 'rainbow-mode)
+
 ;; added to aid emacs in setting environment vars
 ;; correct and according to user shell
 (when (daemonp)

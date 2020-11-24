@@ -1,101 +1,53 @@
-! X11 colors pieced together by Dmitry Medvinsky.
-! Based on Vim colorscheme "badwolf" pieced together by Steve Losh.
-! vim: fdm=marker
-
-! Resourses {{{
-! *fadeColor:   #ffffff
-! *fading:      20
-
-!        black
-! *color0:      #141413
-! *color8:      #000000
-! !        red
-! *color1:      #ff2c4b
-! *color9:      #ff2c4b
-! !        green
-! *color2:      #aeee00
-! *color10:     #aeee00
-! !        yellow
-! *color3:      #fade3e
-! *color11:     #ffa724
-! !        blue
-! *color4:      #0a9dff
-! *color12:     #0a9dff
-! !        magenta
-! *color5:      #ff9eb8
-! *color13:     #ff9eb8
-! !        cyan
-! *color6:      #8cffba
-! *color14:     #8cffba
-! !        white
-! *color7:      #d9cec3
-! *color15:     #ffffff
-! ! }}}
+*saveLines: 8192
 
 
 Xcursor.theme: Adwaita
 Xcursor.size: 32
-Xft.antialias: 1
-Xft.autohint: 0
-Xft.hinting: 1
-Xft.hintstyle: hintslight
-Xft.rgba: rgb
-Xft.lcdfilter: lcddefault
 
-! *font: xft:Monospace:size=32:antialias=true,xft:Symbola:pixelsize=26:antialias=true
-! *font: -*-terminus-*-*-*-*-32-*-*-*-*-*-*-*
-! *font: -*-*-*-*-*-*-32-*-*-*-*-*-*-*
+Xft*antialias: 1
+Xft*hinting: 1
 
-! URxvt*font: -*-terminus-bold-*-*-*-28-*-*-*-*-*-*-*
-! XTerm*font: -*-terminus-bold-*-*-*-28-*-*-*-*-*-*-*
-XTerm*font:     xft:Monospace:size=14:antialias=true,xft:Symbola:pixelsize=10:antialias=true
-XTerm*boldFont: xft:Monospace-bold:bold:size=14:antialias=true,xft:Symbola:pixelsize=10:antialias=true
-XTerm*background:  #1c1b1a
-XTerm*foreground:  #f8f6f2
-XTerm*cursorColor: #aeee00
-XTerm*scrollColor: #45413b
+XTerm*faceName: Inconsolata
+XTerm*renderFont: true
+XTerm*faceSize: 16
 
-Emacs.font: monospace 14
+! let’s be 8bit-clean
+XTerm*utf8            : 1
+XTerm*eightBitInput   : false
+XTerm*eightBitControl : false
+XTerm*eightBitOutput  : true
 
-!! Defining italic and bold fonts because they look like crap
-!! in X with terminus font
-! *boldFont: -*-terminus-bold-*-*-*-28-*-*-*-*-*-*-*
-! *italicFont: -*-terminus-bold-*-*-*-28-*-*-*-*-*-*-*
-! *bolditalicFont: -*-terminus-bold-*-*-*-28-*-*-*-*-*-*-*
-URxvt*font:     xft:Monospace:size=14:antialias=true,xft:Symbola:pixelsize=10:antialias=true
-URxvt*boldFont: xft:Monospace-bold:bold:size=14:antialias=true,xft:Symbola:pixelsize=10:antialias=true
-! URxvt*font:     xft:Terminus:bold:size=26,xft:Symbola:pixelsize=19
-! URxvt*boldFont: xft:Terminus:bold:size=24,xft:Symbola:pixelsize=19
+! copy to CLIPBOARD
+XTerm*selectToClipboard: true
 
+URxvt*font:     xft:DejaVu Sans Mono:size=14:antialias=true
+URxvt*boldFont: xft:DejaVu Sans Mono:bold:size=14:antialias=true
 
-URxvt.saveLines: 8192
 URxvt.scrollBar: false
 URxvt.scrollstyle: plainp
 URxvt.rightScrollBar: false
-URxvt.scrollTtyOutput: false
-URxvt.scrollWithBuffer: true
-URxvt.scrollTtyKeypress: true
-URxvt.visualBell: false
-URxvt.perl-ext-common: default,clipboard,resize-font
-URxvt*dynamicColors: on
-URxvt.url-launcher: firefox
+! URxvt.scrollTtyOutput: false
+! URxvt.scrollWithBuffer: true
+! URxvt.scrollTtyKeypress: true
+
+! notify the WM when the bell rings
+URxvt*urgentOnBell    : true
+
+! URxvt.visualBell: false
+URxvt.perl-ext-common: default,clipboard,font-size
+! URxvt*dynamicColors: on
+URxvt.url-launcher: xdg-open
 URxvt.matcher.button: 3
 URxvt.iso14755_52: false
 URxvt.iso14755: false
 URxvt.clipboard.autocopy: true
 URxvt.keysym.C-M-c: perl:clipboard:copy
 URxvt.keysym.C-M-v: perl:clipboard:paste
-
-! URxvt.background:  #1c1b1a
-! URxvt.foreground:  #f8f6f2
-URxvt.cursorColor: #aeee00
-URxvt.scrollColor: #45413b
+URxvt.keysym.C-plus: perl:font-size:increase
+URxvt.keysym.C-equal: perl:font-size:reset
+URxvt.keysym.C-minus: perl:font-size:decrease
 
 
-! URxvt.keysym.C-minus:     font-size:decrease
-! URxvt.keysym.C-plus:   font-size:increase
-! URxvt.keysym.C-equal:  font-size:reset
-! URxvt.keysym.C-question:  font-size:show
 
 
 URxvt.resize-font.smaller: C-minus
@@ -116,200 +68,31 @@ xscreensaver.passwd.passwdFont:         -*-terminus-bold-*-*-*-32-*-*-*-*-*-*-*
 ! leave blank to diable "new login" button
 xscreensaver.newLoginCommand:
 
-! xmessage*form.okay.shapeStyle: rectangle
 xmessage*form.okay.background: #1c1b1a
 xmessage*form.okay.foreground: #d9cec3
 xmessage*message*background: #1c1b1a
 xmessage*background: #1c1b1a
 xmessage*foreground: #d9cec3
-! xmessage*Scrollbar.width: 10
-! xmessage*Scrollbar.borderWidth: 1
 xmessage*Text.?.cursorColor: #aeee00
 xmessage*Text.borderColor: #d9cec3
 xmessage*Text*background: #1c1b1a
-! xmessage*Command.highlightThickness: 1
-! xmessage*Command.internalWidth: 5
-! xmessage*Command.internalHeight: 3
-! xmessage*Command.borderColor: gray40
-! xmessage*Command.shapeStyle: Rectangle
-! xmessage*Command.background: gray80
-! xmessage*faceName: DejaVuSansMono
-! xmessage*faceSize: 12
 xmessage*message.scrollVertical: Always
 xmessage*message.scrollHorizontal: Never
 
-!general dialog box (affects main hostname, username, password text)
-! xscreensaver.Dialog.foreground:         #00efef
-! xscreensaver.Dialog.background:         #111111
-! xscreensaver.Dialog.topShadowColor:     #111111
-! xscreensaver.Dialog.bottomShadowColor:  #111111
-! xscreensaver.Dialog.Button.foreground:  #111111
-! xscreensaver.Dialog.Button.background:  #2040e0
-
-!username/password input box and date text colour
-! xscreensaver.Dialog.text.foreground:    #2040e0
-! xscreensaver.Dialog.text.background:    #efefef
-! xscreensaver.Dialog.internalBorderWidth:36
-! xscreensaver.Dialog.borderWidth:        0
-! xscreensaver.Dialog.shadowThickness:    2
-
-!timeout bar (background is actually determined by Dialog.text.background)
-! xscreensaver.passwd.thermometer.foreground:  #2040e0
-! xscreensaver.passwd.thermometer.background:  #2040e0
-! xscreensaver.passwd.thermometer.width:       0
-
-!datestamp format--see the strftime(3) manual page for details
-! xscreensaver.dateFormat:    %I:%M%p - %a %b %d, %Y
-
-
-!! Arc-Dark theme colors
 
 rofi.color-enabled: true
-! rofi.color-window: argb:ee273238, #273238, argb:3a1e2529
-! rofi.color-normal: argb:00273238, #c1c1c1, argb:3a273238, #394249, #ffffff
-! rofi.color-active: argb:00273238, #80cbc4, argb:3a273238, #394249, #80cbc4
-! rofi.color-urgent: argb:00273238, #ff1844, argb:3a273238, #394249, #ff1844
 
 rofi.color-window: #273238, #273238, #1e2529
 rofi.color-normal: #273238, #c1c1c1, #273238, #394249, #ffffff
 rofi.color-active: #273238, #80cbc4, #273238, #394249, #80cbc4
 rofi.color-urgent: #273238, #ff1844, #273238, #394249, #ff1844
 
+XTerm*cursorColor: #aeee00
+XTerm*scrollColor: #45413b
 
-! *background: #002b36
-! *foreground: #657b83
-! !!*fading: 40
-! *fadeColor: #002b36
-! *cursorColor: #93a1a1
-! *pointerColorBackground: #586e75
-! *pointerColorForeground: #93a1a1
+URxvt.cursorColor: #aeee00
+URxvt.scrollColor: #45413b
 
-! ! colors
-! *.cursorColor:  #b3bdcb
-! *.background: #404552
-! *.foreground: #b3bdcb
-! ! Black + DarkGrey
-! *.color0:  #404552
-! *.color8:  #2a303b
-! ! DarkRed + Red
-! *.color1:  #cc575d
-! *.color9:  #a3464a
-! ! DarkGreen + Green
-! *.color2:  #2679db
-! *.color10: #75a9e8
-! ! DarkYellow + Yellow
-! *.color3:  #b3bdcb
-! *.color11: #CAD1DB
-! ! DarkBlue + Blue
-! *.color4:  #5294e2
-! *.color12: #97bfee
-! ! DarkMagenta + Magenta
-! *.color5:  #404552
-! *.color13: #686d79
-! ! DarkCyan + Cyan
-! *.color6:  #b3bdcb
-! *.color14: #383c4a
-! ! LightGrey + White
-! *.color7:  #E1E5EA
-! *.color15: #ffffff
-! ! for 256 color stuff
-! *.color24:  #076678
-! *.color66:  #427b58
-! *.color88:  #9d0006
-! *.color96:  #8f3f71
-! *.color100: #79740e
-! *.color108: #8ec07c
-! *.color109: #83a598
-! *.color130: #af3a03
-! *.color136: #b57614
-! *.color142: #b8bb26
-! *.color167: #fb4934
-! *.color175: #d3869b
-! *.color208: #fe8019
-! *.color214: #fabd2f
-! *.color223: #ebdbb2
-! *.color228: #f4e8ba
-! *.color229: #fdf4c1
-! *.color230: #ffffc8
-! *.color234: #1d2021
-! *.color235: #404552
-! *.color236: #32302f
-! *.color237: #3c3836
-! *.color239: #504945
-! *.color241: #665c54
-! *.color243: #7c6f64
-! *.color244: #928374
-! *.color245: #928374
-! *.color246: #a89984
-! *.color248: #bdae93
-! *.color250: #d5c4a1
-
-
-
-
-
-
-
-
-
-!! solarized colors
-
-! #define S_base03        #002b36
-! #define S_base02        #073642
-! #define S_base01        #586e75
-! #define S_base00        #657b83
-! #define S_base0         #839496
-! #define S_base1         #93a1a1
-! #define S_base2         #eee8d5
-! #define S_base3         #fdf6e3
-
-! *background:            S_base3
-! *foreground:            S_base00
-! *fadeColor:             S_base3
-! *cursorColor:           S_base01
-! *pointerColorBackground:S_base1
-! *pointerColorForeground:S_base01
-
-! #define S_yellow        #b58900
-! #define S_orange        #cb4b16
-! #define S_red           #dc322f
-! #define S_magenta       #d33682
-! #define S_violet        #6c71c4
-! #define S_blue          #268bd2
-! #define S_cyan          #2aa198
-! #define S_green         #859900
-
-! !! black dark/light
-! *color0:                S_base02
-! *color8:                S_base03
-
-! !! red dark/light
-! *color1:                S_red
-! *color9:                S_orange
-
-! !! green dark/light
-! *color2:                S_green
-! *color10:               S_base01
-
-! !! yellow dark/light
-! *color3:                S_yellow
-! *color11:               S_base00
-
-! !! blue dark/light
-! *color4:                S_blue
-! *color12:               S_base0
-
-! !! magenta dark/light
-! *color5:                S_magenta
-! *color13:               S_violet
-
-! !! cyan dark/light
-! *color6:                S_cyan
-! *color14:               S_base1
-
-! !! white dark/light
-! *color7:                S_base2
-! *color15:               S_base3
 
 ! Zenburn color-scheme
 URxvt.background              :#1f1f1f
@@ -346,4 +129,41 @@ URxvt.color13                 :#ec93d3
 
 ! bright-cyan + bright-white
 URxvt.color14                 :#93e0e3
-URxvt.color15 :#ffffff
+URxvt.color15 				  :#ffffff
+
+
+XTerm*background              :#1f1f1f
+XTerm*foreground              :#dcdccc
+
+! black + red
+!XTerm*color0                 :#3f3f3f
+XTerm*color0                  :#1f1f1f
+XTerm*color1                  :#705050
+
+! green + yellow
+XTerm*color2                  :#60b48a
+XTerm*color3                  :#dfaf8f
+
+! blue + purple
+XTerm*color4                  :#506070
+XTerm*color5                  :#dc8cc3
+
+! cyan + white
+XTerm*color6                  :#8cd0d3
+XTerm*color7                  :#dcdccc
+
+! bright-black + bright-red
+XTerm*color8                  :#709080
+XTerm*color9                  :#dca3a3
+
+! bright-green + bright-yellow
+XTerm*color10                 :#c3bf9f
+XTerm*color11                 :#f0dfaf
+
+! bright-blue + bright-purple
+XTerm*color12                 :#94bff3
+XTerm*color13                 :#ec93d3
+
+! bright-cyan + bright-white
+XTerm*color14                 :#93e0e3
+XTerm*color15 				  :#ffffff
