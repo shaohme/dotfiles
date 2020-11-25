@@ -1,11 +1,9 @@
 [Unit]
 Description=System event daemon
-BindsTo=pulseaudio.service
+# BindsTo=pulseaudio.service
 After=pulseaudio.service
 
-
 [Service]
-Type=simple
 WorkingDirectory=/home/%u/.virtualenvs/syseventd
 ExecStart=/home/%u/.virtualenvs/syseventd/bin/syseventd
 Restart=on-failure

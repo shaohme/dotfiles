@@ -486,5 +486,9 @@
 (add-to-list 'auto-mode-alist '("/nginx/sites-\\(?:available\\|enabled\\)/" . nginx-mode))
 
 
+;; --- systemd mode
+(ensure-package 'systemd)
+(require 'systemd)
+
 (provide 'emacs.common)
 ;;; emacs.common.el ends here
