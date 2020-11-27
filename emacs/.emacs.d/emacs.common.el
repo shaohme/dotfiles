@@ -125,25 +125,19 @@
       )
 
 
-;; --- gnus
-(require 'mml)
-
-(setq
-      ;; 'gnus-w3m seems to disable colouring in mails
-      ;; mm-text-html-renderer 'gnus-w3m
-      mm-default-directory "~/dwl"
-      mm-tmp-directory "~/tmp")
-
-
-
 ;; --- projectile
 ;; make emacs project aware
 (ensure-package 'projectile)
 (require 'projectile)
 
-
 (setq projectile-completion-system 'ivy ;make ivy aware
       projectile-project-search-path '("~/dev/" "~/work/") ;default paths
+	  ;; attempt to disable project name on modeline. this should
+	  ;; speedup, also over TRAMP
+	  projectile-dynamic-mode-line nil
+	  ;; this should improve emacs performance when projectile is enabled
+	  ;; in a buffer gotten over tramp/ssh
+	  ;; projectile-file-exists-remote-cache-expire nil
       projectile-globally-ignored-directories
       (append '(
                 ".git"
@@ -159,6 +153,16 @@
       )
 
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+(defadvice projectile-on (around exlude-tramp activate)
+  "This should disable projectile when visiting a remote file"
+  (unless  (--any? (and it (file-remote-p it))
+                   (list
+                    (buffer-file-name)
+                    list-buffers-directory
+                    default-directory
+                    dired-directory))
+    ad-do-it))
 
 ;; enable globally so that keymap becomes usable from the start
 (projectile-mode t)
@@ -268,6 +272,7 @@
 ;; (require 'gnus-async)
 (require 'gnus)
 (require 'gnus-cache)
+(require 'mml)
 
 
 (setq gnus-directory "~/.emacs.d/gnus/" ; gnus new home
@@ -277,8 +282,12 @@
 	  ;; move gnus related files into its dir
       gnus-article-save-directory (concat gnus-directory "save/")
       gnus-kill-files-directory (concat gnus-directory "killfiles/")
+      gnus-message-archive-group "Sent"
       mail-user-agent 'gnus-user-agent
-
+      ;; 'gnus-w3m seems to disable colouring in mails
+      ;; mm-text-html-renderer 'gnus-w3m
+      mm-default-directory "~/dwl"
+      mm-tmp-directory "~/tmp"
       )
 
 ;; --- counsel-projectile
