@@ -268,14 +268,20 @@
 
 
 ;; --- gnus
-;; (require 'gnus-art)
-;; (require 'gnus-async)
 (require 'gnus)
+(require 'gnus-agent)
+(require 'gnus-score)
 (require 'gnus-cache)
 (require 'mml)
-
+(require 'nndraft)
+(require 'nnfolder)
+(require 'smtpmail)
 
 (setq gnus-directory "~/.emacs.d/gnus/" ; gnus new home
+	  ;; do not read or write to .newsrc. we dont plan to use other
+	  ;; reader along with gnus
+      gnus-read-newsrc-file nil
+      gnus-save-newsrc-file nil
 	  ;; set new cache directories
 	  gnus-cache-directory (concat gnus-directory "cache/")
       gnus-cache-active-file (concat gnus-directory "cache/active") ; no slash! this is a file, not a directory!
@@ -283,12 +289,79 @@
       gnus-article-save-directory (concat gnus-directory "save/")
       gnus-kill-files-directory (concat gnus-directory "killfiles/")
       gnus-message-archive-group "Sent"
-      mail-user-agent 'gnus-user-agent
-      ;; 'gnus-w3m seems to disable colouring in mails
-      ;; mm-text-html-renderer 'gnus-w3m
+      gnus-agent-directory (concat gnus-directory "agent/")
+	  ;; show result of sign verification from 'mm-verify-option
+	  ;; show alternatives as buttons, like text/html
+      gnus-buttonized-mime-types '("multipart/encrypted" "multipart/signed" "multipart/alternative")
+	  ;; show more headers
+      gnus-extra-headers (quote (To Cc Newsgroups))
+	  ;; not novice anymore, we think
+	  gnus-novice-user nil
+	  ;; silent exit
+      gnus-interactive-exit nil
+	  ;; sort by date primarily
+	  gnus-thread-sort-functions (quote (gnus-thread-sort-by-most-recent-date gnus-thread-sort-by-most-recent-number))
+	  gnus-summary-line-format "%«%3t %U%R %uS %ur %»%(%*%-14,14f   %1«%B%s%»%)
+"
+	  gnus-summary-pick-line-format "%U%R %uS %ur %(%*%-14,14f  %B%s%)
+"
+	  ;; set date format
+
+	  gnus-user-date-format-alist '((t . "%d.%m.%Y %H:%M"))
+      mail-user-agent (quote gnus-user-agent)
+      message-directory "~/.emacs.d/gnus/Mail/"
+      message-fill-column 78
+      message-wash-forwarded-subjects t
+	  ;; kill message after sending it
+	  message-kill-buffer-on-exit t
+	  ;; dont read alias expansions from .mailrc
+	  message-mail-alias-type nil
+	  ;; use 'smtpmail' to send messages
+	  message-send-mail-function (quote message-smtpmail-send-it)
+	  ;; warn if sending to an invalid email address
+      message-setup-hook (quote (message-check-recipients))
+	  ;; determine the value of MFT headers. use built in gnus functions
+	  message-subscribed-address-functions (quote (gnus-find-subscribed-addresses))
+	  ;; extended citation line
+	  message-citation-line-function (quote message-insert-formatted-citation-line)
+	  message-citation-line-format "On %a, %b %d %Y, %f wrote:\n"
+      ;; cursor position 'above' 'below' 'traditional' (inline)
+	  ;; newsgroups frown upon anything but inline
+      message-cite-reply-position (quote above)
+      ;; dont autosave
+      message-auto-save-directory nil
+	  send-mail-function (quote smtpmail-send-it)
+	  ;; debug sending email
+      smtpmail-debug-info t
       mm-default-directory "~/dwl"
       mm-tmp-directory "~/tmp"
+	  ;; verify known signed parts
+      mm-verify-option (quote known)
+      mm-decrypt-option (quote known)
+	  ;; wait plain text when viewing
+	  mm-discouraged-alternatives (quote ("text/html" "text/richtext" "image/.*"))
+	  ;; use same extra headers
+      nnmail-extra-headers gnus-extra-headers
+      nndraft-directory (concat message-directory "drafts/")
+      nnfolder-directory (concat message-directory "archive/")
+      nnfolder-active-file (concat message-directory "archive")
       )
+
+(add-hook 'mail-mode-hook 'footnote-mode)
+(add-hook 'mail-mode-hook 'turn-on-auto-fill)
+(add-hook 'mail-mode-hook 'turn-on-flyspell)
+(add-hook 'message-mode-hook 'turn-on-auto-fill)
+(add-hook 'message-mode-hook 'turn-on-flyspell)
+(add-hook 'message-mode-hook 'footnote-mode)
+
+
+;; --- bbdb
+(ensure-package 'bbdb)
+(require 'bbdb)
+
+;; enable bbdb in needed packages
+(bbdb-initialize (quote (gnus message sc)))
+
 
 ;; --- counsel-projectile
 ;; Counsel-projectile provides further ivy integration into projectile

@@ -1,0 +1,20 @@
+# url
+text/html; w3m -I %{charset} -T text/html; copiousoutput;
+
+# image viewer
+image/*; feh -B black --scale-down -d -S filename '%s';
+
+# pdf
+application/pdf; evince '%s';
+image/pdf; evince '%s'
+
+# video
+video/* ; mpv '%s'
+audio/* ; mpv '%s'
+
+# Office files.
+application/msword; loffice '%s'
+application/rtf; loffice '%s'
+text/richtext; loffice '%s'
+application/vnd.ms-excel; loffice '%s'
+application/vnd.ms-powerpoint; loffice '%s'
