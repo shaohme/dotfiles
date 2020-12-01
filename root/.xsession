@@ -27,7 +27,7 @@ if command -v xset &> /dev/null; then
 fi
 
 if command -v ibus-daemon &> /dev/null; then
-    ibus-daemon -rdx
+    ibus-daemon -rdx --panel /usr/libexec/ibus-ui-gtk3
 fi
 
 if command -v diodon &> /dev/null; then

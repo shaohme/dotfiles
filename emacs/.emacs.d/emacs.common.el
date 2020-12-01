@@ -55,7 +55,8 @@
       save-place-forget-unreadable-files nil
       ;; needed for hungry el packages, like lsp
       gc-cons-threshold 134217728
-
+	  ;; always follow symlinks to source controls
+	  vc-follow-symlinks t
       )
 (when (>= emacs-major-version 27)
   (setq read-process-output-max (* 1024 1024)))
@@ -301,12 +302,15 @@
       gnus-interactive-exit nil
 	  ;; sort by date primarily
 	  gnus-thread-sort-functions (quote (gnus-thread-sort-by-most-recent-date gnus-thread-sort-by-most-recent-number))
-	  gnus-summary-line-format "%«%3t %U%R %uS %ur %»%(%*%-14,14f   %1«%B%s%»%)
-"
-	  gnus-summary-pick-line-format "%U%R %uS %ur %(%*%-14,14f  %B%s%)
-"
+      gnus-summary-line-format "%U%R%z %&user-date; %I%(%[%4L: %-20,20n%]%) %S\n"
 	  ;; set date format
-
+	  gnus-posting-styles '((".*"
+							 (X-Message-SMTP-Method "smtp mail.cephalopo.net 587"))
+							((header "To" "\.*@gotu\.dk|\.*@cephalopo\.net")
+							 (X-Message-SMTP-Method "smtp mail.cephalopo.net 587"))
+							((header "To" "\.*@c\.dk")
+							 (X-Message-SMTP-Method "smtp asmtp.yousee.dk 587"))
+							)
 	  gnus-user-date-format-alist '((t . "%d.%m.%Y %H:%M"))
       mail-user-agent (quote gnus-user-agent)
       message-directory "~/.emacs.d/gnus/Mail/"
@@ -333,6 +337,7 @@
 	  send-mail-function (quote smtpmail-send-it)
 	  ;; debug sending email
       smtpmail-debug-info t
+	  smtpmail-stream-type 'starttls
       mm-default-directory "~/dwl"
       mm-tmp-directory "~/tmp"
 	  ;; verify known signed parts
