@@ -302,6 +302,7 @@
       gnus-interactive-exit nil
 	  ;; sort by date primarily
 	  gnus-thread-sort-functions (quote (gnus-thread-sort-by-most-recent-date gnus-thread-sort-by-most-recent-number))
+	  ;; gnus-summary-line-format ":%U%R %B %s %-60=|%4L |%-20,20f |%&user-date; \n"
       gnus-summary-line-format "%U%R%z %&user-date; %I%(%[%4L: %-20,20n%]%) %S\n"
 	  ;; set date format
 	  gnus-posting-styles '((".*"
@@ -504,6 +505,29 @@
   )
 
 (add-hook 'php-mode-hook 'init-php-mode)
+
+
+;; --- lua mode
+(ensure-package 'lua-mode)
+(require 'lua-mode)
+(ensure-package 'company-lua)
+(require 'company-lua)
+
+;; add luarock files as well
+(add-to-list 'auto-mode-alist '("\\.rockspec" . lua-mode))
+(add-to-list 'auto-mode-alist '("\\.busted" . lua-mode))
+(add-to-list 'auto-mode-alist '("\\.slua" . lua-mode))
+
+(defun init-lua-mode()
+  ;;; combine lua and dabbrev in one completion, so if lua fails dabbrev
+  ;;; can provide
+  (set (make-local-variable 'company-backends)
+       '((company-lua :with company-dabbrev-code :with
+                       company-yasnippet)
+         company-capf company-files))
+  )
+
+(add-hook 'lua-mode-hook #'init-lua-mode)
 
 
 ;; --- yaml mode
