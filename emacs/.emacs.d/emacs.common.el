@@ -243,7 +243,13 @@
 	  ;; make prompt selectable. for instance, while saving buffer to a new
 	  ;; file and not wanting to select any of the suggestions
 	  ivy-use-selectable-prompt t
-      enable-recursive-minibuffers t)
+      enable-recursive-minibuffers t
+	  ;; using these options, try fix slowdown when switching buffers
+	  ;; with switch-to-buffer while having tramp sessions running
+	  ivy-rich-parse-remote-buffer nil
+	  ivy-rich-parse-remote-file-path nil
+	  ivy-rich-path-style (quote full)
+	  )
 (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
 
 ;; xref initialization is different in Emacs 27 - there are two different
