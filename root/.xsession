@@ -5,7 +5,6 @@ pkill steam
 pkill syncthing-gtk
 pkill nm-applet
 pkill redshift-gtk
-pkill pasystray
 pkill ssh-agent
 pkill blueman-applet
 pkill xscreensaver
@@ -52,10 +51,6 @@ fi
 
 if command -v redshift-gtk  &> /dev/null; then
     redshift-gtk &
-fi
-
-if command -v pasystray &> /dev/null; then
-    pasystray &
 fi
 
 if command -v blueman-applet &> /dev/null; then

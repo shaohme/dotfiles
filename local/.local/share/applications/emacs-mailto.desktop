@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=GNU Emacs (mailto)
+GenericName=GNU Emacs email sender
+Comment=Send emails
+MimeType=x-scheme-handler/mailto;
+NoDisplay=false
+Terminal=true
+Type=Application
+Exec=emacs --eval '(browse-url "%u")'
+Icon=emacs

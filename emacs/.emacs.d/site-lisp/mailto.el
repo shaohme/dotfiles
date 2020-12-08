@@ -1,3 +1,5 @@
+;;: Code:
+
 (defun mailto-compose-mail (mailto-url)
   "Parse MAILTO-URL and start composing mail."
   (require 'gnus)

@@ -12,6 +12,7 @@ new_window 1pixel
 for_window [class="^jetbrains-.+"][window_type=dialog] focus
 for_window [instance="sun-awt-X11-XWindowPeer"] border pixel 0
 
+# try use the last WM_CLASS(STRING) name if multiple
 for_window [window_role="pop-up"]         floating enable
 for_window [class="Pinentry"]             floating enable
 for_window [class="Peek"]                 floating enable
@@ -28,6 +29,7 @@ for_window [class="Blueman*"] floating enable
 for_window [class="Vncviewer"] floating enable
 for_window [class="TigerVNC*"] floating enable
 for_window [class="Pavucontrol"] floating enable
+for_window [class="Nm-connection-editor"] floating enable
 
 
 

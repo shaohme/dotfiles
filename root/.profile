@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# make man pages easier to read on a wide display
+export MANWIDTH=100
+
 if [ -d "/store0/android-sdk" ]; then
     export ANDROID_HOME="/store0/android-sdk"
 else
