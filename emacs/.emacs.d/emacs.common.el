@@ -283,6 +283,39 @@
 (require 'nndraft)
 (require 'nnfolder)
 (require 'smtpmail)
+(require 'cl-macs)
+
+(defvar my:smtp-relays
+  '((:gotu "mail.gotu.dk" starttls "submission")
+    (:cephalopo  "mail.cephalopo.net" starttls "submission")
+    (:cdk "asmtp.yousee.dk" starttls "submission"))
+  "Relays Hosts to use depending on From: when sending mail.")
+
+(defvar my:default-smtp-relay
+  '("mail.cephalopo.net" starttls "submission")
+  "Default relay host.")
+
+(defvar my:force-using-default-smtp nil
+  "When not nil, for using dim:default-smtp-relay")
+
+(defun my:message-smtpmail-send-it ()
+  "Automatically adjust the SMTP parameters to match the From header.
+   thanks to https://github.com/dimitri/emacs.d
+  "
+  (let* ((from    (message-field-value "From"))
+		 (network (cond
+				   ((string-match-p "gotu.dk" from) :gotu)
+				   ((string-match-p "cephalopo.net" from) :cephalopo)
+				   ((string-match-p "c.dk" from) :cdk))))
+    ;; get connection details from my:smtp-relays
+    (cl-destructuring-bind (smtpmail-smtp-server
+						 smtpmail-stream-type
+						 smtpmail-smtp-service)
+						(if my:force-using-default-smtp
+							my:default-smtp-relay
+						  (or (cdr (assoc network my:smtp-relays)) my:default-smtp-relay))
+						(message-use-send-mail-function))))
+
 
 (setq gnus-directory "~/.emacs.d/gnus/" ; gnus new home
 	  ;; do not read or write to .newsrc. we dont plan to use other
@@ -300,6 +333,8 @@
 	  ;; show result of sign verification from 'mm-verify-option
 	  ;; show alternatives as buttons, like text/html
       gnus-buttonized-mime-types '("multipart/encrypted" "multipart/signed" "multipart/alternative")
+	  ;; mark sent/Gcc mails as read
+	  gnus-gcc-mark-as-read t
 	  ;; show more headers
       gnus-extra-headers (quote (To Cc Newsgroups))
 	  ;; not novice anymore, we think
@@ -311,13 +346,6 @@
 	  ;; gnus-summary-line-format ":%U%R %B %s %-60=|%4L |%-20,20f |%&user-date; \n"
       gnus-summary-line-format "%U%R%z %&user-date; %I%(%[%4L: %-20,20n%]%) %S\n"
 	  ;; set date format
-	  gnus-posting-styles '((".*"
-							 (X-Message-SMTP-Method "smtp mail.cephalopo.net 587"))
-							((header "To" "\.*@gotu\.dk|\.*@cephalopo\.net")
-							 (X-Message-SMTP-Method "smtp mail.cephalopo.net 587"))
-							((header "To" "\.*@c\.dk")
-							 (X-Message-SMTP-Method "smtp asmtp.yousee.dk 587"))
-							)
 	  gnus-user-date-format-alist '((t . "%d.%m.%Y %H:%M"))
       mail-user-agent (quote gnus-user-agent)
       message-directory "~/.emacs.d/gnus/Mail/"
@@ -328,7 +356,8 @@
 	  ;; dont read alias expansions from .mailrc
 	  message-mail-alias-type nil
 	  ;; use 'smtpmail' to send messages
-	  message-send-mail-function (quote message-smtpmail-send-it)
+	  message-send-mail-function 'my:message-smtpmail-send-it
+	  ;; message-send-mail-function (quote message-smtpmail-send-it)
 	  ;; warn if sending to an invalid email address
       message-setup-hook (quote (message-check-recipients))
 	  ;; determine the value of MFT headers. use built in gnus functions
@@ -359,6 +388,7 @@
       nnfolder-active-file (concat message-directory "archive")
       )
 
+
 (add-hook 'mail-mode-hook 'footnote-mode)
 (add-hook 'mail-mode-hook 'turn-on-auto-fill)
 (add-hook 'mail-mode-hook 'turn-on-flyspell)
@@ -372,7 +402,7 @@
 (require 'bbdb)
 
 ;; enable bbdb in needed packages
-(bbdb-initialize (quote (gnus message sc)))
+(bbdb-initialize (quote (gnus message)))
 
 
 ;; --- counsel-projectile

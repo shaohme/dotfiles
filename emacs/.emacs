@@ -27,10 +27,13 @@
 (package-initialize)
 
 (defvar emacs-local (expand-file-name "emacs.local.el" user-emacs-directory))
+(defvar emacs-secrets (expand-file-name "emacs.secrets.el" user-emacs-directory))
 
 (load (expand-file-name "emacs.common.el" user-emacs-directory))
 (when (file-exists-p emacs-local)
   (load emacs-local))
+(when (file-exists-p emacs-secrets)
+  (load emacs-secrets))
 
 
 (custom-set-variables
