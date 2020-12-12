@@ -23,11 +23,13 @@ else
   PS1='\w $ '
 fi
 
-if ! [ -z "${ANDROID_NDK_HOME}" ]; then
-    LATEST_NDK_DIR=$(ls -td ${ANDROID_NDK_HOME}/*/ | head -1)
-    if ! [ -z "${LATEST_NDK_DIR}" ] && ! [ "${LATEST_NDK_DIR}" = "/tmp" ]; then
-        PATH="$PATH:${LATEST_NDK_DIR}"
-    fi
+if [ ! -z "${ANDROID_NDK_HOME}" ]; then
+	 if [ -d "${ANDROID_NDK_HOME}" ]; then
+		 LATEST_NDK_DIR=$(ls -td ${ANDROID_NDK_HOME}/*/ | head -1)
+		 if ! [ -z "${LATEST_NDK_DIR}" ] && ! [ "${LATEST_NDK_DIR}" = "/tmp" ]; then
+			 PATH="$PATH:${LATEST_NDK_DIR}"
+		 fi
+	 fi
 fi
 
 export GPG_TTY="$( tty )"

@@ -49,16 +49,18 @@ if command -v flameshot &> /dev/null; then
     flameshot &
 fi
 
-if command -v redshift-gtk  &> /dev/null; then
-    redshift-gtk &
-fi
-
 if command -v blueman-applet &> /dev/null; then
     blueman-applet &
 fi
 
-if command -v xss-lock &> /dev/null; then
-    xss-lock --transfer-sleep-lock -- i3lock -c 000000 --nofork &
+if [ ! "$HOSTNAME" = "ent" ]; then
+	if command -v redshift-gtk  &> /dev/null; then
+		redshift-gtk &
+	fi
+
+	if command -v xss-lock &> /dev/null; then
+		xss-lock --transfer-sleep-lock -- i3lock -c 000000 --nofork &
+	fi
 fi
 
 exec i3
