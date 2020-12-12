@@ -49,7 +49,7 @@ font pango:monospace 12
 exec --no-startup-id xsetroot -solid "#17212b"
 
 # setting wallpaper
-exec --no-startup-id feh --bg-scale ~/pics/wallpapers/6898386-stunning-cosmos-wallpaper.jpg
+exec --no-startup-id feh --bg-scale ~/pics/wallpapers/default
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
