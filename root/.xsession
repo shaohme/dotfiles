@@ -53,7 +53,11 @@ if command -v blueman-applet &> /dev/null; then
     blueman-applet &
 fi
 
-if [ ! "$HOSTNAME" = "ent" ]; then
+if [ "$HOSTNAME" = "ent" ]; then
+	if command -v xset &> /dev/null; then
+		xset -dpms
+	fi
+else
 	if command -v redshift-gtk  &> /dev/null; then
 		redshift-gtk &
 	fi
