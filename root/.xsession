@@ -4,7 +4,6 @@ pkill picom
 pkill steam
 pkill syncthing-gtk
 pkill nm-applet
-pkill redshift-gtk
 pkill ssh-agent
 pkill blueman-applet
 pkill xscreensaver
@@ -58,10 +57,6 @@ if [ "$HOSTNAME" = "ent" ]; then
 		xset -dpms
 	fi
 else
-	if command -v redshift-gtk  &> /dev/null; then
-		redshift-gtk &
-	fi
-
 	if command -v xss-lock &> /dev/null; then
 		xss-lock --transfer-sleep-lock -- i3lock -c 000000 --nofork &
 	fi
