@@ -198,7 +198,9 @@
 ;; Wait idle seconds before running flycheck
 (setq flycheck-idle-change-delay 2
       ;; jump to next error instead of warning or info
-      flycheck-navigation-minimum-level 'error)
+      flycheck-navigation-minimum-level 'error
+	  flycheck-checker-error-threshold 100
+	  )
 
 (add-hook 'after-init-hook 'global-flycheck-mode)
 
@@ -529,17 +531,122 @@
 (add-hook 'elpy-mode-hook 'init-elpy-mode)
 
 
+
+;; --- web-mode
+(ensure-package 'web-mode)
+(require 'web-mode)
+(ensure-package 'company-web)
+(require 'company-web)
+(require 'company-web-html)
+
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+
+(flycheck-add-mode 'html-tidy 'web-mode)
+
+(setq web-mode-markup-indent-offset 2
+	  web-mode-css-indent-offset 2
+	  web-mode-code-indent-offset 4
+	  web-mode-enable-auto-pairing t
+	  web-mode-enable-auto-closing t
+	  web-mode-enable-auto-opening t
+	  web-mode-enable-auto-indentation t
+	  web-mode-enable-comment-interpolation t
+	  web-mode-enable-heredoc-fontification t
+	  ;; these two highlights seems to mess up when in tty
+	  web-mode-enable-current-element-highlight nil
+	  web-mode-enable-current-column-highlight nil
+      web-mode-engines-alist
+      '(("php"    . "\\.phtml\\'")
+        ("blade"  . "\\.blade\\."))
+	  )
+
+
+(defun init-web-mode()
+  (set (make-local-variable 'company-backends)
+       '((company-web-html :with company-dabbrev-code :with
+                       company-yasnippet)
+         company-capf company-files))
+  (when (string-equal "jsx" (file-name-extension buffer-file-name))
+    (setup-tide-mode))
+  )
+
+(add-hook 'web-mode-hook #'init-web-mode)
+
+
+
+
+
+
+;; --- typescript/javascript tide mode
+(ensure-package 'tide)
+(require 'tide)
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+(define-key tide-mode-map (kbd "C-c C-i") 'tide-format)
+
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode t)
+  (tide-hl-identifier-mode t))
+
+;; configure javascript-tide checker to run after your default javascript checker
+(flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
+
+;; configure jsx-tide checker to run after your default jsx checker
+(flycheck-add-mode 'javascript-eslint 'web-mode)
+(flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+
+;; configure jsx-tide checker to run after your default jsx checker
+(flycheck-add-mode 'javascript-eslint 'web-mode)
+(flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+
+;; add tide mode to web-mode when editing
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "jsx" (file-name-extension buffer-file-name))
+              (setup-tide-mode))))
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+(add-hook 'js2-mode-hook #'setup-tide-mode)
+
+
+
 ;; --- php mode
 (ensure-package 'php-mode)
 (require 'php-mode)
+(ensure-package 'phpcbf)
+(require 'phpcbf)
 (ensure-package 'company-php)
 (require 'company-php)
+
+(define-key php-mode-map (kbd "C-c C-i") 'phpcbf)
 
 (defun init-php-mode()
   ;; enable to navigate camelCase words smarter
   (subword-mode 1)
+  ;; disable phpcs for now until configured. produces too many errors
+  ;; for flycheck to handle.
+  (setq-local flycheck-disabled-checkers '(php-phpcs))
+  ;; optional
+  (ac-php-core-eldoc-setup)
+  (setq-local 'company-backends
+       '((company-ac-php-backend) (company-keywords company-dabbrev-code) (company-capf company-files)))
   )
 
+(add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 (add-hook 'php-mode-hook 'init-php-mode)
 
 
@@ -565,6 +672,14 @@
 
 (add-hook 'lua-mode-hook #'init-lua-mode)
 
+
+;; --- json mode
+(ensure-package 'json-mode)
+(require 'json-mode)
+
+(add-to-list 'auto-mode-alist '("\\.json" . json-mode))
+
+(define-key json-mode-map (kbd "C-c C-i") 'json-mode-beautify)
 
 ;; --- yaml mode
 (ensure-package 'yaml-mode)
@@ -636,6 +751,22 @@
 ;; --- systemd mode
 (ensure-package 'systemd)
 (require 'systemd)
+
+
+;; --- plantuml mode
+
+(ensure-package 'plantuml-mode)
+(require 'plantuml-mode)
+(ensure-package 'flycheck-plantuml)
+(require 'flycheck-plantuml)
+
+(add-to-list 'flycheck-checkers 'plantuml)
+;; (flycheck-add-mode 'plantuml 'plantuml-mode)
+
+(setq plantuml-default-exec-mode 'jar)
+
+(add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+
 
 (provide 'emacs.common)
 ;;; emacs.common.el ends here
