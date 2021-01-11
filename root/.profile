@@ -21,6 +21,7 @@ export DOOMWADDIR="${HOME}/gms/doom"
 export LIBVIRT_DEFAULT_URI=qemu:///system
 export QEMU_AUDIO_DRV=pa
 export JAVA_HOME=/usr/lib/jvm/default-java
+export STUDIO_JDK=/usr/lib/jvm/default-java
 export NAME="Martin Kjær Jørgensen"
 export GOPRIVATE=bitbucket.shijidev.com
 

@@ -7,6 +7,7 @@ pkill nm-applet
 pkill ssh-agent
 pkill blueman-applet
 pkill xscreensaver
+pkill xsettingsd
 
 if command -v ssh-agent &> /dev/null; then
     eval $(ssh-agent -s)
@@ -50,6 +51,10 @@ fi
 
 if command -v blueman-applet &> /dev/null; then
     blueman-applet &
+fi
+
+if command -v xsettingsd &> /dev/null; then
+    xsettingsd &
 fi
 
 if [ "$HOSTNAME" = "ent" ]; then

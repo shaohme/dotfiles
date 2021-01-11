@@ -5,6 +5,7 @@
 ;; required for helper functions
 (require 'local-common)
 
+
 ;; load theme
 (ensure-package 'zenburn-theme)
 (require 'zenburn-theme)
@@ -73,9 +74,13 @@
   (flyspell-buffer)
   )
 
+(defun init-prog-mode()
+  (setq-local company-backends '(company-capf company-dabbrev-code company-files company-yasnippet))
+  )
+
 (add-hook 'flyspell-mode-hook #'after-init-flyspell-mode)
 ;; enable flyspell in all prog-modes only for comments and strings
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 ;; add eletric pair on all prog modes. should not be intruding any modes.
 (add-hook 'prog-mode-hook 'electric-pair-mode)
 ;; might as well delete trailing whitespace
@@ -96,6 +101,49 @@
 
 ;; change directory immediately to make sure it is enabled
 (ispell-change-dictionary "en_US")
+
+
+;; --- xterm-color
+;; assume we use xterm-256color
+(ensure-package 'xterm-color)
+(require 'xterm-color)
+
+(require 'eshell)
+(require 'esh-mode)
+
+;; add xterm colors workarounds to eshell
+(add-hook 'eshell-before-prompt-hook
+          (lambda ()
+            (setq xterm-color-preserve-properties t)))
+
+(add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+(setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+;; commented out because it doesn't seem to have any noticeable effect
+(setenv "TERM" "xterm-256color")
+
+;; add xterm colors workarounds to compilation buffers
+;; Warning: this might break rg.el and ag.el
+(require 'compile)
+
+(setq compilation-environment '("TERM=xterm-256color"))
+
+(defun my/advice-compilation-filter (f proc string)
+  (funcall f proc (xterm-color-filter string)))
+
+(advice-add 'compilation-filter :around #'my/advice-compilation-filter)
+
+;; xterm-color config for shell mode
+(setq comint-output-filter-functions
+      (remove 'ansi-color-process-output comint-output-filter-functions))
+
+(add-hook 'shell-mode-hook
+          (lambda ()
+            ;; Disable font-locking in this buffer to improve performance
+            (font-lock-mode -1)
+            ;; Prevent font-locking from being re-enabled in this buffer
+            (make-local-variable 'font-lock-function)
+            (setq font-lock-function (lambda (_) nil))
+            (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
 
 
 ;; --- exec-path-from-shell
@@ -174,19 +222,40 @@
 (defadvice projectile-project-root (around ignore-remote first activate)
       (unless (file-remote-p default-directory) ad-do-it))
 
+;; --- sorting and filtering algorithm for other packages to use
+(ensure-package 'prescient)
+(require 'prescient)
+
+(prescient-persist-mode 1)
 
 ;; --- company
 ;; basic completion
 (ensure-package 'company)
 (require 'company)
 (require 'company-dabbrev)
-
+(require 'company-dabbrev-code)
+(ensure-package 'company-prescient)
+(require 'company-prescient)
 
 (setq company-selection-wrap-around t   ;wrap around
       company-minimum-prefix-length 2 ;shorter prefix
+	  company-dabbrev-code-ignore-case t
+	  company-dabbrev-code-other-buffers 'all
+	  company-backends '((company-files company-keywords company-capf company-dabbrev-code company-dabbrev))
+	  company-global-modes '(not comint-mode erc-mode help-mode gud-mode)
 	  company-dabbrev-downcase nil)	  ; make dabbrev completions case sensitive
 
+(add-hook 'company-mode-hook 'company-prescient-mode)
+
 (add-hook 'after-init-hook 'global-company-mode)
+
+;; --- yasnippet
+;; useful to have and recommended by LSP defaults
+(ensure-package 'yasnippet)
+(require 'yasnippet)
+(yas-reload-all)
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+
 
 ;; --- flycheck
 ;; needs to be 'latest' >31 for LSP mode to
@@ -211,6 +280,34 @@
       flycheck-emacs-lisp-load-path load-path
       )
 
+
+;; --- common lisp
+(ensure-package 'slime)
+(require 'slime)
+(ensure-package 'slime-company)
+(require 'slime-company)
+
+(slime-setup '(slime-company))
+
+(setq inferior-lisp-program "sbcl")
+
+
+;; --- wayland
+;; (setq wl-copy-process nil)
+;; (defun wl-copy (text)
+;;   (setq wl-copy-process (make-process :name "wl-copy"
+;;                                       :buffer nil
+;;                                       :command '("wl-copy" "-f" "-n")
+;;                                       :connection-type 'pipe))
+;;   (process-send-string wl-copy-process text)
+;;   (process-send-eof wl-copy-process))
+;; (defun wl-paste ()
+;;   (if (and wl-copy-process (process-live-p wl-copy-process))
+;;       nil ; should return nil if we're the current paste owner
+;;     (shell-command-to-string "wl-paste -n | tr -d \r")))
+;; (setq interprogram-cut-function 'wl-copy)
+;; (setq interprogram-paste-function 'wl-paste)
+
 ;;; --- xclip
 ;;; interact with X11 clipboard
 (ensure-package 'xclip)
@@ -220,8 +317,6 @@
 
 
 ;;; Ivy/Counsel/Swiper
-(ensure-package 'amx)
-(require 'amx)
 ;; narrowing framework Ivy
 (ensure-package 'ivy)
 (require 'ivy)
@@ -237,10 +332,13 @@
 ;; fast textbuffer searching
 (ensure-package 'swiper)
 (require 'swiper)
+;; alternative to amx/smex etc.
+(ensure-package 'ivy-prescient)
+(require 'ivy-prescient)
 
 ;; as per recommendation from ivy-rich website
 (setq ivy-use-virtual-buffers t
-      ivy-rich-path-style 'abbrev
+      ivy-rich-path-style 'abbrev 		; or 'full
       ivy-count-format "(%d/%d) "
 	  ;; make prompt selectable. for instance, while saving buffer to a new
 	  ;; file and not wanting to select any of the suggestions
@@ -250,7 +348,6 @@
 	  ;; with switch-to-buffer while having tramp sessions running
 	  ivy-rich-parse-remote-buffer nil
 	  ivy-rich-parse-remote-file-path nil
-	  ivy-rich-path-style (quote full)
 	  )
 (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
 
@@ -269,7 +366,7 @@
 
 ;; used to add history to minibuffer selections like M-x
 ;; instead of smex which produces compile errors on install
-(amx-mode 1)
+(ivy-prescient-mode 1)
 
 ;; replace default keys
 (define-key global-map [remap isearch-forward] #'swiper)
@@ -429,14 +526,6 @@
 
 ;; enable for all programming modes
 (add-hook 'prog-mode-hook #'indent-tools-minor-mode)
-
-
-;; --- yasnippet
-;; useful to have and recommended by LSP defaults
-(ensure-package 'yasnippet)
-(require 'yasnippet)
-(yas-reload-all)
-(add-hook 'prog-mode-hook #'yas-minor-mode)
 
 
 ;; --- git
@@ -637,13 +726,15 @@
 (defun init-php-mode()
   ;; enable to navigate camelCase words smarter
   (subword-mode 1)
-  ;; disable phpcs for now until configured. produces too many errors
-  ;; for flycheck to handle.
-  (setq-local flycheck-disabled-checkers '(php-phpcs))
+  ;; disable phpcs and phpmd for now until configured. produces too
+  ;; many errors for flycheck to handle.
+  (setq-local flycheck-disabled-checkers '(php-phpcs php-phpmd))
   ;; optional
   (ac-php-core-eldoc-setup)
-  (setq-local 'company-backends
-       '((company-ac-php-backend) (company-keywords company-dabbrev-code) (company-capf company-files)))
+  ;;
+  ;; (setq-local company-dabbrev-ignore-case nil)
+  ;; (make-local-variable company-backends)
+  (setq-local company-backends '((company-ac-php-backend company-files company-keywords company-capf company-dabbrev-code company-dabbrev)))
   )
 
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
