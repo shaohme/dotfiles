@@ -8,6 +8,7 @@ pkill ssh-agent
 pkill blueman-applet
 pkill xscreensaver
 pkill xsettingsd
+pkill redshift-gtk
 
 if command -v ssh-agent &> /dev/null; then
     eval $(ssh-agent -s)
@@ -55,6 +56,12 @@ fi
 
 if command -v xsettingsd &> /dev/null; then
     xsettingsd &
+fi
+
+# set here and masked in systemd --user to try avoid segfaults
+# because systemd --user tries to start it to early
+if command -v redshift-gtk &> /dev/null; then
+    redshift-gtk &
 fi
 
 if [ "$HOSTNAME" = "ent" ]; then

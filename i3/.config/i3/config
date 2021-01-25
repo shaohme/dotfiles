@@ -80,6 +80,10 @@ bindsym $mod+p exec rofi -show
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
+# added sleep because of bug on WS that makes it resume right after it
+# has suspended. maybe its a keyboard bug?
+bindsym XF86Sleep exec --no-startup-id sleep 1 && systemctl suspend
+
 # change focus
 bindsym $mod+j focus left
 bindsym $mod+k focus down
