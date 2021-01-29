@@ -1,6 +1,7 @@
 ;;; package --- Summary
 ;;; Commentary:
 ;;; common config
+;;; Code:
 
 ;; required for helper functions
 (require 'local-common)
@@ -61,6 +62,33 @@
       )
 (when (>= emacs-major-version 27)
   (setq read-process-output-max (* 1024 1024)))
+
+
+(if (daemonp)
+	(add-hook 'after-make-frame-functions
+			  (lambda (frame)
+				;; (select-frame frame)
+				;; (if (display-graphic-p frame)
+				;; 	(load-theme 'zenburn t)
+				;;   (load-theme 'zenburn t)
+				;;   )
+				(when (display-graphic-p)
+				  ;; disable annoying gui features
+				  (tool-bar-mode -1)
+				  (blink-cursor-mode 0)
+				  )
+
+				)
+			  )
+  ;; (load-theme 'solarized-light t)
+  )
+				(when (display-graphic-p)
+				  ;; disable annoying gui features
+				  (tool-bar-mode -1)
+				  (blink-cursor-mode 0)
+				  )
+
+
 ;;; easier dictionary switching
 (global-set-key (kbd "<f8>") 'switch-dictionary)
 
@@ -313,7 +341,10 @@
 (ensure-package 'xclip)
 (require 'xclip)
 
-(xclip-mode 1)
+(unless (display-graphic-p)
+  ;; only needed in terminal mode
+  (xclip-mode 1)
+)
 
 
 ;;; Ivy/Counsel/Swiper
@@ -782,6 +813,8 @@
 
 ;; --- xml
 (require 'nxml-mode)
+(ensure-package 'xml-format)
+(require 'xml-format)
 
 (defun init-nxml-mode()
   (set (make-local-variable 'company-backends)
@@ -791,8 +824,8 @@
 
 (add-hook 'nxml-mode-hook #'init-nxml-mode)
 
-(define-key nxml-mode-map (kbd "C-c C-i") #'nxml-pretty-format)
-
+;; (define-key nxml-mode-map (kbd "C-c C-i") #'nxml-pretty-format)
+(define-key nxml-mode-map (kbd "C-c C-i") #'xml-format-buffer)
 (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.scxml\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.xsd\\'" . nxml-mode))

@@ -2,5 +2,6 @@
 if [ -t 1 ] ; then
     emacsclient -nw "$@"
 else
-    x-terminal-emulator -e "emacsclient -nw $@"
+    # x-terminal-emulator -e "emacsclient -nw $@"
+	emacsclient -c $@
 fi

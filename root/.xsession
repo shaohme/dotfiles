@@ -9,6 +9,7 @@ pkill blueman-applet
 pkill xscreensaver
 pkill xsettingsd
 pkill redshift-gtk
+pkill emacs
 
 if command -v ssh-agent &> /dev/null; then
     eval $(ssh-agent -s)
@@ -72,6 +73,7 @@ else
 	if command -v xss-lock &> /dev/null; then
 		xss-lock --transfer-sleep-lock -- i3lock -c 000000 --nofork &
 	fi
+	/usr/bin/emacs --daemon
 fi
 
 exec i3
