@@ -6,9 +6,10 @@
 #     return
 # fi
 
-HISTCONTROL=ignoreboth
-HISTSIZE=1000
-HISTFILESIZE=2000
+# don't care about history duplicates
+HISTCONTROL=ignoreboth:erasedups
+HISTSIZE=10000
+HISTFILESIZE=20000
 
 shopt -s histappend
 shopt -s checkwinsize
@@ -98,6 +99,15 @@ xterm*|rxvt*)
     }
     trap show_command_in_title_bar DEBUG
     ;;
+dumb)
+	# probably Emacs shell mode
+	# disable pagers as it confuses the emacs "terminal"
+	# emacs M-x shell
+    alias less='cat'
+    alias more='cat'
+    export PAGER=cat
+	export EDITOR=emacsclient
+	;;
 *)
     ;;
 esac

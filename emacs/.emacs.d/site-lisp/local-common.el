@@ -79,6 +79,14 @@ close the *compilation* buffer if the compilation is successful"
 
   )
 
+(defun tidy-buffer-xml (beg end)
+  "Run \"tidy -xml\" on the region from BEG to END, or whole buffer."
+  (interactive "r")
+  (unless (use-region-p)
+    (setq beg (point-min)
+          end (point-max)))
+  (shell-command-on-region beg end "tidy -xml -q -i" (current-buffer) t "*tidy-errors*" t))
+
 
 (defun nxml-pretty-format ()
   "."

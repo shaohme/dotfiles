@@ -9,7 +9,9 @@ pkill blueman-applet
 pkill xscreensaver
 pkill xsettingsd
 pkill redshift-gtk
-pkill emacs
+
+# TODO: for some reason xresources aren't loaded
+xrdb -load "$HOME/.Xresources"
 
 if command -v ssh-agent &> /dev/null; then
     eval $(ssh-agent -s)
@@ -24,7 +26,8 @@ if command -v xsetroot  &> /dev/null; then
 fi
 
 if command -v xset &> /dev/null; then
-    xset s off
+	xset s on s 1200 0
+	xset dpms 0 1200 1203
 fi
 
 if command -v ibus-daemon &> /dev/null; then
@@ -73,7 +76,6 @@ else
 	if command -v xss-lock &> /dev/null; then
 		xss-lock --transfer-sleep-lock -- i3lock -c 000000 --nofork &
 	fi
-	/usr/bin/emacs --daemon
 fi
 
 exec i3

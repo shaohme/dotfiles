@@ -6,28 +6,64 @@
 ;; required for helper functions
 (require 'local-common)
 
+(setq frame-title-format
+      '((:eval (if (buffer-file-name)
+                   (abbreviate-file-name (buffer-file-name))
+                 "%b"))))
+;; (setq-default frame-title-format '("%f [%m] Emacs"))
 
-;; load theme
-(ensure-package 'zenburn-theme)
-(require 'zenburn-theme)
+(when (display-graphic-p)
+  ;; load theme based on whether theme file is set to light or dark
+  (ensure-package 'solarized-theme)
+  (require 'solarized-theme)
+  (let ((f (substitute-in-file-name "$XDG_RUNTIME_DIR/theme")))
+	(if (file-exists-p f)
+		(if (with-temp-buffer
+			  (insert-file-contents (substitute-in-file-name f))
+			  (goto-char (point-min))
+			  (looking-at "0"))
+			(load-theme 'solarized-dark t)
+		  ;; default to light
+		  (load-theme 'solarized-light t))(load-theme 'solarized-light t))
+	  )
+  )
 
-;;; Code:
-(load-theme 'zenburn t)
-
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 
 ;;; basic defaults. these are set as values for all
 ;;; modes if the mode itself does not define it
 
-(setq-default indent-tabs-mode t ;; indent with tabs
-	      ;; set tab width. override in mode if needed
-	      tab-width 4
-              )
+;; indent with tabs
+(setq-default indent-tabs-mode t)
+;; set tab width. override in mode if needed
+(setq-default tab-width 4)
+
+;; no lock files. annoying
+(setq-default create-lockfiles nil)
+
+
 
 ;;; basics, Emacs native
 (require 'ispell)
 (require 'flyspell)
 (require 'recentf)
 (require 'saveplace)
+(require 'tramp)
+
+;; limit recentf, exclude unneeded
+(setq-default recentf-max-saved-items 1000)
+(setq-default recentf-exclude '("^/var/folders\\.*"
+                        "COMMIT_EDITMSG\\'"
+                        ".*-autoloads\\.el\\'"
+                        "[/\\]\\.elpa/"
+						"/tmp/"
+						"/ssh:"
+						(concat package-user-dir "/.*-autoloads\\.el\\'")))
+
+;; paste where mouse is located
+(setq-default mouse-yank-at-point t)
 
 (setq ;; clean startup screen
       user-full-name "Martin Kjær Jørgensen"
@@ -59,35 +95,47 @@
       gc-cons-threshold 134217728
 	  ;; always follow symlinks to source controls
 	  vc-follow-symlinks t
+	  ;; scroll one line at a time using keyboard
+	  scroll-step 1
+	  ;; keep cursor at position when scrolling pages. its annoying
+	  ;; that it jumps to top or bottom of screen when scrolling pages
+	  scroll-preserve-screen-position t
+	  ;;
+	  tramp-default-method "ssh"
+	  ;; limit mini buffer size
+	  ;; max-mini-window-height 0.10
       )
+
 (when (>= emacs-major-version 27)
   (setq read-process-output-max (* 1024 1024)))
 
+(defun set-gui-options()
+  (when (display-graphic-p)
+	;; disable annoying gui features
+	(tool-bar-mode -1)
+	(blink-cursor-mode 0)
+	)
+  )
 
 (if (daemonp)
 	(add-hook 'after-make-frame-functions
 			  (lambda (frame)
-				;; (select-frame frame)
-				;; (if (display-graphic-p frame)
-				;; 	(load-theme 'zenburn t)
-				;;   (load-theme 'zenburn t)
-				;;   )
-				(when (display-graphic-p)
-				  ;; disable annoying gui features
-				  (tool-bar-mode -1)
-				  (blink-cursor-mode 0)
-				  )
-
+				(set-gui-options)
 				)
 			  )
-  ;; (load-theme 'solarized-light t)
   )
-				(when (display-graphic-p)
-				  ;; disable annoying gui features
-				  (tool-bar-mode -1)
-				  (blink-cursor-mode 0)
-				  )
+(set-gui-options)
 
+
+;; overwrite selected text
+(add-hook 'after-init-hook 'delete-selection-mode)
+
+;; auto revert
+(require 'autorevert)
+(setq global-auto-revert-non-file-buffers t
+      auto-revert-verbose nil)
+
+(add-hook 'after-init-hook 'global-auto-revert-mode)
 
 ;;; easier dictionary switching
 (global-set-key (kbd "<f8>") 'switch-dictionary)
@@ -102,13 +150,15 @@
   (flyspell-buffer)
   )
 
-(defun init-prog-mode()
-  (setq-local company-backends '(company-capf company-dabbrev-code company-files company-yasnippet))
-  )
 
 (add-hook 'flyspell-mode-hook #'after-init-flyspell-mode)
 ;; enable flyspell in all prog-modes only for comments and strings
 ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+(add-hook 'markdown-mode-hook 'flyspell-mode)
+;; annoying. especially in yml mode
+;; (add-hook 'text-mode-hook 'flyspell-mode)
+
+
 ;; add eletric pair on all prog modes. should not be intruding any modes.
 (add-hook 'prog-mode-hook 'electric-pair-mode)
 ;; might as well delete trailing whitespace
@@ -130,11 +180,38 @@
 ;; change directory immediately to make sure it is enabled
 (ispell-change-dictionary "en_US")
 
+;; set utf-8 as default
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+
+
+;; ediff
+(require 'ediff)
+
+(setq-default ediff-split-window-function 'split-window-horizontally)
+(setq-default ediff-window-setup-function 'ediff-setup-windows-plain)
+
+(defun ediff-startup-hook-setup ()
+    ;; move to the first difference
+    (ediff-next-difference)
+    ;; move to the merged buffer window
+    (winum-select-window-by-number 3)
+    ;; save the windows layout
+    (window-configuration-to-register ?a))
+
+(add-hook 'ediff-startup-hook 'ediff-startup-hook-setup)
+
+
+(require 're-builder)
+;; Support a slightly more idiomatic quit binding in re-builder
+(define-key reb-mode-map (kbd "C-c C-k") 'reb-quit)
 
 ;; --- xterm-color
 ;; assume we use xterm-256color
 (ensure-package 'xterm-color)
 (require 'xterm-color)
+
 
 (require 'eshell)
 (require 'esh-mode)
@@ -149,6 +226,8 @@
 ;; commented out because it doesn't seem to have any noticeable effect
 (setenv "TERM" "xterm-256color")
 
+(setq-default explicit-shell-file-name "/bin/bash")
+
 ;; add xterm colors workarounds to compilation buffers
 ;; Warning: this might break rg.el and ag.el
 (require 'compile)
@@ -159,6 +238,19 @@
   (funcall f proc (xterm-color-filter string)))
 
 (advice-add 'compilation-filter :around #'my/advice-compilation-filter)
+
+
+;;----------------------------------------------------------------------------
+;; Nicer naming of buffers for files with identical names
+;;----------------------------------------------------------------------------
+(require 'uniquify)
+
+(setq uniquify-buffer-name-style 'reverse)
+(setq uniquify-separator " • ")
+(setq uniquify-after-kill-buffer-p t)
+(setq uniquify-ignore-buffers-re "^\\*")
+
+
 
 ;; xterm-color config for shell mode
 (setq comint-output-filter-functions
@@ -173,25 +265,98 @@
             (setq font-lock-function (lambda (_) nil))
             (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
 
+;; --- ecr
+(require 'erc)
+(require 'erc-log)
+(require 'erc-replace)
+(require 'erc-autoaway)
+
+(setq erc-log-channels-directory (expand-file-name "erc-logs" user-emacs-directory)
+      erc-log-write-after-send t
+      erc-log-write-after-insert t
+      erc-autoaway-idle-seconds 600
+
+      ;; logging
+      erc-enable-logging t
+      erc-save-buffer-on-part t
+      erc-hide-list '("JOIN" "PART" "QUIT" "MODE")
+	  ;; emojify chat
+      erc-replace-alist
+      '(
+        (":+1:" . "👍")
+        (":laughing:" . "😂")
+        (":slightly_smiling_face:" . "😃")
+        (":smiley:" . "😃")
+        (":wink:" . "😉")
+        ))
+
+;; show fill column as 'piped' | lines
+(setq-default indicate-buffer-boundaries 'left)
+(setq-default display-fill-column-indicator-character ?\u254e)
+
+(add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
+
+
+;; --- browse kill ring
+;; handy tool
+
+(ensure-package 'browse-kill-ring)
+(require 'browse-kill-ring)
+
+(setq browse-kill-ring-separator "\f")
+(global-set-key (kbd "C-M-y") 'browse-kill-ring)
+
+(define-key browse-kill-ring-mode-map (kbd "C-g") 'browse-kill-ring-quit)
+(define-key browse-kill-ring-mode-map (kbd "M-n") 'browse-kill-ring-forward)
+(define-key browse-kill-ring-mode-map (kbd "M-p") 'browse-kill-ring-previous)
+
 
 ;; --- exec-path-from-shell
 (ensure-package 'exec-path-from-shell)
 (require 'exec-path-from-shell)
 
 
-;; --- rainbow mode
-;; nice to have
-(ensure-package 'rainbow-mode)
-(require 'rainbow-mode)
+;; --- Which-key mode
+;; show keybindings in popup when typing
+(ensure-package 'which-key)
+(require 'which-key)
+(which-key-mode t)
 
 ;; added to aid emacs in setting environment vars
 ;; correct and according to user shell
-(when (daemonp)
-  (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-env "SSH_AGENT_PID")
-  (exec-path-from-shell-copy-env "SSH_AUTH_SOCK")
-  )
 
+(when (daemonp)
+  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"))
+	(add-to-list 'exec-path-from-shell-variables var))
+  (exec-path-from-shell-initialize))
+
+
+;; handling large files
+(require 'so-long)
+(add-hook 'after-init-hook 'so-long-enable)
+
+(ensure-package 'vlf)
+(require 'vlf)
+
+;; --- mode line bell
+;; instead of sound bell. should work in terminal as well
+(ensure-package 'mode-line-bell)
+(require 'mode-line-bell)
+
+;; --- beacon mode
+;; highlight curson when window scrolls
+
+(ensure-package 'beacon)
+(require 'beacon)
+
+;; remove default lighter string from mode line
+(setq-default beacon-lighter "")
+;; shrink the beacon a bit
+(setq-default beacon-size 20)
+
+(add-hook 'after-init-hook 'beacon-mode)
+
+(add-hook 'after-init-hook 'mode-line-bell-mode)
 
 ;; --- basic editing
 (ensure-package 'iedit)
@@ -201,11 +366,27 @@
 (setq iedit-toggle-key-default nil
       )
 
+;; --- treemacs
+;; liked by some programming modes, like Java+LSP
+(ensure-package 'treemacs)
+(require 'treemacs)
+;; (ensure-package 'treemacs-all-the-icons)
+;; (require 'treemacs-all-the-icons)
+(ensure-package 'treemacs-icons-dired)
+(require 'treemacs-icons-dired)
+
 
 ;; --- projectile
 ;; make emacs project aware
 (ensure-package 'projectile)
 (require 'projectile)
+
+;; (when (executable-find "rg")
+;;   (setq-default projectile-generic-command "rg --files --hidden"))
+
+(ensure-package 'treemacs-projectile)
+(require 'treemacs-projectile)
+
 
 (setq projectile-completion-system 'ivy ;make ivy aware
       projectile-project-search-path '("~/dev/" "~/work/") ;default paths
@@ -262,14 +443,16 @@
 (require 'company)
 (require 'company-dabbrev)
 (require 'company-dabbrev-code)
+(require 'company-ispell)
 (ensure-package 'company-prescient)
 (require 'company-prescient)
 
 (setq company-selection-wrap-around t   ;wrap around
       company-minimum-prefix-length 2 ;shorter prefix
 	  company-dabbrev-code-ignore-case t
+	  company-idle-delay 0.2 			; speed up completion
 	  company-dabbrev-code-other-buffers 'all
-	  company-backends '((company-files company-keywords company-capf company-dabbrev-code company-dabbrev))
+	  company-backends '((company-keywords company-capf company-dabbrev-code company-dabbrev company-ispell company-files))
 	  company-global-modes '(not comint-mode erc-mode help-mode gud-mode)
 	  company-dabbrev-downcase nil)	  ; make dabbrev completions case sensitive
 
@@ -294,12 +477,15 @@
 
 ;; Wait idle seconds before running flycheck
 (setq flycheck-idle-change-delay 2
-      ;; jump to next error instead of warning or info
+	  ;;
+	  flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list
+	  ;; jump to next error instead of warning or info
       flycheck-navigation-minimum-level 'error
 	  flycheck-checker-error-threshold 100
 	  )
 
 (add-hook 'after-init-hook 'global-flycheck-mode)
+
 
 
 ;;; --- emacs lisp
@@ -315,10 +501,41 @@
 (ensure-package 'slime-company)
 (require 'slime-company)
 
-(slime-setup '(slime-company))
+(setq slime-company-completion 'fuzzy
+	  inferior-lisp-program "sbcl"
+      slime-company-after-completion 'slime-company-just-one-space)
 
-(setq inferior-lisp-program "sbcl")
+(slime-setup '(slime-fancy slime-repl slime-fuzzy slime-company))
 
+(add-to-list 'slime-lisp-implementations
+			 '(sbcl ("sbcl") :coding-system utf-8-unix))
+
+;; From http://bc.tech.coop/blog/070515.html
+(defun lispdoc ()
+  "Searches lispdoc.com for SYMBOL, which is by default the symbol currently under the curser"
+  (interactive)
+  (let* ((word-at-point (word-at-point))
+         (symbol-at-point (symbol-at-point))
+         (default (symbol-name symbol-at-point))
+         (inp (read-from-minibuffer
+               (if (or word-at-point symbol-at-point)
+                   (concat "Symbol (default " default "): ")
+                 "Symbol (no default): "))))
+    (if (and (string= inp "") (not word-at-point) (not
+                                                   symbol-at-point))
+        (message "you didn't enter a symbol!")
+      (let ((search-type (read-from-minibuffer
+                          "full-text (f) or basic (b) search (default b)? ")))
+        (browse-url (concat "http://lispdoc.com?q="
+                            (if (string= inp "")
+                                default
+                              inp)
+                            "&search="
+                            (if (string-equal search-type "f")
+                                "full+text+search"
+                              "basic+search")))))))
+
+(define-key lisp-mode-map (kbd "C-c l") 'lispdoc)
 
 ;; --- wayland
 ;; (setq wl-copy-process nil)
@@ -366,6 +583,11 @@
 ;; alternative to amx/smex etc.
 (ensure-package 'ivy-prescient)
 (require 'ivy-prescient)
+
+
+(define-key global-map [menu] nil)
+;; such a common everyday function. bind it also to something simpler
+(define-key global-map (kbd "M-o") 'other-window)
 
 ;; as per recommendation from ivy-rich website
 (setq ivy-use-virtual-buffers t
@@ -542,6 +764,10 @@
 ;; session
 (ensure-package 'counsel-projectile)
 (require 'counsel-projectile)
+(ensure-package 'counsel-tramp)
+(require 'counsel-tramp)
+
+(define-key global-map (kbd "C-c s") 'counsel-tramp)
 
 ;; no need to reassign keys with counsel/ivy aware
 ;; alternatives. counsel-projectile-mode does that.
@@ -564,9 +790,15 @@
 ;; basic tools for handling git files and git repos
 (ensure-package 'magit)
 (require 'magit)
+(ensure-package 'treemacs-magit)
+(require 'treemacs-magit)
 
 ;; (add-hook 'git-commit-mode-hook #'turn-on-flyspell)
 ;; (add-hook 'git-commit-mode-hook 'turn-on-auto-fill)
+
+;; most for fun/convenience
+(ensure-package 'git-timemachine)
+(require 'git-timemachine)
 
 
 (ensure-package 'gitattributes-mode)
@@ -577,29 +809,53 @@
 
 (ensure-package 'gitignore-mode)
 (require 'gitignore-mode)
+(ensure-package 'gitignore-templates)
+(require 'gitignore-templates)
 
+;; show diff highlights in buffer
+(ensure-package 'diff-hl)
+(require 'diff-hl)
+
+(add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+(add-hook 'after-init-hook 'global-diff-hl-mode)
 
 
 ;; lsp-mode
 ;; LSP compatibility
 (ensure-package 'lsp-mode)
 (require 'lsp-clients)
+(require 'lsp-completion)
 (require 'lsp-diagnostics)
+(ensure-package 'lsp-treemacs)
+(require 'lsp-treemacs)
+
+(setq lsp-eldoc-render-all t
+	  lsp-file-watch-threshold 10000 	; we're handling big projects
+	  lsp-keymap-prefix "C-c C-l"
+	  lsp-completion-enable-additional-text-edit t)
+
+
 ;; enable lsp-ui for more fancy UI features, like docs and flycheck errors
 ;; shown in buffer
-(ensure-package 'lsp-ui)
+;; (ensure-package 'lsp-ui)
+;; (require 'lsp-ui)
 ;; disable lsp diagnostics (flycheck) for now.
 ;; it sets lsp as sole or default flycheck provider
 ;; and makes errors when idle if enabled.
 ;; no use for it anyway for now.
-(setq lsp-diagnostics-provider :flycheck)
+;; (setq lsp-diagnostics-provider :flycheck)
+;; (setq lsp-auto-configure nil)
 
 (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
 (define-key lsp-mode-map (kbd "C-c C-i") #'lsp-format-buffer)
 (define-key lsp-mode-map (kbd "C-c C-v r") #'lsp-rename)
 
+(ensure-package 'dap-mode)
+(require 'dap-mode)
 
-
+;; sessions locals breakpoints expressions controls tooltip
+;; disable dap ui controls
+(setq dap-auto-configure-features '(sessions locals breakpoints expressions))
 
 ;; --- golang
 (ensure-package 'go-mode)
@@ -623,6 +879,8 @@
 (ensure-package 'groovy-mode)
 (require 'groovy-mode)
 
+(add-hook 'groovy-mode-hook #'lsp)
+
 
 ;; --- python mode
 (ensure-package 'elpy)
@@ -632,21 +890,21 @@
 
 
 ;; replace flymake with flycheck
-(when (load "flycheck" t t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  )
+;; (when (load "flycheck" t t)
+;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+;;   )
 
 ;; rpc needs its own virtualenv
 (setq elpy-rpc-virtualenv-path "~/.virtualenvs/elpyrpc3")
 ;; remap to standard format key stroke
 (define-key elpy-mode-map (kbd "C-c C-i") 'elpy-format-code)
 
-(defun init-elpy-mode()
-  ;; it seems we need to disable checkers on elpy-mode-hook, otherwise
-  ;; they are re-enabled. disable flake8 and pycompile
-  (setq flycheck-disabled-checkers (quote (python-flake8 python-pycompile))
-		)
-  )
+;; (defun init-elpy-mode()
+;;   ;; it seems we need to disable checkers on elpy-mode-hook, otherwise
+;;   ;; they are re-enabled. disable flake8 and pycompile
+;;   (setq flycheck-disabled-checkers (quote (python-flake8 python-pycompile))
+;; 		)
+;;   )
 
 (add-hook 'elpy-mode-hook 'init-elpy-mode)
 
@@ -703,6 +961,31 @@
 
 
 
+;;; SASS and SCSS
+(ensure-package 'scss-mode)
+(require 'scss-mode)
+
+(setq-default scss-compile-at-save nil)
+
+
+;; Skewer CSS
+(ensure-package 'skewer-mode)
+(require 'skewer-mode)
+
+(add-hook 'css-mode-hook 'skewer-css-mode)
+
+
+;;; LESS
+(ensure-package 'less-css-mode)
+(require 'less-css-mode)
+(ensure-package 'skewer-less)
+(require 'skewer-less)
+
+(add-hook 'less-css-mode-hook 'skewer-less-mode)
+
+
+
+
 
 
 ;; --- typescript/javascript tide mode
@@ -718,20 +1001,20 @@
 (defun setup-tide-mode ()
   (interactive)
   (tide-setup)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
   (eldoc-mode t)
   (tide-hl-identifier-mode t))
 
 ;; configure javascript-tide checker to run after your default javascript checker
-(flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
+;; (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
 
 ;; configure jsx-tide checker to run after your default jsx checker
-(flycheck-add-mode 'javascript-eslint 'web-mode)
-(flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+;; (flycheck-add-mode 'javascript-eslint 'web-mode)
+;; (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
 
 ;; configure jsx-tide checker to run after your default jsx checker
-(flycheck-add-mode 'javascript-eslint 'web-mode)
-(flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+;; (flycheck-add-mode 'javascript-eslint 'web-mode)
+;; (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
 
 ;; add tide mode to web-mode when editing
 (add-hook 'web-mode-hook
@@ -747,19 +1030,20 @@
 ;; --- php mode
 (ensure-package 'php-mode)
 (require 'php-mode)
-(ensure-package 'phpcbf)
-(require 'phpcbf)
 (ensure-package 'company-php)
 (require 'company-php)
 
-(define-key php-mode-map (kbd "C-c C-i") 'phpcbf)
+;; not available anymore?
+;; (ensure-package 'phpcbf)
+;; (require 'phpcbf)
+;; (define-key php-mode-map (kbd "C-c C-i") 'phpcbf)
 
 (defun init-php-mode()
   ;; enable to navigate camelCase words smarter
   (subword-mode 1)
   ;; disable phpcs and phpmd for now until configured. produces too
   ;; many errors for flycheck to handle.
-  (setq-local flycheck-disabled-checkers '(php-phpcs php-phpmd))
+  ;; (setq-local flycheck-disabled-checkers '(php-phpcs php-phpmd))
   ;; optional
   (ac-php-core-eldoc-setup)
   ;;
@@ -798,10 +1082,13 @@
 ;; --- json mode
 (ensure-package 'json-mode)
 (require 'json-mode)
+(ensure-package 'counsel-jq)
+(require 'counsel-jq)
 
 (add-to-list 'auto-mode-alist '("\\.json" . json-mode))
 
 (define-key json-mode-map (kbd "C-c C-i") 'json-mode-beautify)
+
 
 ;; --- yaml mode
 (ensure-package 'yaml-mode)
@@ -811,21 +1098,39 @@
 (add-hook 'yaml-mode-hook #'indent-tools-minor-mode)
 
 
+;; --- k8s mode
+(ensure-package 'k8s-mode)
+(require 'k8s-mode)
+
+(setq k8s-indent-offset nil)
+
+(add-hook 'k8s-mode-hook #'yas-minor-mode)
+
+
 ;; --- xml
 (require 'nxml-mode)
 (ensure-package 'xml-format)
-(require 'xml-format)
+;; (require 'xml-format)
 
+(require 'company-xsd)
+;;
 (defun init-nxml-mode()
   (set (make-local-variable 'company-backends)
-       '((company-nxml :with company-dabbrev-code)
+       '((company-xsd-backend company-nxml company-dabbrev)
          company-files))
+  ;; complete on anything
+  (setq company-minimum-prefix-length 0)
   )
 
 (add-hook 'nxml-mode-hook #'init-nxml-mode)
 
+(setq magic-mode-alist (cons '("<\\?xml " . nxml-mode) magic-mode-alist))
+(fset 'xml-mode 'nxml-mode)
+(setq nxml-slash-auto-complete-flag t)
+
 ;; (define-key nxml-mode-map (kbd "C-c C-i") #'nxml-pretty-format)
 (define-key nxml-mode-map (kbd "C-c C-i") #'xml-format-buffer)
+;; (define-key nxml-mode-map (kbd "C-c C-i") #'tidy-buffer-xml)
 (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.scxml\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.xsd\\'" . nxml-mode))
@@ -839,19 +1144,23 @@
 ;; --- markdown
 (ensure-package 'markdown-mode)
 (require 'markdown-mode)
+(ensure-package 'markdown-preview-mode)
+(require 'markdown-preview-mode)
 
 ;; use perl markdown
 (setq markdown-command "multimarkdown")
 
-;; (defun init-markdown-mode()
-;;   (set (make-local-variable 'company-backends)
-;;        '((company-abbrev company-keywords company-ispell)
-;;          company-capf company-files))
-;;   )
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 ;; use github markdown for readmes
 (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+
+
+;; --- docker
+(ensure-package 'docker)
+(require 'docker)
+(ensure-package 'docker-tramp)
+(require 'docker-tramp)
 
 
 ;; --- dockerfile
@@ -881,16 +1190,100 @@
 
 (ensure-package 'plantuml-mode)
 (require 'plantuml-mode)
-(ensure-package 'flycheck-plantuml)
-(require 'flycheck-plantuml)
+;; (ensure-package 'flycheck-plantuml)
+;; (require 'flycheck-plantuml)
 
-(add-to-list 'flycheck-checkers 'plantuml)
+;; (add-to-list 'flycheck-checkers 'plantuml)
 ;; (flycheck-add-mode 'plantuml 'plantuml-mode)
 
 (setq plantuml-default-exec-mode 'jar)
 
 (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
 
+
+;; --- java mode
+(ensure-package 'lsp-java)
+(require 'lsp-java)
+
+
+(add-hook 'java-mode-hook #'lsp)
+(define-key java-mode-map (kbd "C-c C-l") nil)
+(setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/0.68.0/jdt-language-server-0.68.0-202101202016.tar.gz")
+
+
+;; --- nov reader
+;; for epub files
+
+(ensure-package 'nov)
+(require 'nov)
+
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+
+
+
+;; --- csv mode
+
+(ensure-package 'csv-mode)
+(require 'csv-mode)
+
+(setq csv-separators '("," ";" "|" " "))
+
+(add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
+
+
+
+;; --- rainbow mode
+;; nice to have
+(ensure-package 'rainbow-mode)
+(require 'rainbow-mode)
+(dolist (hook '(css-mode-hook html-mode-hook sass-mode-hook))
+  (add-hook hook 'rainbow-mode))
+
+
+;; --- rainbow delimiters
+;; color delimiters differently
+(ensure-package 'rainbow-delimiters)
+(require 'rainbow-delimiters)
+
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+
+
+;; --- crontab mode
+(ensure-package 'crontab-mode)
+(require 'crontab-mode)
+
+(add-to-list 'auto-mode-alist '("\\.?cron\\(tab\\)?\\'" . crontab-mode))
+
+
+;; --- highlight escape sequence mode
+;;
+
+(ensure-package 'highlight-escape-sequences)
+(require 'highlight-escape-sequences)
+
+(add-hook 'prog-mode-hook 'turn-on-hes-mode)
+
+
+;; --- meson mode
+(ensure-package 'meson-mode)
+(require 'meson-mode)
+
+
+;; --- cmake mode
+(ensure-package 'cmake-mode)
+(require 'cmake-mode)
+
+
+;; --- sql mode
+(ensure-package 'sqlformat)
+(require 'sqlformat)
+(require 'sql)
+
+(add-hook 'sql-mode-hook 'sqlformat-mode)
+
+;; redefine key
+(define-key sql-mode-map (kbd "C-c C-f") nil)
+(define-key sql-mode-map (kbd "C-c C-i") 'sqlformat)
 
 (provide 'emacs.common)
 ;;; emacs.common.el ends here

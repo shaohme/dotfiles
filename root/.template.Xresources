@@ -1,0 +1,167 @@
+*saveLines: 8192
+
+
+Xcursor.theme: Adwaita
+Xcursor.size: 32
+
+Xft*antialias: 1
+Xft*hinting: 1
+
+XTerm*faceName: Inconsolata
+! XTerm*faceName: DejaVu Sans Mono
+XTerm*renderFont: true
+XTerm*faceSize: 16
+XTerm*scrollTtyOutput: false
+XTerm*scrollKey: true
+
+! let’s be 8bit-clean
+XTerm*utf8: 1
+XTerm*eightBitInput: false
+XTerm*eightBitControl: false
+XTerm*eightBitOutput: true
+
+! remove tiny border around terminals
+XTerm*borderWidth: 0
+
+! copy to CLIPBOARD
+XTerm*selectToClipboard: true
+
+XTerm*termName: xterm-256color
+
+URxvt*font:     xft:Inconsolata:size=14:antialias=true
+URxvt*boldFont: xft:Inconsolata:bold:size=14:antialias=true
+
+URxvt.scrollBar: false
+URxvt.scrollstyle: plainp
+URxvt.rightScrollBar: false
+! URxvt.scrollTtyOutput: false
+! URxvt.scrollWithBuffer: true
+! URxvt.scrollTtyKeypress: true
+
+! notify the WM when the bell rings
+URxvt*urgentOnBell    : true
+
+! URxvt.visualBell: false
+URxvt.perl-ext-common: default,clipboard,font-size
+! URxvt*dynamicColors: on
+URxvt.url-launcher: xdg-open
+URxvt.matcher.button: 3
+URxvt.iso14755_52: false
+URxvt.iso14755: false
+URxvt.clipboard.autocopy: true
+URxvt.keysym.C-M-c: perl:clipboard:copy
+URxvt.keysym.C-M-v: perl:clipboard:paste
+URxvt.keysym.C-plus: perl:font-size:increase
+URxvt.keysym.C-equal: perl:font-size:reset
+URxvt.keysym.C-minus: perl:font-size:decrease
+
+URxvt.resize-font.smaller: C-minus
+URxvt.resize-font.bigger: C-plus
+URxvt.resize-font.reset: C-equal
+URxvt.resize-font.show: C-question
+
+!font settings                          -*-terminus-*-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.headingFont:        -*-terminus-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.bodyFont:           -*-terminus-bold-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.labelFont:          -*-terminus-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.unameFont:          -*-terminus-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.buttonFont:         -*-terminus-bold-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.dateFont:           -*-terminus-bold-*-*-*-16-*-*-*-*-*-*-*
+xscreensaver.passwd.passwdFont:         -*-terminus-bold-*-*-*-32-*-*-*-*-*-*-*
+
+! leave blank to diable "new login" button
+xscreensaver.newLoginCommand:
+
+xmessage*message.scrollVertical: Always
+xmessage*message.scrollHorizontal: Never
+
+rofi.color-enabled: true
+
+
+
+!! solarized palette
+#define S_base03        #002b36
+#define S_base02        #073642
+#define S_base01        #586e75
+#define S_base00        #657b83
+#define S_base0         #839496
+#define S_base1         #93a1a1
+#define S_base2         #eee8d5
+#define S_base3         #fdf6e3
+
+#define S_yellow        #b58900
+#define S_orange        #cb4b16
+#define S_red           #dc322f
+#define S_magenta       #d33682
+#define S_violet        #6c71c4
+#define S_blue          #268bd2
+#define S_cyan          #2aa198
+#define S_green         #859900
+
+!! black dark/light
+*color0:                S_base02
+*color8:                S_base03
+
+!! red dark/light
+*color1:                S_red
+*color9:                S_orange
+
+!! green dark/light
+*color2:                S_green
+*color10:               S_base01
+
+!! yellow dark/light
+*color3:                S_yellow
+*color11:               S_base00
+
+!! blue dark/light
+*color4:                S_blue
+*color12:               S_base0
+
+!! magenta dark/light
+*color5:                S_magenta
+*color13:               S_violet
+
+!! cyan dark/light
+*color6:                S_cyan
+*color14:               S_base1
+
+!! white dark/light
+*color7:                S_base2
+*color15:               S_base3
+
+!! LIGHT
+! *background:            S_base3
+! *foreground:            S_base00
+! *fadeColor:             S_base3
+! *cursorColor:           S_base01
+! *pointerColorBackground:S_base1
+! *pointerColorForeground:S_base01
+
+!! DARK
+! *background:            S_base03
+! *foreground:            S_base0
+! *fadeColor:             S_base03
+! *cursorColor:           S_base1
+! *pointerColorBackground:S_base01
+! *pointerColorForeground:S_base1
+
+*background:            SR_BACKGROUND
+*foreground:            SR_FOREGROUND
+*fadeColor:             SR_FADECOLOR
+*cursorColor:           SR_CURSORCOLOR
+*pointerColorBackground:SR_POINTERCOLORBACKGROUND
+*pointerColorForeground:SR_POINTERCOLORFOREGROUND
+
+!                  ´background´, ´border´,      ´separator´
+rofi.color-window: SR_BACKGROUND,		 S_base02,		SR_CURSORCOLOR
+! State:           ´bg´,     ´fg´,     ´bgalt´,  ´hlbg´,   ´hlfg´
+rofi.color-normal: SR_BACKGROUND, SR_FOREGROUND, SR_BACKGROUND, SR_FOREGROUND, S_base2
+rofi.color-active: SR_BACKGROUND, S_cyan, SR_BACKGROUND, SR_FOREGROUND, S_cyan
+rofi.color-urgent: SR_BACKGROUND, S_red, SR_BACKGROUND, SR_FOREGROUND, S_red
+
+XTerm*scrollColor: S_base02
+URxvt.scrollColor: S_base02
+
+xmessage*Text.?.cursorColor: SR_CURSORCOLOR
+xmessage*Text.borderColor: S_base02

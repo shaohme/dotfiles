@@ -7,5 +7,5 @@ MimeType=x-scheme-handler/mailto;
 NoDisplay=false
 Terminal=false
 Type=Application
-Exec=xterm -e emacs --eval '(browse-url "%u")'
+Exec=emacs --eval '(browse-url "%u")'
 Icon=emacs
