@@ -9,7 +9,7 @@
 (setq frame-title-format
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
+                 "E - %b"))))
 ;; (setq-default frame-title-format '("%f [%m] Emacs"))
 
 (when (display-graphic-p)
@@ -448,7 +448,7 @@
 (require 'company-prescient)
 
 (setq company-selection-wrap-around t   ;wrap around
-      company-minimum-prefix-length 2 ;shorter prefix
+      company-minimum-prefix-length 3 ;shorter prefix
 	  company-dabbrev-code-ignore-case t
 	  company-idle-delay 0.2 			; speed up completion
 	  company-dabbrev-code-other-buffers 'all
@@ -1119,7 +1119,7 @@
        '((company-xsd-backend company-nxml company-dabbrev)
          company-files))
   ;; complete on anything
-  (setq company-minimum-prefix-length 0)
+  (setq-local company-minimum-prefix-length 1)
   )
 
 (add-hook 'nxml-mode-hook #'init-nxml-mode)
@@ -1284,6 +1284,39 @@
 ;; redefine key
 (define-key sql-mode-map (kbd "C-c C-f") nil)
 (define-key sql-mode-map (kbd "C-c C-i") 'sqlformat)
+
+
+;; --- latex auctex
+(ensure-package 'auctex)
+(require 'latex)
+(ensure-package 'company-auctex)
+(require 'company-auctex)
+
+(setq TeX-PDF-mode t
+	  TeX-source-correlate-method (quote synctex)
+	  TeX-source-correlate-mode t
+      TeX-source-correlate-start-server t)
+
+(defun init-latex-mode()
+  (set (make-local-variable 'company-backends)
+       '((company-auctex company-ispell company-dabbrev))
+  ;; complete on anything
+  ;; (setq-local company-minimum-prefix-length 1)
+	   )
+  )
+
+(add-hook 'TeX-mode-hook #'init-latex-mode)
+
+
+;; ---- rg
+;; tried rg.el but it had many user questions and could not
+;; open remote file over TRAMP automatically from the result list
+
+(ensure-package 'deadgrep)
+(require 'deadgrep)
+
+(define-key global-map (kbd "M-s r") 'deadgrep)
+
 
 (provide 'emacs.common)
 ;;; emacs.common.el ends here
