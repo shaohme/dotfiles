@@ -48,9 +48,9 @@
    '(moe-theme ample-theme counsel-projectile flycheck zenburn-theme xclip projectile ivy-xref ivy-rich counsel company amx))
  '(safe-local-variable-values
    '((pyvenv-workon . syseventd)
-	 (pyvenv-workon . inputeventd)
-	 (pyvenv-workon . pulsemand)
-	 (pyvenv-workon . scm-utils))))
+     (pyvenv-workon . inputeventd)
+     (pyvenv-workon . pulsemand)
+     (pyvenv-workon . scm-utils))))
 ;;; .emacs ends here
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

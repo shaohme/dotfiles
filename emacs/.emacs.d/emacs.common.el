@@ -6,7 +6,7 @@
 ;; required for helper functions
 (require 'local-common)
 
-(setq frame-title-format
+(setq-default frame-title-format
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
                  "E - %b"))))
@@ -36,9 +36,9 @@
 ;;; modes if the mode itself does not define it
 
 ;; indent with tabs
-(setq-default indent-tabs-mode t)
+;; (setq-default indent-tabs-mode t)
 ;; set tab width. override in mode if needed
-(setq-default tab-width 4)
+;; (setq-default tab-width 4)
 
 ;; no lock files. annoying
 (setq-default create-lockfiles nil)
@@ -296,6 +296,12 @@
 
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
+;; --- diminish
+;; cosmetic purposes
+(ensure-package 'diminish)
+(require 'diminish)
+
+(diminish 'abbrev-mode)
 
 ;; --- browse kill ring
 ;; handy tool
@@ -320,7 +326,12 @@
 ;; show keybindings in popup when typing
 (ensure-package 'which-key)
 (require 'which-key)
+
+;; remove lighter from modeline
+(setq which-key-lighter "")
+
 (which-key-mode t)
+
 
 ;; added to aid emacs in setting environment vars
 ;; correct and according to user shell
@@ -422,8 +433,8 @@
                     dired-directory))
     ad-do-it))
 
-;; enable globally so that keymap becomes usable from the start
-(projectile-mode t)
+;; enable projectile through counsel-projectile
+;; (projectile-mode t)
 
 ;; a reddit user suggested this config to make projectile not crawl
 ;; on remote file systems over TRAMP which can be cumbersome
@@ -449,6 +460,8 @@
 
 (setq company-selection-wrap-around t   ;wrap around
       company-minimum-prefix-length 3 ;shorter prefix
+	  company-dabbrev-ignore-case t
+	  company-lighter-base "" 			; remove lighter
 	  company-dabbrev-code-ignore-case t
 	  company-idle-delay 0.2 			; speed up completion
 	  company-dabbrev-code-other-buffers 'all
@@ -457,8 +470,9 @@
 	  company-dabbrev-downcase nil)	  ; make dabbrev completions case sensitive
 
 (add-hook 'company-mode-hook 'company-prescient-mode)
+(add-hook 'prog-mode-hook 'company-mode)
+(add-hook 'conf-mode-hook 'company-mode)
 
-(add-hook 'after-init-hook 'global-company-mode)
 
 ;; --- yasnippet
 ;; useful to have and recommended by LSP defaults
@@ -484,7 +498,7 @@
 	  flycheck-checker-error-threshold 100
 	  )
 
-(add-hook 'after-init-hook 'global-flycheck-mode)
+(add-hook 'prog-mode-hook 'flycheck-mode)
 
 
 
@@ -612,6 +626,8 @@
 ;; commands other than xref-find-definitions (e.g. project-find-regexp)
 ;; as well
 (setq xref-show-xrefs-function #'ivy-xref-show-xrefs)
+
+(diminish 'ivy-mode)
 
 ;; enable ivy and rich mode
 (ivy-mode 1)
@@ -774,7 +790,9 @@
 
 ;; dont add counsel-projectile to projectile-mode-hook. lisp max depth
 ;; errors occurs
-(add-hook 'after-init-hook 'counsel-projectile-mode)
+(add-hook 'prog-mode-hook 'counsel-projectile-mode)
+(add-hook 'conf-mode-hook 'counsel-projectile-mode)
+(add-hook 'text-mode-hook 'counsel-projectile-mode)
 
 ;; --- indent tools
 ;; Smarter way to indent code
@@ -817,7 +835,7 @@
 (require 'diff-hl)
 
 (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-(add-hook 'after-init-hook 'global-diff-hl-mode)
+(add-hook 'prog-mode-hook 'diff-hl-mode)
 
 
 ;; lsp-mode
@@ -847,6 +865,7 @@
 ;; (setq lsp-auto-configure nil)
 
 (define-key lsp-mode-map (kbd "M-.") #'lsp-find-definition)
+(define-key lsp-mode-map (kbd "C-c a") #'lsp-execute-code-action)
 (define-key lsp-mode-map (kbd "C-c C-i") #'lsp-format-buffer)
 (define-key lsp-mode-map (kbd "C-c C-v r") #'lsp-rename)
 
@@ -886,28 +905,32 @@
 (ensure-package 'elpy)
 (require 'elpy)
 
-(elpy-enable)
-
-
 ;; replace flymake with flycheck
 ;; (when (load "flycheck" t t)
-;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
 ;;   )
 
 ;; rpc needs its own virtualenv
-(setq elpy-rpc-virtualenv-path "~/.virtualenvs/elpyrpc3")
+(setq elpy-rpc-virtualenv-path "~/.virtualenvs/elpyrpc3"
+	  ;; disable annoying auto elpy config
+	  elpy-modules (delq 'elpy-module-flymake (delq 'elpy-module-company elpy-modules)))
+
 ;; remap to standard format key stroke
 (define-key elpy-mode-map (kbd "C-c C-i") 'elpy-format-code)
 
-;; (defun init-elpy-mode()
-;;   ;; it seems we need to disable checkers on elpy-mode-hook, otherwise
-;;   ;; they are re-enabled. disable flake8 and pycompile
-;;   (setq flycheck-disabled-checkers (quote (python-flake8 python-pycompile))
-;; 		)
-;;   )
+(defun init-elpy-mode()
+  ;; it seems we need to disable checkers on elpy-mode-hook, otherwise
+  ;; they are re-enabled. disable flake8 and pycompile
 
-(add-hook 'elpy-mode-hook 'init-elpy-mode)
+  ;; dabbrev in comments is nice
+  (setq-local company-dabbrev-code-everywhere t
+			  company-idle-delay 0.1)
+  (setq-local flycheck-disabled-checkers (quote (python-flake8 python-pycompile)))
+  (setq-local company-backends '((elpy-company-backend company-dabbrev-code)))
+  )
 
+(elpy-enable)
+
+(add-hook 'elpy-mode-hook #'init-elpy-mode)
 
 
 ;; --- web-mode
@@ -1070,9 +1093,7 @@
 (defun init-lua-mode()
   ;;; combine lua and dabbrev in one completion, so if lua fails dabbrev
   ;;; can provide
-  (set (make-local-variable 'company-backends)
-       '((company-lua :with company-dabbrev-code :with
-                       company-yasnippet)
+  (setq-local company-backends '((company-lua :with company-dabbrev-code :with company-yasnippet)
          company-capf company-files))
   )
 
@@ -1085,17 +1106,45 @@
 (ensure-package 'counsel-jq)
 (require 'counsel-jq)
 
+(defun init-json-mode()
+  ;;; combine lua and dabbrev in one completion, so if lua fails dabbrev
+  ;;; can provide
+  (setq-local company-backends '((company-dabbrev company-ispell)))
+  )
+
+
 (add-to-list 'auto-mode-alist '("\\.json" . json-mode))
 
 (define-key json-mode-map (kbd "C-c C-i") 'json-mode-beautify)
+
+(add-hook 'json-mode-hook 'counsel-projectile-mode)
+(add-hook 'json-mode-hook 'flycheck-mode)
+(add-hook 'json-mode-hook 'company-mode)
+
+
+;; --- highlight indentation mode
+;; used for yaml mailny
+(ensure-package 'highlight-indentation)
+(require 'highlight-indentation)
 
 
 ;; --- yaml mode
 (ensure-package 'yaml-mode)
 (require 'yaml-mode)
 
-;; (add-hook 'yaml-mode-hook #'lsp)
-(add-hook 'yaml-mode-hook #'indent-tools-minor-mode)
+(defun init-yaml-mode()
+  ;; tabs are outlawed
+  (setq-local indent-tabs-mode nil)
+  (setq-local tab-width 2)
+  (setq-local highlight-indentation-offset 2)
+  )
+
+(add-hook 'yaml-mode-hook #'init-yaml-mode)
+(add-hook 'yaml-mode-hook 'indent-tools-minor-mode)
+(add-hook 'yaml-mode-hook 'highlight-indentation-mode)
+(add-hook 'yaml-mode-hook 'counsel-projectile-mode)
+(add-hook 'yaml-mode-hook 'flycheck-mode)
+(add-hook 'yaml-mode-hook 'company-mode)
 
 
 ;; --- k8s mode
@@ -1112,17 +1161,18 @@
 (ensure-package 'xml-format)
 ;; (require 'xml-format)
 
-(require 'company-xsd)
-;;
+;; seems broken. takes precedence over other backends
+;; (require 'company-xsd)
+
 (defun init-nxml-mode()
-  (set (make-local-variable 'company-backends)
-       '((company-xsd-backend company-nxml company-dabbrev)
-         company-files))
-  ;; complete on anything
-  (setq-local company-minimum-prefix-length 1)
+  (setq-local company-backends '((company-dabbrev company-ispell)))
+  (setq-local company-minimum-prefix-length 3)
   )
 
 (add-hook 'nxml-mode-hook #'init-nxml-mode)
+(add-hook 'nxml-mode-hook 'counsel-projectile-mode)
+(add-hook 'nxml-mode-hook 'flycheck-mode)
+(add-hook 'nxml-mode-hook 'company-mode)
 
 (setq magic-mode-alist (cons '("<\\?xml " . nxml-mode) magic-mode-alist))
 (fset 'xml-mode 'nxml-mode)
@@ -1205,8 +1255,15 @@
 (ensure-package 'lsp-java)
 (require 'lsp-java)
 
+(defun init-java-mode()
+  (setq-local indent-tabs-mode nil)
+  (setq-local tab-width 4)
+
+  )
 
 (add-hook 'java-mode-hook #'lsp)
+(add-hook 'java-mode-hook #'init-java-mode)
+
 (define-key java-mode-map (kbd "C-c C-l") nil)
 (setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/0.68.0/jdt-language-server-0.68.0-202101202016.tar.gz")
 
@@ -1246,6 +1303,8 @@
 (require 'rainbow-delimiters)
 
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+
+(diminish 'rainbow-mode)
 
 
 ;; --- crontab mode
@@ -1298,8 +1357,7 @@
       TeX-source-correlate-start-server t)
 
 (defun init-latex-mode()
-  (set (make-local-variable 'company-backends)
-       '((company-auctex company-ispell company-dabbrev))
+  (setq-local company-backends '((company-auctex company-ispell company-dabbrev))
   ;; complete on anything
   ;; (setq-local company-minimum-prefix-length 1)
 	   )

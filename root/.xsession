@@ -1,21 +1,23 @@
 #!/bin/bash
 
+pkill dunst
 pkill picom
 pkill steam
 pkill syncthing-gtk
 pkill nm-applet
-pkill ssh-agent
+# pkill ssh-agent
 pkill blueman-applet
+pkill xss-lock
 pkill xscreensaver
 pkill xsettingsd
-pkill redshift-gtk
+pkill redshift
 
 # TODO: for some reason xresources aren't loaded
 xrdb -load "$HOME/.Xresources"
 
-if command -v ssh-agent &> /dev/null; then
-    eval $(ssh-agent -s)
-fi
+# if command -v ssh-agent &> /dev/null; then
+#    eval $(ssh-agent -s)
+# fi
 
 if command -v picom &> /dev/null; then
     picom -CGb
@@ -28,6 +30,10 @@ fi
 if command -v xset &> /dev/null; then
 	xset s on s 1200 0
 	xset dpms 0 1200 1203
+fi
+
+if command -v dunst &> /dev/null; then
+    dunst &
 fi
 
 if command -v ibus-daemon &> /dev/null; then
@@ -64,8 +70,8 @@ fi
 
 # set here and masked in systemd --user to try avoid segfaults
 # because systemd --user tries to start it to early
-if command -v redshift-gtk &> /dev/null; then
-    redshift-gtk &
+if command -v redshift &> /dev/null; then
+	redshift &
 fi
 
 if [ "$HOSTNAME" = "ent" ]; then

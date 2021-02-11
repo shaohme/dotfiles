@@ -1,5 +1,6 @@
 [Unit]
 Description=System event daemon
+ConditionEnvironment=DISPLAY
 After=pulseaudio.service
 
 [Service]

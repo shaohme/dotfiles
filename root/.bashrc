@@ -65,6 +65,10 @@ if command -v aws_completer &> /dev/null; then
     complete -C 'aws_completer' aws
 fi
 
+for bcfile in ~/.bash_completion.d/* ; do
+  [ -f "$bcfile" ] && . $bcfile
+done
+
 if [ -x $HOME/.local/bin/bashmarks.sh ]; then
     . $HOME/.local/bin/bashmarks.sh
 fi
@@ -146,6 +150,8 @@ alias jwth="decode_jwt 1"
 # Decode JWT Payload
 alias jwtp="decode_jwt 2"
 
+
+alias cpma="quake3 +nosplash +set fs_game cpma"
 
 if [ -f ${HOME}/.bash_aliases ]; then
     . ${HOME}/.bash_aliases
