@@ -13,7 +13,22 @@ export RUST_SRC_PATH="/usr/lib/rustlib/src/rust"
 export GOPATH="${HOME}/gocode"
 export NPM_PACKAGES="${HOME}/.local"
 
-export PATH="${HOME}/bin:${HOME}/.local/bin:/usr/sbin:/usr/games/bin:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/emulator:${ANDROID_HOME}/platform-tools:${HOME}/.cask/bin:/usr/local/games:${HOME}/.cargo/bin:${HOME}/.cabal/bin:${HOME}/.ghcup/bin:$GOROOT/bin:$GOPATH/bin:${HOME}/.gem/ruby/2.5.0/bin:${HOME}/.gem/ruby/2.7.0/bin:${HOME}/.local/lib/idea/bin:$PATH"
+export PATH="${HOME}/bin:\
+${HOME}/.local/bin:\
+${HOME}/dev/pyenv/bin:\
+${ANDROID_HOME}/cmdline-tools/latest/bin:\
+${ANDROID_HOME}/emulator:\
+${ANDROID_HOME}/platform-tools:\
+${HOME}/.cask/bin:\
+${HOME}/.cargo/bin:\
+${HOME}/.cabal/bin:\
+${HOME}/.ghcup/bin:\
+$GOPATH/bin:\
+${HOME}/.gem/ruby/2.5.0/bin:\
+${HOME}/.gem/ruby/2.7.0/bin:\
+${HOME}/.local/lib/idea/bin:\
+/usr/sbin:\
+$PATH"
 
 export PROJECTS_HOME="${HOME}/dev"
 export SDL_AUDIODRIVER="pulse"
@@ -24,6 +39,9 @@ export JAVA_HOME=/usr/lib/jvm/default-java
 export STUDIO_JDK=/usr/lib/jvm/default-java
 export NAME="Martin Kjær Jørgensen"
 export GOPRIVATE=bitbucket.shijidev.com
+export MPD_HOST="${HOME}/.mpd/socket"
+export MAVEN_OPTS="-Xmx8192m -Xms2048m -Djava.awt.headless=true"
+export PYENV_ROOT="${HOME}/dev/pyenv"
 
 HN=$(hostname -s)
 if [ "$HN" = "ws" ] || [ "$HN" = "rw" ]; then

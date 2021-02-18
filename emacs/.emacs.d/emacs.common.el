@@ -35,10 +35,11 @@
 ;;; basic defaults. these are set as values for all
 ;;; modes if the mode itself does not define it
 
-;; indent with tabs
-;; (setq-default indent-tabs-mode t)
+;; indent with whitespace by default to make files appear the same
+;; across editors
+(setq-default indent-tabs-mode nil)
 ;; set tab width. override in mode if needed
-;; (setq-default tab-width 4)
+(setq-default tab-width 4)
 
 ;; no lock files. annoying
 (setq-default create-lockfiles nil)
@@ -185,6 +186,10 @@
 (set-keyboard-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+
+(require 'hideshow)
 
 ;; ediff
 (require 'ediff)
@@ -213,31 +218,32 @@
 (require 'xterm-color)
 
 
+;;  --- bash completion
+;; kinda nice in shell-mode
+
+(ensure-package 'bash-completion)
+(require 'bash-completion)
+
+(bash-completion-setup)
+
+
+
 (require 'eshell)
 (require 'esh-mode)
 
 ;; add xterm colors workarounds to eshell
-(add-hook 'eshell-before-prompt-hook
-          (lambda ()
-            (setq xterm-color-preserve-properties t)))
+;; (add-hook 'eshell-before-prompt-hook
+;;           (lambda ()
+;;             (setq xterm-color-preserve-properties t)))
 
-(add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
-(setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+;; (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+;; (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+(setq eshell-banner-message "")
+
 ;; commented out because it doesn't seem to have any noticeable effect
-(setenv "TERM" "xterm-256color")
+;; (setenv "TERM" "xterm-256color")
 
 (setq-default explicit-shell-file-name "/bin/bash")
-
-;; add xterm colors workarounds to compilation buffers
-;; Warning: this might break rg.el and ag.el
-(require 'compile)
-
-(setq compilation-environment '("TERM=xterm-256color"))
-
-(defun my/advice-compilation-filter (f proc string)
-  (funcall f proc (xterm-color-filter string)))
-
-(advice-add 'compilation-filter :around #'my/advice-compilation-filter)
 
 
 ;;----------------------------------------------------------------------------
@@ -251,19 +257,23 @@
 (setq uniquify-ignore-buffers-re "^\\*")
 
 
-
 ;; xterm-color config for shell mode
-(setq comint-output-filter-functions
-      (remove 'ansi-color-process-output comint-output-filter-functions))
+;; (setq comint-output-filter-functions
+;;       (remove 'ansi-color-process-output comint-output-filter-functions))
 
-(add-hook 'shell-mode-hook
-          (lambda ()
-            ;; Disable font-locking in this buffer to improve performance
-            (font-lock-mode -1)
-            ;; Prevent font-locking from being re-enabled in this buffer
-            (make-local-variable 'font-lock-function)
-            (setq font-lock-function (lambda (_) nil))
-            (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
+;; (add-hook 'shell-mode-hook
+;;           (lambda ()
+;;             ;; Disable font-locking in this buffer to improve performance
+;;             (font-lock-mode -1)
+;;             ;; Prevent font-locking from being re-enabled in this buffer
+;;             (make-local-variable 'font-lock-function)
+;;             (setq font-lock-function (lambda (_) nil))
+;;             (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
+
+
+;;
+(add-hook 'shell-mode-hook 'rename-uniquely)
+;; (add-hook 'term-mode-hook 'rename-uniquely)
 
 ;; --- ecr
 (require 'erc)
@@ -296,12 +306,6 @@
 
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
-;; --- diminish
-;; cosmetic purposes
-(ensure-package 'diminish)
-(require 'diminish)
-
-(diminish 'abbrev-mode)
 
 ;; --- browse kill ring
 ;; handy tool
@@ -336,10 +340,15 @@
 ;; added to aid emacs in setting environment vars
 ;; correct and according to user shell
 
+;; (when (daemonp)
+;;   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"))
+;; 	(add-to-list 'exec-path-from-shell-variables var))
+;;   (exec-path-from-shell-initialize))
 (when (daemonp)
   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"))
 	(add-to-list 'exec-path-from-shell-variables var))
-  (exec-path-from-shell-initialize))
+  )
+(exec-path-from-shell-initialize)
 
 
 ;; handling large files
@@ -627,7 +636,6 @@
 ;; as well
 (setq xref-show-xrefs-function #'ivy-xref-show-xrefs)
 
-(diminish 'ivy-mode)
 
 ;; enable ivy and rich mode
 (ivy-mode 1)
@@ -836,6 +844,7 @@
 
 (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 (add-hook 'prog-mode-hook 'diff-hl-mode)
+(add-hook 'text-mode-hook 'diff-hl-mode)
 
 
 ;; lsp-mode
@@ -930,6 +939,7 @@
 
 (elpy-enable)
 
+(add-hook 'elpy-mode-hook #'superword-mode) ; become snake-case aware
 (add-hook 'elpy-mode-hook #'init-elpy-mode)
 
 
@@ -1137,6 +1147,7 @@
   (setq-local indent-tabs-mode nil)
   (setq-local tab-width 2)
   (setq-local highlight-indentation-offset 2)
+  (flycheck-select-checker 'yaml-yamllint)
   )
 
 (add-hook 'yaml-mode-hook #'init-yaml-mode)
@@ -1145,6 +1156,8 @@
 (add-hook 'yaml-mode-hook 'counsel-projectile-mode)
 (add-hook 'yaml-mode-hook 'flycheck-mode)
 (add-hook 'yaml-mode-hook 'company-mode)
+
+(add-to-list 'auto-mode-alist '("\\.yamllint" . yaml-mode))
 
 
 ;; --- k8s mode
@@ -1173,6 +1186,17 @@
 (add-hook 'nxml-mode-hook 'counsel-projectile-mode)
 (add-hook 'nxml-mode-hook 'flycheck-mode)
 (add-hook 'nxml-mode-hook 'company-mode)
+(add-hook 'nxml-mode-hook 'hs-minor-mode)
+
+(add-to-list 'hs-special-modes-alist
+             (list 'nxml-mode
+                   "<!--\\|<[^/>]*[^/]>"
+                   "-->\\|</[^/>]*[^/]>"
+                   "<!--"
+                   'nxml-forward-element
+                   nil))
+
+(define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
 
 (setq magic-mode-alist (cons '("<\\?xml " . nxml-mode) magic-mode-alist))
 (fset 'xml-mode 'nxml-mode)
@@ -1262,6 +1286,7 @@
   )
 
 (add-hook 'java-mode-hook #'lsp)
+(add-hook 'java-mode-hook #'subword-mode) ;navigate camelcase easier
 (add-hook 'java-mode-hook #'init-java-mode)
 
 (define-key java-mode-map (kbd "C-c C-l") nil)
@@ -1304,7 +1329,6 @@
 
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 
-(diminish 'rainbow-mode)
 
 
 ;; --- crontab mode
@@ -1375,6 +1399,16 @@
 
 (define-key global-map (kbd "M-s r") 'deadgrep)
 
+
+;; --- diminish
+;; cosmetic purposes
+(ensure-package 'diminish)
+(require 'diminish)
+
+(diminish 'abbrev-mode)
+(diminish 'hs-minor-mode)
+(diminish 'rainbow-mode)
+(diminish 'ivy-mode)
 
 (provide 'emacs.common)
 ;;; emacs.common.el ends here

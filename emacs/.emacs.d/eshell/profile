@@ -1,0 +1,2 @@
+export TERM=emacs
+export PAGER=cat

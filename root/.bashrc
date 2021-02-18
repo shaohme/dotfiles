@@ -65,6 +65,10 @@ if command -v aws_completer &> /dev/null; then
     complete -C 'aws_completer' aws
 fi
 
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi
+
 for bcfile in ~/.bash_completion.d/* ; do
   [ -f "$bcfile" ] && . $bcfile
 done

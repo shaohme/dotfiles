@@ -47,7 +47,14 @@
  '(package-selected-packages
    '(moe-theme ample-theme counsel-projectile flycheck zenburn-theme xclip projectile ivy-xref ivy-rich counsel company amx))
  '(safe-local-variable-values
-   '((pyvenv-workon . syseventd)
+   '((lsp-pyls-plugins-jedi-environment . "/home/mkj/syseventd/bin/python3")
+     (lsp-pyls-plugins-jedi-environment . "/home/mkj/.virtualenvs/syseventd/bin/python")
+     (lsp-pyls-plugins-jedi-environment . "/home/mkj/.virtualenvs/syseventd/")
+     (lsp-pyls-plugins-jedi-environment . /home/mkj/\.virtualenvs/syseventd/)
+     (lsp-pyls-plugins-jedi-environment . /home/mkj/\.virtualenvs/syseventd/bin/python)
+     (lsp-pyls-plugins-jedi-environment . "/home/mkj/.virtualenvs/syseventd")
+     (lsp-pyls-plugins-jedi-environment . ~/\.virtualenvs/syseventd)
+     (pyvenv-workon . syseventd)
      (pyvenv-workon . inputeventd)
      (pyvenv-workon . pulsemand)
      (pyvenv-workon . scm-utils))))

@@ -148,5 +148,11 @@ With argument, do this that many times."
   (kill-emacs)
   )
 
+(defun create-and-center-shell ()
+  "Creates a shell and removes other windows"
+  (shell)
+  (delete-other-windows)
+  )
+
 (provide 'local-common)
 ;;; local-common.el ends here
