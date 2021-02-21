@@ -87,25 +87,25 @@ fi
 
 case "$TERM" in
 xterm*|rxvt*)
-    PROMPT_COMMAND='echo -ne "\033]0;${PWD}\007"'
+    # PROMPT_COMMAND='echo -ne "\033]0;${PWD}\007"'
 
-    # Show the currently running command in the terminal title:
-    # http://www.davidpashley.com/articles/xterm-titles-with-bash.html
-    show_command_in_title_bar()
-    {
-        case "$BASH_COMMAND" in
-            *\033]0*)
-                # The command is trying to set the title bar as well;
-                # this is most likely the execution of $PROMPT_COMMAND.
-                # In any case nested escapes confuse the terminal, so don't
-                # output them.
-                ;;
-            *)
-                echo -ne "\033]0;${BASH_COMMAND}\007"
-                ;;
-        esac
-    }
-    trap show_command_in_title_bar DEBUG
+    # # Show the currently running command in the terminal title:
+    # # http://www.davidpashley.com/articles/xterm-titles-with-bash.html
+    # show_command_in_title_bar()
+    # {
+    #     case "$BASH_COMMAND" in
+    #         "*\\033]0*"")
+    #             # The command is trying to set the title bar as well;
+    #             # this is most likely the execution of $PROMPT_COMMAND.
+    #             # In any case nested escapes confuse the terminal, so don't
+    #             # output them.
+    #             ;;
+    #         *)
+    #             echo -ne "\033]0;${BASH_COMMAND}\007"
+    #             ;;
+    #     esac
+    # }
+    # trap show_command_in_title_bar DEBUG
     ;;
 dumb)
 	# probably Emacs shell mode
@@ -154,8 +154,10 @@ alias jwth="decode_jwt 1"
 # Decode JWT Payload
 alias jwtp="decode_jwt 2"
 
-
 alias cpma="quake3 +nosplash +set fs_game cpma"
+
+alias ssh-add-pkcs11="ssh-add -s /usr/lib/x86_64-linux-gnu/pkcs11/opensc-pkcs11.so"
+alias ssh-add-pkcs11-del="ssh-add -e /usr/lib/x86_64-linux-gnu/pkcs11/opensc-pkcs11.so"
 
 if [ -f ${HOME}/.bash_aliases ]; then
     . ${HOME}/.bash_aliases

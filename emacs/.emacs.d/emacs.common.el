@@ -12,22 +12,6 @@
                  "E - %b"))))
 ;; (setq-default frame-title-format '("%f [%m] Emacs"))
 
-(when (display-graphic-p)
-  ;; load theme based on whether theme file is set to light or dark
-  (ensure-package 'solarized-theme)
-  (require 'solarized-theme)
-  (let ((f (substitute-in-file-name "$XDG_RUNTIME_DIR/theme")))
-	(if (file-exists-p f)
-		(if (with-temp-buffer
-			  (insert-file-contents (substitute-in-file-name f))
-			  (goto-char (point-min))
-			  (looking-at "0"))
-			(load-theme 'solarized-dark t)
-		  ;; default to light
-		  (load-theme 'solarized-light t))(load-theme 'solarized-light t))
-	  )
-  )
-
 (require 'server)
 (unless (server-running-p)
   (server-start))
@@ -1400,6 +1384,16 @@
 (define-key global-map (kbd "M-s r") 'deadgrep)
 
 
+;; ---- visaul regex
+;; nice to have
+
+(ensure-package 'visual-regexp)
+(require 'visual-regexp)
+
+(define-key global-map (kbd "C-c r") 'vr/replace)
+(define-key global-map (kbd "C-c q") 'vr/query-replace)
+
+
 ;; --- diminish
 ;; cosmetic purposes
 (ensure-package 'diminish)
@@ -1409,6 +1403,26 @@
 (diminish 'hs-minor-mode)
 (diminish 'rainbow-mode)
 (diminish 'ivy-mode)
+
+
+(when (display-graphic-p)
+  ;; load theme based on whether theme file is set to light or dark
+  (ensure-package 'solarized-theme)
+  (require 'solarized-theme)
+  (let ((f (substitute-in-file-name "$XDG_RUNTIME_DIR/theme")))
+	(if (file-exists-p f)
+		(if (with-temp-buffer
+			  (insert-file-contents (substitute-in-file-name f))
+			  (goto-char (point-min))
+			  (looking-at "0"))
+			(load-theme 'solarized-dark t)
+		  ;; default to light
+		  (load-theme 'solarized-light t))(load-theme 'solarized-light t))
+	)
+  (add-to-list 'default-frame-alist '(font . "Hack 12"))
+  (set-face-attribute 'default t :font "Hack 12")
+  )
+
 
 (provide 'emacs.common)
 ;;; emacs.common.el ends here
