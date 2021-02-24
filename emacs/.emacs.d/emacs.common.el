@@ -172,6 +172,9 @@
 
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
+;; remove list-buffers from keymap. often accidentally hit it when aiming for C-x b
+(define-key global-map (kbd "C-x C-b") nil)
+
 
 (require 'hideshow)
 
@@ -309,6 +312,20 @@
 (ensure-package 'exec-path-from-shell)
 (require 'exec-path-from-shell)
 
+;; added to aid emacs in setting environment vars
+;; correct and according to user shell
+
+;; (when (daemonp)
+;;   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"))
+;; 	(add-to-list 'exec-path-from-shell-variables var))
+;;   (exec-path-from-shell-initialize))
+;; (when (daemonp)
+;;   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"))
+;; 	(add-to-list 'exec-path-from-shell-variables var))
+;;   )
+
+(exec-path-from-shell-initialize)
+
 
 ;; --- Which-key mode
 ;; show keybindings in popup when typing
@@ -319,20 +336,6 @@
 (setq which-key-lighter "")
 
 (which-key-mode t)
-
-
-;; added to aid emacs in setting environment vars
-;; correct and according to user shell
-
-;; (when (daemonp)
-;;   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"))
-;; 	(add-to-list 'exec-path-from-shell-variables var))
-;;   (exec-path-from-shell-initialize))
-(when (daemonp)
-  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"))
-	(add-to-list 'exec-path-from-shell-variables var))
-  )
-(exec-path-from-shell-initialize)
 
 
 ;; handling large files
@@ -590,7 +593,6 @@
 ;; alternative to amx/smex etc.
 (ensure-package 'ivy-prescient)
 (require 'ivy-prescient)
-
 
 (define-key global-map [menu] nil)
 ;; such a common everyday function. bind it also to something simpler
@@ -895,36 +897,43 @@
 
 
 ;; --- python mode
-(ensure-package 'elpy)
-(require 'elpy)
+(ensure-package 'pyenv-mode)
+(require 'pyenv-mode)
+;; (ensure-package 'elpy)
+;; (require 'elpy)
 
 ;; replace flymake with flycheck
 ;; (when (load "flycheck" t t)
 ;;   )
 
 ;; rpc needs its own virtualenv
-(setq elpy-rpc-virtualenv-path "~/.virtualenvs/elpyrpc3"
-	  ;; disable annoying auto elpy config
-	  elpy-modules (delq 'elpy-module-flymake (delq 'elpy-module-company elpy-modules)))
+;; (setq elpy-rpc-virtualenv-path "~/.virtualenvs/elpyrpc3"
+;; 	  ;; disable annoying auto elpy config
+;; 	  elpy-modules (delq 'elpy-module-flymake (delq 'elpy-module-company elpy-modules)))
 
 ;; remap to standard format key stroke
-(define-key elpy-mode-map (kbd "C-c C-i") 'elpy-format-code)
+;; (define-key elpy-mode-map (kbd "C-c C-i") 'elpy-format-code)
+;; remove C-return binding. annoying shell execution
+;; (define-key elpy-mode-map (kbd "C-RET") nil)
 
-(defun init-elpy-mode()
-  ;; it seems we need to disable checkers on elpy-mode-hook, otherwise
-  ;; they are re-enabled. disable flake8 and pycompile
 
-  ;; dabbrev in comments is nice
-  (setq-local company-dabbrev-code-everywhere t
-			  company-idle-delay 0.1)
-  (setq-local flycheck-disabled-checkers (quote (python-flake8 python-pycompile)))
-  (setq-local company-backends '((elpy-company-backend company-dabbrev-code)))
-  )
+;; (defun init-elpy-mode()
+;;   ;; it seems we need to disable checkers on elpy-mode-hook, otherwise
+;;   ;; they are re-enabled. disable flake8 and pycompile
 
-(elpy-enable)
+;;   ;; dabbrev in comments is nice
+;;   (setq-local company-dabbrev-code-everywhere t
+;; 			  company-idle-delay 0.1)
+;;   (setq-local flycheck-disabled-checkers (quote (python-flake8 python-pycompile)))
+;;   (setq-local company-backends '((elpy-company-backend company-dabbrev-code)))
+;;   )
 
-(add-hook 'elpy-mode-hook #'superword-mode) ; become snake-case aware
-(add-hook 'elpy-mode-hook #'init-elpy-mode)
+;; (elpy-enable)
+
+(add-hook 'python-mode-hook #'superword-mode) ; become snake-case aware
+(add-hook 'python-mode-hook #'pyenv-mode)
+;; (add-hook 'elpy-mode-hook #'superword-mode) ; become snake-case aware
+;; (add-hook 'elpy-mode-hook #'init-elpy-mode)
 
 
 ;; --- web-mode
@@ -1117,7 +1126,7 @@
 
 
 ;; --- highlight indentation mode
-;; used for yaml mailny
+;; used for yaml mainly
 (ensure-package 'highlight-indentation)
 (require 'highlight-indentation)
 

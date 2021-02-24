@@ -30,6 +30,22 @@ ${HOME}/.local/lib/idea/bin:\
 /usr/sbin:\
 $PATH"
 
+# make sure most shell sessions gets more complete PATH.
+# this seems needed especially for Emacs started in an X session
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi
+
+if [ ! -z "${ANDROID_NDK_HOME}" ]; then
+    if [ -d "${ANDROID_NDK_HOME}" ]; then
+        LATEST_NDK_DIR=$(ls -td ${ANDROID_NDK_HOME}/*/ | head -1)
+        if ! [ -z "${LATEST_NDK_DIR}" ] && ! [ "${LATEST_NDK_DIR}" = "/tmp" ]; then
+            PATH="$PATH:${LATEST_NDK_DIR}"
+        fi
+    fi
+fi
+
+
 export PROJECTS_HOME="${HOME}/dev"
 export SDL_AUDIODRIVER="pulse"
 export DOOMWADDIR="${HOME}/gms/doom"

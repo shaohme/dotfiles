@@ -24,13 +24,22 @@ else
   PS1='\w $ '
 fi
 
-if [ ! -z "${ANDROID_NDK_HOME}" ]; then
-	 if [ -d "${ANDROID_NDK_HOME}" ]; then
-		 LATEST_NDK_DIR=$(ls -td ${ANDROID_NDK_HOME}/*/ | head -1)
-		 if ! [ -z "${LATEST_NDK_DIR}" ] && ! [ "${LATEST_NDK_DIR}" = "/tmp" ]; then
-			 PATH="$PATH:${LATEST_NDK_DIR}"
-		 fi
-	 fi
+# make sure most shell sessions gets more complete PATH and enable completions
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi
+
+# if [ ! -z "${ANDROID_NDK_HOME}" ]; then
+# 	 if [ -d "${ANDROID_NDK_HOME}" ]; then
+# 		 LATEST_NDK_DIR=$(ls -td ${ANDROID_NDK_HOME}/*/ | head -1)
+# 		 if ! [ -z "${LATEST_NDK_DIR}" ] && ! [ "${LATEST_NDK_DIR}" = "/tmp" ]; then
+# 			 PATH="$PATH:${LATEST_NDK_DIR}"
+# 		 fi
+# 	 fi
+# fi
+
+if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
+    . $HOME/.sdkman/bin/sdkman-init.sh
 fi
 
 export GPG_TTY="$( tty )"
@@ -65,10 +74,6 @@ if command -v aws_completer &> /dev/null; then
     complete -C 'aws_completer' aws
 fi
 
-if command -v pyenv 1>/dev/null 2>&1; then
-    eval "$(pyenv init -)"
-fi
-
 for bcfile in ~/.bash_completion.d/* ; do
   [ -f "$bcfile" ] && . $bcfile
 done
@@ -79,10 +84,6 @@ fi
 
 if [ -f /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh ]; then
     . /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
-fi
-
-if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
-    source "$HOME/.sdkman/bin/sdkman-init.sh"
 fi
 
 case "$TERM" in
