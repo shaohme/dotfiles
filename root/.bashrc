@@ -27,6 +27,7 @@ fi
 # make sure most shell sessions gets more complete PATH and enable completions
 if command -v pyenv 1>/dev/null 2>&1; then
     eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
 fi
 
 # if [ ! -z "${ANDROID_NDK_HOME}" ]; then

@@ -69,7 +69,7 @@ if [ "$HN" = "dev6" ]; then
     export EMAIL="martin.jorgensen@shijigroup.com"
 fi
 
-export PYTHON_VIRTUALENV_DIR="${HOME}/.virtualenvs"
+# export PYTHON_VIRTUALENV_DIR="${HOME}/.virtualenvs"
 export WINEARCH=win32
 export WINEPREFIX="${HOME}/.wine32"
 

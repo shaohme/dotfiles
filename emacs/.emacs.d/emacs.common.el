@@ -175,6 +175,12 @@
 ;; remove list-buffers from keymap. often accidentally hit it when aiming for C-x b
 (define-key global-map (kbd "C-x C-b") nil)
 
+(define-key global-map [menu] nil)
+;; such a common everyday function. bind it also to something simpler
+(define-key global-map (kbd "M-o") 'other-window)
+;; not using existing (tab-to-tab-stop) so binding it to imenu istead
+(define-key global-map (kbd "M-i") 'imenu)
+
 
 (require 'hideshow)
 
@@ -395,7 +401,7 @@
 (require 'treemacs-projectile)
 
 
-(setq projectile-completion-system 'ivy ;make ivy aware
+(setq ;; projectile-completion-system 'ivy ;make ivy aware
       projectile-project-search-path '("~/dev/" "~/work/") ;default paths
 	  ;; attempt to disable project name on modeline. this should
 	  ;; speedup, also over TRAMP
@@ -430,7 +436,7 @@
     ad-do-it))
 
 ;; enable projectile through counsel-projectile
-;; (projectile-mode t)
+(projectile-mode t)
 
 ;; a reddit user suggested this config to make projectile not crawl
 ;; on remote file systems over TRAMP which can be cumbersome
@@ -565,75 +571,132 @@
 
 ;;; --- xclip
 ;;; interact with X11 clipboard
-(ensure-package 'xclip)
-(require 'xclip)
+;; (ensure-package 'xclip)
+;; (require 'xclip)
 
-(unless (display-graphic-p)
-  ;; only needed in terminal mode
-  (xclip-mode 1)
-)
+;; (unless (display-graphic-p)
+;;   ;; only needed in terminal mode
+;;   (xclip-mode 1)
+;; )
+
+
+;; --- selectrum
+
+(ensure-package 'selectrum)
+(require 'selectrum)
+(ensure-package 'selectrum-prescient)
+(require 'selectrum-prescient)
+
+(selectrum-mode +1)
+
+;; to make sorting and filtering more intelligent
+(selectrum-prescient-mode +1)
+
+
+;; --- ctrlf
+(ensure-package 'ctrlf)
+(require 'ctrlf)
+
+;; (ctrlf-mode +1)
+
+
+(define-key global-map (kbd "C-s") 'ctrlf-forward-fuzzy)
+(define-key global-map (kbd "C-r") 'ctrlf-backward-fuzzy)
+
+
+;; --- marginalia
+;; add annotations to minibuffer completions
+(ensure-package 'marginalia)
+(require 'marginalia)
+
+(marginalia-mode)
+
+;; When using Selectrum, ensure that Selectrum is refreshed when cycling annotations.
+(advice-add #'marginalia-cycle :after
+            (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
+
+;; add key to cycle annotations
+(define-key minibuffer-local-map (kbd "M-A") 'marginalia-cycle)
+
+;; show more heavy annotations by default. like docs, additional strings, keybindings on M-x
+(setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+
+
+;; --- consult
+(ensure-package 'consult)
+(require 'consult)
+(ensure-package 'consult-flycheck)
+(require 'consult-flycheck)
+
+;; disable preview for now. even though its a major feature, its also
+;; annoying, and causes emacs to load major modes when previewing,
+;; which might include LSP etc. making it slow
+(setq consult-preview-key nil)
+;; (when (>= emacs-major-version 27)
+;;   (setq xref-show-definitions-function #'consult-xref))
+
+
+(define-key global-map (kbd "M-g g") 'consult-goto-line)
+(define-key global-map (kbd "M-s r") 'consult-ripgrep)
+(define-key global-map (kbd "C-x b") 'consult-buffer)
 
 
 ;;; Ivy/Counsel/Swiper
 ;; narrowing framework Ivy
-(ensure-package 'ivy)
-(require 'ivy)
+;; (ensure-package 'ivy)
+;; (require 'ivy)
 ;; additions to Ivy
-(ensure-package 'ivy-rich)
-(require 'ivy-rich)
+;; (ensure-package 'ivy-rich)
+;; (require 'ivy-rich)
 ;; xref intergration with ivy
-(ensure-package 'ivy-xref)
-(require 'ivy-xref)
+;; (ensure-package 'ivy-xref)
+;; (require 'ivy-xref)
 ;; parts of ivy
-(ensure-package 'counsel)
-(require 'counsel)
+;; (ensure-package 'counsel)
+;; (require 'counsel)
 ;; fast textbuffer searching
-(ensure-package 'swiper)
-(require 'swiper)
+;; (ensure-package 'swiper)
+;; (require 'swiper)
 ;; alternative to amx/smex etc.
-(ensure-package 'ivy-prescient)
-(require 'ivy-prescient)
+;; (ensure-package 'ivy-prescient)
+;; (require 'ivy-prescient)
 
-(define-key global-map [menu] nil)
-;; such a common everyday function. bind it also to something simpler
-(define-key global-map (kbd "M-o") 'other-window)
+;; ;; as per recommendation from ivy-rich website
+;; (setq ivy-use-virtual-buffers t
+;;       ivy-rich-path-style 'abbrev 		; or 'full
+;;       ivy-count-format "(%d/%d) "
+;; 	  ;; make prompt selectable. for instance, while saving buffer to a new
+;; 	  ;; file and not wanting to select any of the suggestions
+;; 	  ivy-use-selectable-prompt t
+;;       enable-recursive-minibuffers t
+;; 	  ;; using these options, try fix slowdown when switching buffers
+;; 	  ;; with switch-to-buffer while having tramp sessions running
+;; 	  ivy-rich-parse-remote-buffer nil
+;; 	  ivy-rich-parse-remote-file-path nil
+;; 	  )
+;; (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
 
-;; as per recommendation from ivy-rich website
-(setq ivy-use-virtual-buffers t
-      ivy-rich-path-style 'abbrev 		; or 'full
-      ivy-count-format "(%d/%d) "
-	  ;; make prompt selectable. for instance, while saving buffer to a new
-	  ;; file and not wanting to select any of the suggestions
-	  ivy-use-selectable-prompt t
-      enable-recursive-minibuffers t
-	  ;; using these options, try fix slowdown when switching buffers
-	  ;; with switch-to-buffer while having tramp sessions running
-	  ivy-rich-parse-remote-buffer nil
-	  ivy-rich-parse-remote-file-path nil
-	  )
-(setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-
-;; xref initialization is different in Emacs 27 - there are two different
-;; variables which can be set rather than just one
-(when (>= emacs-major-version 27)
-  (setq xref-show-definitions-function #'ivy-xref-show-defs))
-;; Necessary in Emacs <27. In Emacs 27 it will affect all xref-based
-;; commands other than xref-find-definitions (e.g. project-find-regexp)
-;; as well
-(setq xref-show-xrefs-function #'ivy-xref-show-xrefs)
+;; ;; xref initialization is different in Emacs 27 - there are two different
+;; ;; variables which can be set rather than just one
+;; (when (>= emacs-major-version 27)
+;;   (setq xref-show-definitions-function #'ivy-xref-show-defs))
+;; ;; Necessary in Emacs <27. In Emacs 27 it will affect all xref-based
+;; ;; commands other than xref-find-definitions (e.g. project-find-regexp)
+;; ;; as well
+;; (setq xref-show-xrefs-function #'ivy-xref-show-xrefs)
 
 
 ;; enable ivy and rich mode
-(ivy-mode 1)
-(ivy-rich-mode 1)
+;; (ivy-mode 1)
+;; (ivy-rich-mode 1)
 
 ;; used to add history to minibuffer selections like M-x
 ;; instead of smex which produces compile errors on install
-(ivy-prescient-mode 1)
+;; (ivy-prescient-mode 1)
 
 ;; replace default keys
-(define-key global-map [remap isearch-forward] #'swiper)
-(define-key global-map [remap execute-extended-command] #'counsel-M-x)
+;; (define-key global-map [remap isearch-forward] #'swiper)
+;; (define-key global-map [remap execute-extended-command] #'counsel-M-x)
 
 
 ;; --- gnus
@@ -772,21 +835,21 @@
 ;; by taking advantage of ivy's support for selecting from a list of
 ;; actions and applying an action without leaving the completion
 ;; session
-(ensure-package 'counsel-projectile)
-(require 'counsel-projectile)
-(ensure-package 'counsel-tramp)
-(require 'counsel-tramp)
+;; (ensure-package 'counsel-projectile)
+;; (require 'counsel-projectile)
+;; (ensure-package 'counsel-tramp)
+;; (require 'counsel-tramp)
 
-(define-key global-map (kbd "C-c s") 'counsel-tramp)
+;; (define-key global-map (kbd "C-c s") 'counsel-tramp)
 
 ;; no need to reassign keys with counsel/ivy aware
 ;; alternatives. counsel-projectile-mode does that.
 
 ;; dont add counsel-projectile to projectile-mode-hook. lisp max depth
 ;; errors occurs
-(add-hook 'prog-mode-hook 'counsel-projectile-mode)
-(add-hook 'conf-mode-hook 'counsel-projectile-mode)
-(add-hook 'text-mode-hook 'counsel-projectile-mode)
+;; (add-hook 'prog-mode-hook 'counsel-projectile-mode)
+;; (add-hook 'conf-mode-hook 'counsel-projectile-mode)
+;; (add-hook 'text-mode-hook 'counsel-projectile-mode)
 
 ;; --- indent tools
 ;; Smarter way to indent code
@@ -899,41 +962,43 @@
 ;; --- python mode
 (ensure-package 'pyenv-mode)
 (require 'pyenv-mode)
-;; (ensure-package 'elpy)
-;; (require 'elpy)
+;; (require 'lsp-pyls)
+(ensure-package 'elpy)
+(require 'elpy)
 
 ;; replace flymake with flycheck
-;; (when (load "flycheck" t t)
-;;   )
+(when (load "flycheck" t t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+
 
 ;; rpc needs its own virtualenv
-;; (setq elpy-rpc-virtualenv-path "~/.virtualenvs/elpyrpc3"
-;; 	  ;; disable annoying auto elpy config
-;; 	  elpy-modules (delq 'elpy-module-flymake (delq 'elpy-module-company elpy-modules)))
+(setq elpy-rpc-virtualenv-path "~/dev/pyenv/versions/3.9.1/envs/elpyrpc3")
 
 ;; remap to standard format key stroke
-;; (define-key elpy-mode-map (kbd "C-c C-i") 'elpy-format-code)
+(define-key elpy-mode-map (kbd "C-c C-i") 'elpy-format-code)
 ;; remove C-return binding. annoying shell execution
-;; (define-key elpy-mode-map (kbd "C-RET") nil)
+(define-key elpy-mode-map (kbd "C-RET") nil)
 
 
-;; (defun init-elpy-mode()
+(defun init-python-mode()
 ;;   ;; it seems we need to disable checkers on elpy-mode-hook, otherwise
 ;;   ;; they are re-enabled. disable flake8 and pycompile
 
 ;;   ;; dabbrev in comments is nice
-;;   (setq-local company-dabbrev-code-everywhere t
-;; 			  company-idle-delay 0.1)
-;;   (setq-local flycheck-disabled-checkers (quote (python-flake8 python-pycompile)))
-;;   (setq-local company-backends '((elpy-company-backend company-dabbrev-code)))
-;;   )
-
-;; (elpy-enable)
+  (setq-local company-dabbrev-code-everywhere t
+			  company-idle-delay 0.1)
+  (setq-local flycheck-disabled-checkers (quote (python-flake8 python-pycompile)))
+  (setq-local company-backends '((elpy-company-backend company-dabbrev-code)))
+  )
 
 (add-hook 'python-mode-hook #'superword-mode) ; become snake-case aware
 (add-hook 'python-mode-hook #'pyenv-mode)
+;; (add-hook 'python-mode-hook #'elpy)
 ;; (add-hook 'elpy-mode-hook #'superword-mode) ; become snake-case aware
-;; (add-hook 'elpy-mode-hook #'init-elpy-mode)
+(add-hook 'python-mode-hook #'init-python-mode)
+
+(elpy-enable)
 
 
 ;; --- web-mode
@@ -1106,8 +1171,8 @@
 ;; --- json mode
 (ensure-package 'json-mode)
 (require 'json-mode)
-(ensure-package 'counsel-jq)
-(require 'counsel-jq)
+;; (ensure-package 'counsel-jq)
+;; (require 'counsel-jq)
 
 (defun init-json-mode()
   ;;; combine lua and dabbrev in one completion, so if lua fails dabbrev
@@ -1120,7 +1185,7 @@
 
 (define-key json-mode-map (kbd "C-c C-i") 'json-mode-beautify)
 
-(add-hook 'json-mode-hook 'counsel-projectile-mode)
+;; (add-hook 'json-mode-hook 'counsel-projectile-mode)
 (add-hook 'json-mode-hook 'flycheck-mode)
 (add-hook 'json-mode-hook 'company-mode)
 
@@ -1136,6 +1201,7 @@
 (require 'yaml-mode)
 
 (defun init-yaml-mode()
+  (setq-local company-backends '((company-dabbrev company-ispell)))
   ;; tabs are outlawed
   (setq-local indent-tabs-mode nil)
   (setq-local tab-width 2)
@@ -1146,7 +1212,7 @@
 (add-hook 'yaml-mode-hook #'init-yaml-mode)
 (add-hook 'yaml-mode-hook 'indent-tools-minor-mode)
 (add-hook 'yaml-mode-hook 'highlight-indentation-mode)
-(add-hook 'yaml-mode-hook 'counsel-projectile-mode)
+;; (add-hook 'yaml-mode-hook 'counsel-projectile-mode)
 (add-hook 'yaml-mode-hook 'flycheck-mode)
 (add-hook 'yaml-mode-hook 'company-mode)
 
@@ -1176,7 +1242,7 @@
   )
 
 (add-hook 'nxml-mode-hook #'init-nxml-mode)
-(add-hook 'nxml-mode-hook 'counsel-projectile-mode)
+;; (add-hook 'nxml-mode-hook 'counsel-projectile-mode)
 (add-hook 'nxml-mode-hook 'flycheck-mode)
 (add-hook 'nxml-mode-hook 'company-mode)
 (add-hook 'nxml-mode-hook 'hs-minor-mode)
@@ -1389,8 +1455,11 @@
 
 (ensure-package 'deadgrep)
 (require 'deadgrep)
+;; needed for projectile rg
+(ensure-package 'ripgrep)
+(require 'ripgrep)
 
-(define-key global-map (kbd "M-s r") 'deadgrep)
+;; (define-key global-map (kbd "M-s r") 'deadgrep)
 
 
 ;; ---- visaul regex
@@ -1412,7 +1481,7 @@
 (diminish 'hs-minor-mode)
 (diminish 'rainbow-mode)
 (diminish 'ivy-mode)
-
+;; diminish superword-mode does not work
 
 (when (display-graphic-p)
   ;; load theme based on whether theme file is set to light or dark

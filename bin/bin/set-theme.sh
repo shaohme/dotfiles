@@ -2,6 +2,10 @@
 set -x
 set -e
 VAR_FILE="${XDG_RUNTIME_DIR}/theme"
+# 0 = dark
+# 1 = neutral/default
+# 2 = light
+
 LIGHT=1
 
 CONFIG_DIR=$HOME/.config
