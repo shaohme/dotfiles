@@ -84,3 +84,7 @@ export ALTERNATE_EDITOR=/usr/bin/emacs
 if [ -f ${HOME}/.profile.local ]; then
     . ${HOME}/.profile.local
 fi
+
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi

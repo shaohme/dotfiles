@@ -464,6 +464,8 @@
       company-minimum-prefix-length 3 ;shorter prefix
 	  company-dabbrev-ignore-case t
 	  company-lighter-base "" 			; remove lighter
+      company-tooltip-limit 30          ; improve performance by limit to
+      company-tooltip-maximum-width 90     ; dont eat entire screen
 	  company-dabbrev-code-ignore-case t
 	  company-idle-delay 0.2 			; speed up completion
 	  company-dabbrev-code-other-buffers 'all
@@ -631,14 +633,22 @@
 ;; disable preview for now. even though its a major feature, its also
 ;; annoying, and causes emacs to load major modes when previewing,
 ;; which might include LSP etc. making it slow
-(setq consult-preview-key nil)
+;; (setq consult-preview-key nil)
+;; (setq consult-preview-key (kbd "M-p"))
+
+(setq consult-config `((consult-file :preview-key nil)))
+
 ;; (when (>= emacs-major-version 27)
 ;;   (setq xref-show-definitions-function #'consult-xref))
-
+(setq xref-show-xrefs-function #'consult-xref
+      xref-show-definitions-function #'consult-xref)
 
 (define-key global-map (kbd "M-g g") 'consult-goto-line)
 (define-key global-map (kbd "M-s r") 'consult-ripgrep)
 (define-key global-map (kbd "C-x b") 'consult-buffer)
+
+(define-key flycheck-command-map "!"  #'consult-flycheck)
+
 
 
 ;;; Ivy/Counsel/Swiper
@@ -908,6 +918,7 @@
 (setq lsp-eldoc-render-all t
 	  lsp-file-watch-threshold 10000 	; we're handling big projects
 	  lsp-keymap-prefix "C-c C-l"
+      lsp-completion-mode :none
 	  lsp-completion-enable-additional-text-edit t)
 
 
@@ -960,45 +971,31 @@
 
 
 ;; --- python mode
-(ensure-package 'pyenv-mode)
-(require 'pyenv-mode)
-;; (require 'lsp-pyls)
-(ensure-package 'elpy)
-(require 'elpy)
+(require 'lsp-pyls)
 
-;; replace flymake with flycheck
-(when (load "flycheck" t t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
+;; ;; replace flymake with flycheck
+(setq lsp-pyls-plugins-pylint-enabled t)
 
+;; ;; rpc needs its own virtualenv
+;; (setq elpy-rpc-virtualenv-path "~/dev/pyenv/versions/3.9.1/envs/elpyrpc3")
 
-;; rpc needs its own virtualenv
-(setq elpy-rpc-virtualenv-path "~/dev/pyenv/versions/3.9.1/envs/elpyrpc3")
-
-;; remap to standard format key stroke
-(define-key elpy-mode-map (kbd "C-c C-i") 'elpy-format-code)
-;; remove C-return binding. annoying shell execution
-(define-key elpy-mode-map (kbd "C-RET") nil)
+;; ;; remap to standard format key stroke
+;; (define-key elpy-mode-map (kbd "C-c C-i") 'elpy-format-code)
+;; ;; remove C-return binding. annoying shell execution
+;; (define-key elpy-mode-map (kbd "C-RET") nil)
 
 
 (defun init-python-mode()
-;;   ;; it seems we need to disable checkers on elpy-mode-hook, otherwise
-;;   ;; they are re-enabled. disable flake8 and pycompile
-
-;;   ;; dabbrev in comments is nice
+  ;; dabbrev in comments is nice
   (setq-local company-dabbrev-code-everywhere t
 			  company-idle-delay 0.1)
-  (setq-local flycheck-disabled-checkers (quote (python-flake8 python-pycompile)))
-  (setq-local company-backends '((elpy-company-backend company-dabbrev-code)))
+  (setq-local company-backends '((company-capf company-dabbrev-code company-dabbrev)))
   )
 
 (add-hook 'python-mode-hook #'superword-mode) ; become snake-case aware
-(add-hook 'python-mode-hook #'pyenv-mode)
-;; (add-hook 'python-mode-hook #'elpy)
-;; (add-hook 'elpy-mode-hook #'superword-mode) ; become snake-case aware
+(add-hook 'python-mode-hook #'lsp)
 (add-hook 'python-mode-hook #'init-python-mode)
 
-(elpy-enable)
 
 
 ;; --- web-mode
@@ -1161,10 +1158,23 @@
 (defun init-lua-mode()
   ;;; combine lua and dabbrev in one completion, so if lua fails dabbrev
   ;;; can provide
-  (setq-local company-backends '((company-lua :with company-dabbrev-code :with company-yasnippet)
-         company-capf company-files))
+                                  ;; company-capf
+  ;; :with
+  ;; (setq lsp-auto-configure nil)
+  (setq-local company-backends '(
+                                 (:separate
+                                  company-dabbrev-code
+                                  company-lua
+                                  company-keywords
+                                  company-yasnippet
+                                  )
+                                 company-files
+                                 ))
+  ;; (setq-local company-backends '((company-lua :with company-dabbrev-code :with company-yasnippet)
+  ;;        company-capf company-files))
   )
 
+(add-hook 'lua-mode-hook #'lsp)
 (add-hook 'lua-mode-hook #'init-lua-mode)
 
 
@@ -1175,8 +1185,6 @@
 ;; (require 'counsel-jq)
 
 (defun init-json-mode()
-  ;;; combine lua and dabbrev in one completion, so if lua fails dabbrev
-  ;;; can provide
   (setq-local company-backends '((company-dabbrev company-ispell)))
   )
 
@@ -1470,6 +1478,64 @@
 
 (define-key global-map (kbd "C-c r") 'vr/replace)
 (define-key global-map (kbd "C-c q") 'vr/query-replace)
+
+
+;; --- apache mode
+;; nice to have
+
+(ensure-package 'apache-mode)
+(require 'apache-mode)
+
+
+;; --- nov mode
+;; book reader
+
+(ensure-package 'nov)
+(require 'nov)
+(ensure-package 'visual-fill-column)
+(require 'visual-fill-column)
+
+(defun init-nov-mode ()
+  (setq nov-text-width 90)
+  (setq visual-fill-column-center-text t)
+  (face-remap-add-relative 'variable-pitch :height 1.4 :family "LM Roman 12")
+  )
+(add-hook 'nov-mode-hook 'init-nov-mode)
+(add-hook 'nov-mode-hook 'visual-line-mode)
+(add-hook 'nov-mode-hook 'visual-fill-column-mode)
+
+
+;; --- elfeed
+;; rss reader
+
+(ensure-package 'elfeed)
+(require 'elfeed)
+
+(global-set-key (kbd "C-x w") 'elfeed)
+
+(setq elfeed-feeds
+      '(
+        ;; programming
+        ("https://news.ycombinator.com/rss" hacker)
+        ("https://www.heise.de/developer/rss/news-atom.xml" heise)
+        ("https://www.reddit.com/r/programming.rss" programming)
+        ("https://www.reddit.com/r/emacs.rss" emacs)
+
+        ;; programming languages
+        ;; ("https://www.reddit.com/r/golang.rss" golang)
+        ;; ("https://www.reddit.com/r/python.rss" python)
+
+        ))
+
+;; (setq elfeed-feeds
+;;       '("http://nullprogram.com/feed/"
+;;         "http://planet.emacsen.org/atom.xml"))
+
+(setq-default elfeed-search-filter "@2-days-ago +unread")
+(setq-default elfeed-search-title-max-width 100)
+(setq-default elfeed-search-title-min-width 100)
+
+
 
 
 ;; --- diminish

@@ -4,8 +4,7 @@ ConditionEnvironment=DISPLAY
 After=pulseaudio.service
 
 [Service]
-WorkingDirectory=%h/.virtualenvs/syseventd
-ExecStart=%h/.virtualenvs/syseventd/bin/syseventd
+ExecStart=%h/dev/pyenv/shims/syseventd
 Restart=on-failure
 RestartSec=1s
 

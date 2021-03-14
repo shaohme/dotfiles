@@ -71,6 +71,10 @@ if command -v minikube &> /dev/null; then
     source <(minikube completion bash)
 fi
 
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi
+
 if command -v aws_completer &> /dev/null; then
     complete -C 'aws_completer' aws
 fi
@@ -86,6 +90,20 @@ fi
 if [ -f /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh ]; then
     . /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
 fi
+
+export PROMPT_COMMAND=append_prompt
+
+ORIG_PS1=$PS1
+
+append_prompt() {
+  # Capture exit code of last command
+  local ex=$?
+
+  # Set original prompt content
+  PS1="$ORIG_PS1"
+  # If exit code of last command is non-zero, prepend this code to the prompt
+  [[ "$ex" -ne 0 ]] && PS1="$ex|$PS1"
+}
 
 case "$TERM" in
 xterm*|rxvt*)
