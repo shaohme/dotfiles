@@ -1,0 +1,6 @@
+!                  ´background´, ´border´,      ´separator´
+rofi.color-window:  #F8F8F2,      #50FA7B,     #282A36
+! State:           ´bg´,     ´fg´,     ´bgalt´,  ´hlbg´,   ´hlfg´
+rofi.color-normal: #F8F8F2, #282A36, #F8F8F2, #282A36, #F8F8F2
+rofi.color-active: #F8F8F2, #9AEDFE, #F8F8F2, #282A36, #9AEDFE
+rofi.color-urgent: #F8F8F2, #FF6E67, #F8F8F2, #282A36, #FF6E67

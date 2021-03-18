@@ -161,6 +161,8 @@
 (save-place-mode 1)
 ;; show matching parenthesis
 (show-paren-mode 1)
+;; remove scroll bars. not needed.
+(toggle-scroll-bar nil)
 
 ;; change directory immediately to make sure it is enabled
 (ispell-change-dictionary "en_US")
@@ -636,7 +638,11 @@
 ;; (setq consult-preview-key nil)
 ;; (setq consult-preview-key (kbd "M-p"))
 
-(setq consult-config `((consult-file :preview-key nil)))
+(setq consult-config `((consult-file :preview-key nil)
+                       (consult-ripgrep :preview-key nil)))
+
+;; leverage projectile
+(setq consult-project-root-function #'projectile-project-root)
 
 ;; (when (>= emacs-major-version 27)
 ;;   (setq xref-show-definitions-function #'consult-xref))
@@ -1549,19 +1555,26 @@
 (diminish 'ivy-mode)
 ;; diminish superword-mode does not work
 
+
+(ensure-package 'monokai-theme)
+(require 'monokai-theme)
+(ensure-package 'leuven-theme)
+(require 'leuven-theme)
+
 (when (display-graphic-p)
   ;; load theme based on whether theme file is set to light or dark
-  (ensure-package 'solarized-theme)
-  (require 'solarized-theme)
+  ;; (ensure-package 'solarized-theme)
+  ;; (require 'solarized-theme)
   (let ((f (substitute-in-file-name "$XDG_RUNTIME_DIR/theme")))
 	(if (file-exists-p f)
 		(if (with-temp-buffer
 			  (insert-file-contents (substitute-in-file-name f))
 			  (goto-char (point-min))
 			  (looking-at "0"))
-			(load-theme 'solarized-dark t)
+			(load-theme 'monokai t)
 		  ;; default to light
-		  (load-theme 'solarized-light t))(load-theme 'solarized-light t))
+		  (load-theme 'leuven t))
+      (load-theme 'leuven t))
 	)
   (add-to-list 'default-frame-alist '(font . "Hack 12"))
   (set-face-attribute 'default t :font "Hack 12")

@@ -1,0 +1,78 @@
+*saveLines: 8192
+
+
+Xcursor.theme: Adwaita
+Xcursor.size: 32
+
+Xft*antialias: 1
+Xft*hinting: 1
+
+XTerm*faceName: Inconsolata
+! XTerm*faceName: DejaVu Sans Mono
+XTerm*renderFont: true
+XTerm*faceSize: 16
+XTerm*scrollTtyOutput: false
+XTerm*scrollKey: true
+
+! let’s be 8bit-clean
+XTerm*utf8: 1
+XTerm*eightBitInput: false
+XTerm*eightBitControl: false
+XTerm*eightBitOutput: true
+
+! remove tiny border around terminals
+XTerm*borderWidth: 0
+
+! copy to CLIPBOARD
+XTerm*selectToClipboard: true
+
+XTerm*termName: xterm-256color
+
+URxvt*font:     xft:Inconsolata:size=14:antialias=true
+URxvt*boldFont: xft:Inconsolata:bold:size=14:antialias=true
+
+URxvt.scrollBar: false
+URxvt.scrollstyle: plainp
+URxvt.rightScrollBar: false
+! URxvt.scrollTtyOutput: false
+! URxvt.scrollWithBuffer: true
+! URxvt.scrollTtyKeypress: true
+
+! notify the WM when the bell rings
+URxvt*urgentOnBell    : true
+
+! URxvt.visualBell: false
+URxvt.perl-ext-common: default,clipboard,font-size
+! URxvt*dynamicColors: on
+URxvt.url-launcher: xdg-open
+URxvt.matcher.button: 3
+URxvt.iso14755_52: false
+URxvt.iso14755: false
+URxvt.clipboard.autocopy: true
+URxvt.keysym.C-M-c: perl:clipboard:copy
+URxvt.keysym.C-M-v: perl:clipboard:paste
+URxvt.keysym.C-plus: perl:font-size:increase
+URxvt.keysym.C-equal: perl:font-size:reset
+URxvt.keysym.C-minus: perl:font-size:decrease
+
+URxvt.resize-font.smaller: C-minus
+URxvt.resize-font.bigger: C-plus
+URxvt.resize-font.reset: C-equal
+URxvt.resize-font.show: C-question
+
+!font settings                          -*-terminus-*-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.headingFont:        -*-terminus-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.bodyFont:           -*-terminus-bold-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.labelFont:          -*-terminus-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.unameFont:          -*-terminus-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.buttonFont:         -*-terminus-bold-*-*-*-32-*-*-*-*-*-*-*
+xscreensaver.Dialog.dateFont:           -*-terminus-bold-*-*-*-16-*-*-*-*-*-*-*
+xscreensaver.passwd.passwdFont:         -*-terminus-bold-*-*-*-32-*-*-*-*-*-*-*
+
+! leave blank to diable "new login" button
+xscreensaver.newLoginCommand:
+
+xmessage*message.scrollVertical: Always
+xmessage*message.scrollHorizontal: Never
+
+rofi.color-enabled: true
