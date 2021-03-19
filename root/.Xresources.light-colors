@@ -4,3 +4,21 @@ rofi.color-window:  #F8F8F2,      #50FA7B,     #282A36
 rofi.color-normal: #F8F8F2, #282A36, #F8F8F2, #282A36, #F8F8F2
 rofi.color-active: #F8F8F2, #9AEDFE, #F8F8F2, #282A36, #9AEDFE
 rofi.color-urgent: #F8F8F2, #FF6E67, #F8F8F2, #282A36, #FF6E67
+
+! alter some colors, especially yellow, as they are too bright on
+! most screens
+XTerm.*.background:         White
+XTerm.*.color0:             Black
+XTerm.*.color1:             Red
+XTerm.*.color2:             DarkGreen
+XTerm.*.color3:             Orange
+XTerm.*.color4:             CornflowerBlue
+XTerm.*.color5:             Magenta
+XTerm.*.color6:             Cyan
+XTerm.*.color7:             White
+XTerm.*.colorBD:            Black
+XTerm.*.colorBDMode:        true
+XTerm.*.colorUL:            Orange
+XTerm.*.colorULMode:        true
+XTerm.*.cursorColor:        Black
+XTerm.*.foreground:         Black

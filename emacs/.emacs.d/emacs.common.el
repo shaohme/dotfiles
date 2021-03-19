@@ -910,6 +910,7 @@
 (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 (add-hook 'prog-mode-hook 'diff-hl-mode)
 (add-hook 'text-mode-hook 'diff-hl-mode)
+(add-hook 'conf-mode-hook 'diff-hl-mode)
 
 
 ;; lsp-mode
@@ -1355,7 +1356,7 @@
 (defun init-java-mode()
   (setq-local indent-tabs-mode nil)
   (setq-local tab-width 4)
-
+  (setq-local company-backends '((company-capf company-dabbrev-code)))
   )
 
 (add-hook 'java-mode-hook #'lsp)
@@ -1363,7 +1364,7 @@
 (add-hook 'java-mode-hook #'init-java-mode)
 
 (define-key java-mode-map (kbd "C-c C-l") nil)
-(setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/0.68.0/jdt-language-server-0.68.0-202101202016.tar.gz")
+(setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/0.70.0/jdt-language-server-0.70.0-202103051608.tar.gz")
 
 
 ;; --- nov reader
@@ -1558,23 +1559,16 @@
 
 (ensure-package 'monokai-theme)
 (require 'monokai-theme)
-(ensure-package 'leuven-theme)
-(require 'leuven-theme)
 
 (when (display-graphic-p)
   ;; load theme based on whether theme file is set to light or dark
-  ;; (ensure-package 'solarized-theme)
-  ;; (require 'solarized-theme)
   (let ((f (substitute-in-file-name "$XDG_RUNTIME_DIR/theme")))
 	(if (file-exists-p f)
 		(if (with-temp-buffer
 			  (insert-file-contents (substitute-in-file-name f))
 			  (goto-char (point-min))
 			  (looking-at "0"))
-			(load-theme 'monokai t)
-		  ;; default to light
-		  (load-theme 'leuven t))
-      (load-theme 'leuven t))
+			(load-theme 'monokai t)))
 	)
   (add-to-list 'default-frame-alist '(font . "Hack 12"))
   (set-face-attribute 'default t :font "Hack 12")

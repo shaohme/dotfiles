@@ -48,7 +48,8 @@
  '(package-selected-packages
    '(moe-theme ample-theme counsel-projectile flycheck zenburn-theme xclip projectile ivy-xref ivy-rich counsel company amx))
  '(safe-local-variable-values
-   '((lsp-pyls-plugins-jedi-environment . "/home/mkj/syseventd/bin/python3")
+   '((lsp-java-import-gradle-enabled)
+     (lsp-pyls-plugins-jedi-environment . "/home/mkj/syseventd/bin/python3")
      (lsp-pyls-plugins-jedi-environment . "/home/mkj/.virtualenvs/syseventd/bin/python")
      (lsp-pyls-plugins-jedi-environment . "/home/mkj/.virtualenvs/syseventd/")
      (lsp-pyls-plugins-jedi-environment . /home/mkj/\.virtualenvs/syseventd/)
