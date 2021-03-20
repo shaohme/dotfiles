@@ -32,14 +32,14 @@ cp $HOME/.Xresources.base $HOME/.Xresources
 cp $HOME/.config/i3/base.config $HOME/.config/i3/config
 cp $HOME/.config/gtk-3.0/settings.base.ini $HOME/.config/gtk-3.0/settings.ini
 
+EMACS_DARK_THEME=my:dark-theme
+
 if [ $LIGHT -eq 0 ]; then
 	# set dark themes
     cat $HOME/.Xresources.dark-colors >> $HOME/.Xresources
     cat $HOME/.config/i3/dark-colors.config >> $HOME/.config/i3/config
     cp $HOME/.xsettingsd-dark-colors $HOME/.xsettingsd
     cat $HOME/.config/gtk-3.0/dark-colors.ini >> $HOME/.config/gtk-3.0/settings.ini
-	EMACS_THEME_LOAD=monokai
-	EMACS_THEME_UNLOAD=leuven
 	WALLPAPER=default-dark
 else
 	# set light themes
@@ -47,8 +47,6 @@ else
     cat $HOME/.config/i3/light-colors.config >> $HOME/.config/i3/config
     cp $HOME/.xsettingsd-light-colors $HOME/.xsettingsd
     cat $HOME/.config/gtk-3.0/light-colors.ini >> $HOME/.config/gtk-3.0/settings.ini
-	EMACS_THEME_LOAD=leuven
-	EMACS_THEME_UNLOAD=monokai
 	WALLPAPER=default-light
 fi
 
@@ -61,8 +59,14 @@ pkill xsettingsd || true
 xrdb -load $HOME/.Xresources
 
 if [ -S $XDG_RUNTIME_DIR/emacs/server ]; then
-    emacsclient --eval "(disable-theme '${EMACS_THEME_UNLOAD})" || true
-	emacsclient --eval "(load-theme '${EMACS_THEME_LOAD} t)"
+    if [ $LIGHT -eq 0 ]; then
+	    # emacsclient --eval "(load-theme ${EMACS_THEME_LOAD} t)"
+	    emacsclient --eval "(load-theme ${EMACS_DARK_THEME} t)"
+    else
+        emacsclient --eval "(disable-theme ${EMACS_DARK_THEME})" || true
+    fi
+    # emacsclient --eval "(disable-theme '${EMACS_THEME_UNLOAD})" || true
+	# emacsclient --eval "(load-theme '${EMACS_THEME_LOAD} t)"
 fi
 
 # settings empty values first and wait for a while seems to make some

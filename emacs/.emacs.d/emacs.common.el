@@ -315,6 +315,15 @@
 (define-key browse-kill-ring-mode-map (kbd "M-n") 'browse-kill-ring-forward)
 (define-key browse-kill-ring-mode-map (kbd "M-p") 'browse-kill-ring-previous)
 
+;; --- with-editor
+(ensure-package 'with-editor)
+(require 'with-editor)
+
+;;  set the EDITOR var to use to make it use 'current' editor
+(add-hook 'shell-mode-hook  'with-editor-export-editor)
+(add-hook 'term-exec-hook   'with-editor-export-editor)
+(add-hook 'eshell-mode-hook 'with-editor-export-editor)
+
 
 ;; --- exec-path-from-shell
 (ensure-package 'exec-path-from-shell)
@@ -883,6 +892,8 @@
 (require 'magit)
 (ensure-package 'treemacs-magit)
 (require 'treemacs-magit)
+
+(global-set-key (kbd "C-x g") 'magit-status)
 
 ;; (add-hook 'git-commit-mode-hook #'turn-on-flyspell)
 ;; (add-hook 'git-commit-mode-hook 'turn-on-auto-fill)
@@ -1556,9 +1567,14 @@
 (diminish 'ivy-mode)
 ;; diminish superword-mode does not work
 
+(ensure-package 'color-theme-sanityinc-tomorrow)
+(require 'color-theme-sanityinc-tomorrow)
 
 (ensure-package 'monokai-theme)
 (require 'monokai-theme)
+
+(defvar my:light-theme 'default)
+(defvar my:dark-theme 'sanityinc-tomorrow-night)
 
 (when (display-graphic-p)
   ;; load theme based on whether theme file is set to light or dark
@@ -1568,7 +1584,9 @@
 			  (insert-file-contents (substitute-in-file-name f))
 			  (goto-char (point-min))
 			  (looking-at "0"))
-			(load-theme 'monokai t)))
+			(load-theme my:dark-theme t)
+          )
+      )
 	)
   (add-to-list 'default-frame-alist '(font . "Hack 12"))
   (set-face-attribute 'default t :font "Hack 12")

@@ -11,6 +11,7 @@ pkill xss-lock
 pkill xscreensaver
 pkill xsettingsd
 pkill redshift
+pkill xob
 
 # TODO: for some reason xresources aren't loaded
 xrdb -load "$HOME/.Xresources"
@@ -72,6 +73,14 @@ fi
 # because systemd --user tries to start it to early
 if command -v redshift &> /dev/null; then
 	redshift &
+fi
+
+if command -v xob &> /dev/null; then
+    if [ ! -p $XDG_RUNTIME_DIR/xob ]; then
+        mkfifo $XDG_RUNTIME_DIR/xob
+    fi
+
+    tail -f $XDG_RUNTIME_DIR/xob | xob &
 fi
 
 if [ "$HOSTNAME" = "ent" ]; then
