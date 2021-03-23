@@ -962,6 +962,11 @@
 ;; sessions locals breakpoints expressions controls tooltip
 ;; disable dap ui controls
 (setq dap-auto-configure-features '(sessions locals breakpoints expressions))
+(define-key dap-mode-map [f7] #'dap-next)
+(define-key dap-mode-map [f6] #'dap-step-in)
+(define-key dap-mode-map [f10] #'dap-continue)
+(define-key dap-mode-map [f5] #'dap-step-out)
+(define-key dap-mode-map [f4] #'dap-breakpoint-toggle)
 
 ;; --- golang
 (ensure-package 'go-mode)
@@ -1257,6 +1262,9 @@
 ;; --- xml
 (require 'nxml-mode)
 (ensure-package 'xml-format)
+;; convenience. rename start/end tags when altering
+(ensure-package 'auto-rename-tag)
+(require 'auto-rename-tag)
 ;; (require 'xml-format)
 
 ;; seems broken. takes precedence over other backends
@@ -1272,6 +1280,7 @@
 (add-hook 'nxml-mode-hook 'flycheck-mode)
 (add-hook 'nxml-mode-hook 'company-mode)
 (add-hook 'nxml-mode-hook 'hs-minor-mode)
+(add-hook 'nxml-mode-hook 'auto-rename-tag-mode)
 
 (add-to-list 'hs-special-modes-alist
              (list 'nxml-mode
@@ -1367,7 +1376,8 @@
 (defun init-java-mode()
   (setq-local indent-tabs-mode nil)
   (setq-local tab-width 4)
-  (setq-local company-backends '((company-capf company-dabbrev-code)))
+  (setq dap-java-default-debug-port 5005)
+  (setq-local company-backends '((company-capf :separate company-dabbrev-code)))
   )
 
 (add-hook 'java-mode-hook #'lsp)
@@ -1554,7 +1564,61 @@
 (setq-default elfeed-search-title-min-width 100)
 
 
+;; --- org-mode
+;; because, of course
+(ensure-package 'org)
+(require 'org)
+(require 'org-capture)
+(ensure-package 'org-bullets)
+(require 'org-bullets)
 
+(setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+(setq org-default-notes-file (concat org-directory "/notes.org"))
+(setq org-refile-targets '(("~/org/gtd.org" :maxlevel . 3)
+                           ("~/org/someday.org" :level . 1)
+                           ("~/org/tickler.org" :maxlevel . 2)))
+
+(setq org-capture-templates '(("t" "Todo [inbox]" entry
+                               (file+headline "~/org/inbox.org" "Tasks")
+                               "* TODO %i%?")
+                              ("n" "Note" entry
+                               (file "~/org/inbox.org")
+                               "* NOTE %?\n%U" :empty-lines 1)
+                              ("j" "Journal" entry (file+datetree "~/org/journal.org")
+                               "* %?\nEntered on %U\n  %i\n  %a")
+                              ("T" "Tickler" entry
+                               (file+headline "~/org/tickler.org" "Tickler")
+                               "* %i%? \n %U")))
+
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
+
+
+;; --- google-translate
+;; used by define-it but needs additional config
+(ensure-package 'google-translate)
+(require 'google-translate)
+
+
+;; produces error: search-failed ",tkk:'" #137
+;; fix to make google-translate work. without config
+;; https://github.com/atykhonov/google-translate/issues/52
+;; problem seems to be ongoing so it might break again if google
+;; changes anything radical
+(setq google-translate-backend-method 'curl)
+(defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
+
+
+
+;; --- define-it
+(ensure-package 'define-it)
+(require 'define-it)
+
+(setq define-it-output-choice 'pop)
 
 ;; --- diminish
 ;; cosmetic purposes
@@ -1570,11 +1634,25 @@
 (ensure-package 'color-theme-sanityinc-tomorrow)
 (require 'color-theme-sanityinc-tomorrow)
 
-(ensure-package 'monokai-theme)
-(require 'monokai-theme)
+;; (ensure-package 'monokai-theme)
+;; (require 'monokai-theme)
 
 (defvar my:light-theme 'default)
 (defvar my:dark-theme 'sanityinc-tomorrow-night)
+
+;; custom theme loading functions to customize colors not otherwise
+;; touched by theme
+(defun load-light-theme()
+  (interactive)
+  (disable-theme my:dark-theme)
+  (set-face-foreground 'fill-column-indicator "#DADADA")
+  )
+
+(defun load-dark-theme()
+  (interactive)
+  (load-theme my:dark-theme t)
+  (set-face-foreground 'fill-column-indicator "#3D3D3D")
+  )
 
 (when (display-graphic-p)
   ;; load theme based on whether theme file is set to light or dark
@@ -1584,9 +1662,9 @@
 			  (insert-file-contents (substitute-in-file-name f))
 			  (goto-char (point-min))
 			  (looking-at "0"))
-			(load-theme my:dark-theme t)
-          )
-      )
+            (load-dark-theme)
+          (load-light-theme))
+      (load-light-theme))
 	)
   (add-to-list 'default-frame-alist '(font . "Hack 12"))
   (set-face-attribute 'default t :font "Hack 12")

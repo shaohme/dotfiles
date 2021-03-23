@@ -5,20 +5,37 @@ rofi.color-normal: #F8F8F2, #282A36, #F8F8F2, #282A36, #F8F8F2
 rofi.color-active: #F8F8F2, #9AEDFE, #F8F8F2, #282A36, #9AEDFE
 rofi.color-urgent: #F8F8F2, #FF6E67, #F8F8F2, #282A36, #FF6E67
 
-! alter some colors, especially yellow, as they are too bright on
-! most screens
 XTerm.*.background:         White
-XTerm.*.color0:             Black
-XTerm.*.color1:             Red
-XTerm.*.color2:             DarkGreen
-XTerm.*.color3:             Orange
-XTerm.*.color4:             CornflowerBlue
-XTerm.*.color5:             Magenta
-XTerm.*.color6:             Cyan
-XTerm.*.color7:             White
-XTerm.*.colorBD:            Black
-XTerm.*.colorBDMode:        true
-XTerm.*.colorUL:            Orange
-XTerm.*.colorULMode:        true
-XTerm.*.cursorColor:        Black
 XTerm.*.foreground:         Black
+
+! black + red
+XTerm*color0                  :#000000
+XTerm*color1                  :#FF6E67
+
+! green + yellow
+XTerm*color2                  :#00875f
+XTerm*color3                  :#ffaf00
+
+! blue + purple
+XTerm*color4                  :#0000af
+XTerm*color5                  :#dc8cc3
+
+! cyan + white
+XTerm*color6                  :#8cd0d3
+XTerm*color7                  :#FFFFFF
+
+! bright-black + bright-red
+XTerm*color8                  :#709080
+XTerm*color9                  :#dca3a3
+
+! bright-green + bright-yellow
+XTerm*color10                 :#00af00
+XTerm*color11                 :#ffd700
+
+! bright-blue + bright-purple
+XTerm*color12                 :#005fd7
+XTerm*color13                 :#ec93d3
+
+! bright-cyan + bright-white
+XTerm*color14                 :#93e0e3
+XTerm*color15                 :#ffffff

@@ -45,9 +45,9 @@ fi
 
 export GPG_TTY="$( tty )"
 
-case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
-esac
+# case "$TERM" in
+#     xterm-color|*-256color) color_prompt=yes;;
+# esac
 
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"

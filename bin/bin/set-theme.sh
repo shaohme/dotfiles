@@ -32,8 +32,6 @@ cp $HOME/.Xresources.base $HOME/.Xresources
 cp $HOME/.config/i3/base.config $HOME/.config/i3/config
 cp $HOME/.config/gtk-3.0/settings.base.ini $HOME/.config/gtk-3.0/settings.ini
 
-EMACS_DARK_THEME=my:dark-theme
-
 if [ $LIGHT -eq 0 ]; then
 	# set dark themes
     cat $HOME/.Xresources.dark-colors >> $HOME/.Xresources
@@ -60,13 +58,10 @@ xrdb -load $HOME/.Xresources
 
 if [ -S $XDG_RUNTIME_DIR/emacs/server ]; then
     if [ $LIGHT -eq 0 ]; then
-	    # emacsclient --eval "(load-theme ${EMACS_THEME_LOAD} t)"
-	    emacsclient --eval "(load-theme ${EMACS_DARK_THEME} t)"
+	    emacsclient --eval "(load-dark-theme)"
     else
-        emacsclient --eval "(disable-theme ${EMACS_DARK_THEME})" || true
+        emacsclient --eval "(load-light-theme)" || true
     fi
-    # emacsclient --eval "(disable-theme '${EMACS_THEME_UNLOAD})" || true
-	# emacsclient --eval "(load-theme '${EMACS_THEME_LOAD} t)"
 fi
 
 # settings empty values first and wait for a while seems to make some

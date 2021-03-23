@@ -26,7 +26,7 @@ XTerm*borderWidth: 0
 ! copy to CLIPBOARD
 XTerm*selectToClipboard: true
 
-XTerm*termName: xterm-256color
+! XTerm*termName: xterm-256color
 
 URxvt*font:     xft:Inconsolata:size=14:antialias=true
 URxvt*boldFont: xft:Inconsolata:bold:size=14:antialias=true
