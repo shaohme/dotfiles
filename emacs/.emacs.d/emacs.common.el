@@ -129,14 +129,10 @@
 ;;; answer questions easier
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(defun after-init-flyspell-mode()
-  ;;; Check the whole buffer after flyspell loads, so to see current
-  ;;; spelling errors
-  (flyspell-buffer)
-  )
+;; WARNING: do not invoke (flyspell-buffer) after flyspell-mode init.
+;; it slows emacs considerably if handling bigger files.
 
-
-(add-hook 'flyspell-mode-hook #'after-init-flyspell-mode)
+;; (add-hook 'flyspell-mode-hook #'after-init-flyspell-mode)
 ;; enable flyspell in all prog-modes only for comments and strings
 ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 (add-hook 'markdown-mode-hook 'flyspell-mode)
@@ -838,13 +834,19 @@
       nnfolder-active-file (concat message-directory "archive")
       )
 
+(defun after-flyspell-init()
+  (flyspell-buffer)
+  )
 
 (add-hook 'mail-mode-hook 'footnote-mode)
 (add-hook 'mail-mode-hook 'turn-on-auto-fill)
 (add-hook 'mail-mode-hook 'turn-on-flyspell)
+(add-hook 'mail-mode-hook 'after-flyspell-init)
 (add-hook 'message-mode-hook 'turn-on-auto-fill)
 (add-hook 'message-mode-hook 'turn-on-flyspell)
 (add-hook 'message-mode-hook 'footnote-mode)
+(add-hook 'message-mode-hook 'after-flyspell-init)
+
 
 
 ;; --- bbdb
@@ -1569,18 +1571,23 @@
 (ensure-package 'org)
 (require 'org)
 (require 'org-capture)
-(ensure-package 'org-bullets)
-(require 'org-bullets)
+;; (ensure-package 'org-bullets)
+;; (require 'org-bullets)
 
 (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+;; more fancy bullet points
+;; (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
 (setq org-default-notes-file (concat org-directory "/notes.org"))
+(setq org-agenda-files '("~/org/inbox.org"
+                         "~/org/gtd.org"
+                         "~/org/tickler.org"))
 (setq org-refile-targets '(("~/org/gtd.org" :maxlevel . 3)
                            ("~/org/someday.org" :level . 1)
                            ("~/org/tickler.org" :maxlevel . 2)))
-
+;; set timestamp when finishing
+(setq org-log-done 'time)
 (setq org-capture-templates '(("t" "Todo [inbox]" entry
                                (file+headline "~/org/inbox.org" "Tasks")
                                "* TODO %i%?")
