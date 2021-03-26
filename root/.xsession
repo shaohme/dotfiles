@@ -12,7 +12,6 @@ pkill xscreensaver
 pkill xsettingsd
 pkill redshift
 pkill xob
-pkill syncthing-gtk
 
 # TODO: for some reason xresources aren't loaded
 xrdb -load "$HOME/.Xresources"
@@ -30,8 +29,8 @@ if command -v xsetroot  &> /dev/null; then
 fi
 
 if command -v xset &> /dev/null; then
-	xset s on s 1200 0
-	xset dpms 0 1200 1203
+    xset s on s 1200 0
+    xset dpms 0 1200 1203
 fi
 
 if command -v dunst &> /dev/null; then
@@ -73,11 +72,7 @@ fi
 # set here and masked in systemd --user to try avoid segfaults
 # because systemd --user tries to start it to early
 if command -v redshift &> /dev/null; then
-	redshift &
-fi
-
-if command -v syncthing-gtk &> /dev/null; then
-	syncthing-gtk &
+    redshift &
 fi
 
 if command -v xob &> /dev/null; then
@@ -89,13 +84,13 @@ if command -v xob &> /dev/null; then
 fi
 
 if [ "$HOSTNAME" = "ent" ]; then
-	if command -v xset &> /dev/null; then
-		xset -dpms
-	fi
+    if command -v xset &> /dev/null; then
+        xset -dpms
+    fi
 else
-	if command -v xss-lock &> /dev/null; then
-		xss-lock --transfer-sleep-lock -- i3lock -c 000000 --nofork &
-	fi
+    if command -v xss-lock &> /dev/null; then
+        xss-lock --transfer-sleep-lock -- i3lock -c 000000 --nofork &
+    fi
 fi
 
 exec i3
