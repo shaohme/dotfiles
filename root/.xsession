@@ -12,6 +12,7 @@ pkill xscreensaver
 pkill xsettingsd
 pkill redshift
 pkill xob
+pkill syncthing-gtk
 
 # TODO: for some reason xresources aren't loaded
 xrdb -load "$HOME/.Xresources"
@@ -73,6 +74,10 @@ fi
 # because systemd --user tries to start it to early
 if command -v redshift &> /dev/null; then
 	redshift &
+fi
+
+if command -v syncthing-gtk &> /dev/null; then
+	syncthing-gtk &
 fi
 
 if command -v xob &> /dev/null; then
