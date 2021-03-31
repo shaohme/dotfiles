@@ -1627,6 +1627,18 @@
 
 (setq define-it-output-choice 'pop)
 
+
+;; --- ssh-config-mode
+;; convenience
+(ensure-package 'ssh-config-mode)
+(require 'ssh-config-mode)
+
+(add-to-list 'auto-mode-alist '("/\\.ssh/config\\'" . ssh-config-mode))
+(add-to-list 'auto-mode-alist '("/sshd?_config\\'" . ssh-config-mode))
+(add-to-list 'auto-mode-alist '("/knownhosts\\'" . ssh-known-hosts-mode))
+(add-to-list 'auto-mode-alist '("/authorized_keys2?\\'" . ssh-authorized-keys-mode))
+(add-hook 'ssh-config-mode-hook 'turn-on-font-lock)
+
 ;; --- diminish
 ;; cosmetic purposes
 (ensure-package 'diminish)
@@ -1643,6 +1655,9 @@
 
 ;; (ensure-package 'monokai-theme)
 ;; (require 'monokai-theme)
+
+;; (ensure-package 'apropospriate-theme)
+;; (require 'apropospriate)
 
 (defvar my:light-theme 'default)
 (defvar my:dark-theme 'sanityinc-tomorrow-night)

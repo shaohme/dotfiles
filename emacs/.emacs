@@ -21,6 +21,7 @@
          (lua-mode           . "MELPA")
          ;; to be compatible with
          ;; lsp-mode. flcheck-32 is needed
+         (apropospriate-theme . "MELPA")
          (flycheck           . "MELPA")
          )))
 
