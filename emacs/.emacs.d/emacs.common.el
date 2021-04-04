@@ -484,6 +484,7 @@
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
 
+(define-key company-mode-map [remap indent-for-tab-command] #'company-indent-or-complete-common)
 
 ;; --- yasnippet
 ;; useful to have and recommended by LSP defaults
@@ -636,6 +637,8 @@
 (require 'consult)
 (ensure-package 'consult-flycheck)
 (require 'consult-flycheck)
+(ensure-package 'consult-recoll)
+(require 'consult-recoll)
 
 ;; disable preview for now. even though its a major feature, its also
 ;; annoying, and causes emacs to load major modes when previewing,
@@ -1574,7 +1577,7 @@
 ;; (ensure-package 'org-bullets)
 ;; (require 'org-bullets)
 
-(setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+(setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "NEXT(n)" "|" "DONE(d)" "CANCELLED(c)")))
 
 ;; more fancy bullet points
 ;; (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
