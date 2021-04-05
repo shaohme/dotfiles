@@ -484,7 +484,6 @@
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
 
-(define-key company-mode-map [remap indent-for-tab-command] #'company-indent-or-complete-common)
 
 ;; --- yasnippet
 ;; useful to have and recommended by LSP defaults
