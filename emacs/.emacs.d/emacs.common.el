@@ -1572,7 +1572,9 @@
 ;; because, of course
 (ensure-package 'org)
 (require 'org)
+(require 'org-agenda)
 (require 'org-capture)
+(require 'ox-icalendar)
 ;; (ensure-package 'org-bullets)
 ;; (require 'org-bullets)
 
@@ -1588,6 +1590,18 @@
 (setq org-refile-targets '(("~/org/gtd.org" :maxlevel . 3)
                            ("~/org/someday.org" :level . 1)
                            ("~/org/tickler.org" :maxlevel . 2)))
+
+(setq org-icalendar-alarm-time 30
+      org-icalendar-combined-agenda-file "~/org/comb-agenda.ics"
+      org-icalendar-include-todo nil
+      org-agenda-default-appointment-duration 60
+      org-icalendar-use-deadline '(event-if-not-todo event-if-todo-not-done todo-due)
+      org-icalendar-use-scheduled '(event-if-not-todo event-if-todo-not-done todo-start)
+      ;; org-icalendar-use-deadline '(event-if-not-todo event-if-todo event-if-todo-not-done todo-due)
+      ;; org-icalendar-use-scheduled '(event-if-not-todo event-if-todo event-if-todo-not-done todo-start)
+      org-icalendar-with-timestamps 'active)
+
+
 ;; set timestamp when finishing
 (setq org-log-done 'time)
 (setq org-capture-templates '(("t" "Todo [inbox]" entry
