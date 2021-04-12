@@ -157,8 +157,13 @@
 (save-place-mode 1)
 ;; show matching parenthesis
 (show-paren-mode 1)
-;; remove scroll bars. not needed.
-(toggle-scroll-bar nil)
+
+;; should only test this on GUI Emacs. function does not exists
+;; on emacs-nox
+(when (display-graphic-p)
+  ;; remove scroll bars. not needed.
+  (toggle-scroll-bar nil)
+  )
 
 ;; change directory immediately to make sure it is enabled
 (ispell-change-dictionary "en_US")
@@ -467,14 +472,15 @@
 (ensure-package 'company-prescient)
 (require 'company-prescient)
 
-(setq company-selection-wrap-around t   ;wrap around
+(setq company-selection-wrap-around t   ;wrap around candidates
       company-minimum-prefix-length 3 ;shorter prefix
 	  company-dabbrev-ignore-case t
 	  company-lighter-base "" 			; remove lighter
       company-tooltip-limit 30          ; improve performance by limit to
       company-tooltip-maximum-width 90     ; dont eat entire screen
 	  company-dabbrev-code-ignore-case t
-	  company-idle-delay 0.2 			; speed up completion
+      company-idle-delay nil
+	  ;; company-idle-delay 0.2 			; speed up completion
 	  company-dabbrev-code-other-buffers 'all
 	  company-backends '((company-keywords company-capf company-dabbrev-code company-dabbrev company-ispell company-files))
 	  company-global-modes '(not comint-mode erc-mode help-mode gud-mode)
@@ -484,6 +490,7 @@
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
 
+(global-set-key (kbd "M-TAB") #'company-complete)
 
 ;; --- yasnippet
 ;; useful to have and recommended by LSP defaults
@@ -998,6 +1005,9 @@
 
 
 ;; --- python mode
+(ensure-package 'pip-requirements)
+(require 'pip-requirements)
+
 (require 'lsp-pyls)
 
 ;; ;; replace flymake with flycheck
@@ -1015,7 +1025,8 @@
 (defun init-python-mode()
   ;; dabbrev in comments is nice
   (setq-local company-dabbrev-code-everywhere t
-			  company-idle-delay 0.1)
+			  ;; company-idle-delay 0.1
+              )
   (setq-local company-backends '((company-capf company-dabbrev-code company-dabbrev)))
   )
 
