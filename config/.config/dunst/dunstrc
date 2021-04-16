@@ -1,5 +1,5 @@
 [global]
-    font                 = Monospace 16
+    font                 = Monospace 14
     markup               = yes
     plain_text           = no
     format               = "%s\n%b"
@@ -17,8 +17,7 @@
     show_age_threshold   = 60
     idle_threshold       = 120
 
-    # geometry             = "300x100-0+30"
-    geometry             = "900x100-30+45"
+    geometry             = "900x5-30+45"
     shrink               = no
     line_height          = 0
     notification_height  = 100

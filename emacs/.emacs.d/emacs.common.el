@@ -479,8 +479,8 @@
       company-tooltip-limit 30          ; improve performance by limit to
       company-tooltip-maximum-width 90     ; dont eat entire screen
 	  company-dabbrev-code-ignore-case t
-      company-idle-delay nil
-	  ;; company-idle-delay 0.2 			; speed up completion
+      ;; company-idle-delay nil
+	  company-idle-delay 0.2 			; speed up completion
 	  company-dabbrev-code-other-buffers 'all
 	  company-backends '((company-keywords company-capf company-dabbrev-code company-dabbrev company-ispell company-files))
 	  company-global-modes '(not comint-mode erc-mode help-mode gud-mode)
@@ -489,8 +489,6 @@
 (add-hook 'company-mode-hook 'company-prescient-mode)
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
-
-(global-set-key (kbd "M-TAB") #'company-complete)
 
 ;; --- yasnippet
 ;; useful to have and recommended by LSP defaults
@@ -1005,13 +1003,19 @@
 
 
 ;; --- python mode
+(require 'python)
 (ensure-package 'pip-requirements)
 (require 'pip-requirements)
+(ensure-package 'lsp-jedi)
+(require 'lsp-jedi)
 
 (require 'lsp-pyls)
 
 ;; ;; replace flymake with flycheck
-(setq lsp-pyls-plugins-pylint-enabled t)
+(setq lsp-pyls-plugins-pylint-enabled t
+      lsp-jedi-diagnostics-enable t
+      )
+
 
 ;; ;; rpc needs its own virtualenv
 ;; (setq elpy-rpc-virtualenv-path "~/dev/pyenv/versions/3.9.1/envs/elpyrpc3")
@@ -1024,16 +1028,20 @@
 
 (defun init-python-mode()
   ;; dabbrev in comments is nice
-  (setq-local company-dabbrev-code-everywhere t
-			  ;; company-idle-delay 0.1
-              )
+  (setq-local company-dabbrev-code-everywhere t)
   (setq-local company-backends '((company-capf company-dabbrev-code company-dabbrev)))
   )
+
+(define-key python-mode-map (kbd "C-M-i") 'company-complete)
 
 (add-hook 'python-mode-hook #'superword-mode) ; become snake-case aware
 (add-hook 'python-mode-hook #'lsp)
 (add-hook 'python-mode-hook #'init-python-mode)
 
+;; (add-to-list 'lsp-disabled-clients 'pyls)
+;; (add-to-list 'lsp-enabled-clients 'jedi)
+(add-to-list 'lsp-disabled-clients 'jedi)
+(add-to-list 'lsp-enabled-clients 'pyls)
 
 
 ;; --- web-mode
@@ -1280,6 +1288,7 @@
 ;; convenience. rename start/end tags when altering
 (ensure-package 'auto-rename-tag)
 (require 'auto-rename-tag)
+(require 'lsp-xml)
 ;; (require 'xml-format)
 
 ;; seems broken. takes precedence over other backends
@@ -1309,7 +1318,9 @@
 
 (setq magic-mode-alist (cons '("<\\?xml " . nxml-mode) magic-mode-alist))
 (fset 'xml-mode 'nxml-mode)
-(setq nxml-slash-auto-complete-flag t)
+(setq nxml-slash-auto-complete-flag t
+      lsp-xml-jar-file (expand-file-name (locate-user-emacs-file "org.eclipse.lemminx-0.16.0-uber.jar"))
+      )
 
 ;; (define-key nxml-mode-map (kbd "C-c C-i") #'nxml-pretty-format)
 (define-key nxml-mode-map (kbd "C-c C-i") #'xml-format-buffer)
@@ -1677,8 +1688,11 @@
 (diminish 'ivy-mode)
 ;; diminish superword-mode does not work
 
-(ensure-package 'color-theme-sanityinc-tomorrow)
-(require 'color-theme-sanityinc-tomorrow)
+;; (ensure-package 'color-theme-sanityinc-tomorrow)
+;; (require 'color-theme-sanityinc-tomorrow)
+
+(ensure-package 'modus-themes)
+(require 'modus-themes)
 
 ;; (ensure-package 'monokai-theme)
 ;; (require 'monokai-theme)
@@ -1686,19 +1700,21 @@
 ;; (ensure-package 'apropospriate-theme)
 ;; (require 'apropospriate)
 
-(defvar my:light-theme 'default)
-(defvar my:dark-theme 'sanityinc-tomorrow-night)
+(defvar my:light-theme 'modus-operandi)
+(defvar my:dark-theme 'modus-vivendi)
 
 ;; custom theme loading functions to customize colors not otherwise
 ;; touched by theme
 (defun load-light-theme()
   (interactive)
   (disable-theme my:dark-theme)
+  (load-theme my:light-theme t)
   (set-face-foreground 'fill-column-indicator "#DADADA")
   )
 
 (defun load-dark-theme()
   (interactive)
+  (disable-theme my:light-theme)
   (load-theme my:dark-theme t)
   (set-face-foreground 'fill-column-indicator "#3D3D3D")
   )
