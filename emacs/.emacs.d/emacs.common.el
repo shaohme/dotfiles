@@ -643,6 +643,8 @@
 (require 'consult-flycheck)
 (ensure-package 'consult-recoll)
 (require 'consult-recoll)
+(ensure-package 'consult-notmuch)
+(require 'consult-notmuch)
 
 ;; disable preview for now. even though its a major feature, its also
 ;; annoying, and causes emacs to load major modes when previewing,
@@ -1676,6 +1678,15 @@
 (add-to-list 'auto-mode-alist '("/knownhosts\\'" . ssh-known-hosts-mode))
 (add-to-list 'auto-mode-alist '("/authorized_keys2?\\'" . ssh-authorized-keys-mode))
 (add-hook 'ssh-config-mode-hook 'turn-on-font-lock)
+
+
+;; --- mu4e
+(require 'mu4e)
+
+(setq mu4e-sent-folder "/Sent"
+      mu4e-drafts-folder "/Drafts"
+      mu4e-refile-folder "/Archive"
+      mu4e-trash-folder "/Trash")
 
 ;; --- diminish
 ;; cosmetic purposes
