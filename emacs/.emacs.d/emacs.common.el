@@ -143,7 +143,7 @@
 ;; add eletric pair on all prog modes. should not be intruding any modes.
 (add-hook 'prog-mode-hook 'electric-pair-mode)
 ;; might as well delete trailing whitespace
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; have list of recent files
 (recentf-mode t)
@@ -369,8 +369,7 @@
 (require 'mode-line-bell)
 
 ;; --- beacon mode
-;; highlight curson when window scrolls
-
+;; highlight cursor when window scrolls
 (ensure-package 'beacon)
 (require 'beacon)
 
@@ -378,6 +377,8 @@
 (setq-default beacon-lighter "")
 ;; shrink the beacon a bit
 (setq-default beacon-size 20)
+;; blink when cursor jumps several lines, to make it more visible
+(setq-default beacon-blink-when-point-moves-vertically 3)
 
 (add-hook 'after-init-hook 'beacon-mode)
 
@@ -740,38 +741,6 @@
 (require 'smtpmail)
 (require 'cl-macs)
 
-(defvar my:smtp-relays
-  '((:gotu "mail.gotu.dk" starttls "submission")
-    (:cephalopo  "mail.cephalopo.net" starttls "submission")
-    (:cdk "asmtp.yousee.dk" starttls "submission"))
-  "Relays Hosts to use depending on From: when sending mail.")
-
-(defvar my:default-smtp-relay
-  '("mail.cephalopo.net" starttls "submission")
-  "Default relay host.")
-
-(defvar my:force-using-default-smtp nil
-  "When not nil, for using dim:default-smtp-relay")
-
-(defun my:message-smtpmail-send-it ()
-  "Automatically adjust the SMTP parameters to match the From header.
-   thanks to https://github.com/dimitri/emacs.d
-  "
-  (let* ((from    (message-field-value "From"))
-		 (network (cond
-				   ((string-match-p "gotu.dk" from) :gotu)
-				   ((string-match-p "cephalopo.net" from) :cephalopo)
-				   ((string-match-p "c.dk" from) :cdk))))
-    ;; get connection details from my:smtp-relays
-    (cl-destructuring-bind (smtpmail-smtp-server
-						 smtpmail-stream-type
-						 smtpmail-smtp-service)
-						(if my:force-using-default-smtp
-							my:default-smtp-relay
-						  (or (cdr (assoc network my:smtp-relays)) my:default-smtp-relay))
-						(message-use-send-mail-function))))
-
-
 (setq gnus-directory "~/.emacs.d/gnus/" ; gnus new home
 	  ;; do not read or write to .newsrc. we dont plan to use other
 	  ;; reader along with gnus
@@ -802,7 +771,6 @@
       gnus-summary-line-format "%U%R%z %&user-date; %I%(%[%4L: %-20,20n%]%) %S\n"
 	  ;; set date format
 	  gnus-user-date-format-alist '((t . "%d.%m.%Y %H:%M"))
-      mail-user-agent (quote gnus-user-agent)
       message-directory "~/.emacs.d/gnus/Mail/"
       message-fill-column 78
       message-wash-forwarded-subjects t
@@ -811,7 +779,7 @@
 	  ;; dont read alias expansions from .mailrc
 	  message-mail-alias-type nil
 	  ;; use 'smtpmail' to send messages
-	  message-send-mail-function 'my:message-smtpmail-send-it
+	  message-send-mail-function 'message-smtpmail-send-it
 	  ;; message-send-mail-function (quote message-smtpmail-send-it)
 	  ;; warn if sending to an invalid email address
       message-setup-hook (quote (message-check-recipients))
@@ -827,8 +795,6 @@
       message-auto-save-directory nil
 	  send-mail-function (quote smtpmail-send-it)
 	  ;; debug sending email
-      smtpmail-debug-info t
-	  smtpmail-stream-type 'starttls
       mm-default-directory "~/dwl"
       mm-tmp-directory "~/tmp"
 	  ;; verify known signed parts
@@ -857,13 +823,44 @@
 (add-hook 'message-mode-hook 'after-flyspell-init)
 
 
+;; stmp
 
-;; --- bbdb
-(ensure-package 'bbdb)
-(require 'bbdb)
+;; use local MTA to send email
+(setq smtpmail-smtp-server "localhost"
+      smtpmail-default-smtp-server "localhost"
+      smtpmail-stream-type 'plain
+ )
 
-;; enable bbdb in needed packages
-(bbdb-initialize (quote (gnus message)))
+
+;; --- notmuch
+
+(require 'notmuch)
+
+(defvar notmuch-cache-dir nil "Custom default directory to store Notmuch realated files.")
+
+(setq notmuch-cache-dir (format "%s/.cache/notmuch" (getenv "HOME")))
+(make-directory notmuch-cache-dir t)
+
+(setq notmuch-show-logo nil
+      notmuch-show-all-tags-list t
+      notmuch-search-oldest-first nil
+      notmuch-mua-cite-function #'message-cite-original-without-signature
+      notmuch-saved-searches '((:name "inbox" :query "tag:inbox" :key "i")
+                               (:name "Recent mail" :query "*" :sort-order newest-first :key "r")
+                               (:name "unread" :query "tag:unread" :key "u")
+                               (:name "flagged" :query "tag:flagged" :key "f")
+                               (:name "sent" :query "tag:sent" :key "t")
+                               (:name "drafts" :query "tag:draft" :key "d")
+                               (:name "junk" :query "tag:spam" :key "j")
+                               (:name "all mail" :query "*" :key "a"))
+      ;; Cache addresses for completion:
+      notmuch-address-save-filename (concat notmuch-cache-dir "/addresses")
+      notmuch-archive-tags '("-inbox" "-unread" "+archive")
+      ;; using notmuch insert does not seem to mark sent mail as read.
+      ;; maybe it is a bug. by setting this nil notmuch unfortunately
+      ;; also do not index the recently sent mail
+      notmuch-maildir-use-notmuch-insert nil
+      )
 
 
 ;; --- counsel-projectile
@@ -1008,8 +1005,8 @@
 (require 'python)
 (ensure-package 'pip-requirements)
 (require 'pip-requirements)
-(ensure-package 'lsp-jedi)
-(require 'lsp-jedi)
+;; (ensure-package 'lsp-jedi)
+;; (require 'lsp-jedi)
 
 (require 'lsp-pyls)
 
@@ -1042,8 +1039,8 @@
 
 ;; (add-to-list 'lsp-disabled-clients 'pyls)
 ;; (add-to-list 'lsp-enabled-clients 'jedi)
-(add-to-list 'lsp-disabled-clients 'jedi)
-(add-to-list 'lsp-enabled-clients 'pyls)
+;; (add-to-list 'lsp-disabled-clients 'jedi)
+;; (add-to-list 'lsp-enabled-clients 'pyls)
 
 
 ;; --- web-mode
@@ -1413,7 +1410,16 @@
 (add-hook 'java-mode-hook #'init-java-mode)
 
 (define-key java-mode-map (kbd "C-c C-l") nil)
-(setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/0.70.0/jdt-language-server-0.70.0-202103051608.tar.gz")
+(setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/0.70.0/jdt-language-server-0.70.0-202103051608.tar.gz"
+      lsp-java-configuration-runtimes '[(:name "current"
+						                       :path (expand-file-name "$HOME/.sdkman/candidates/java/current/")
+                                               :default t)
+					                    (:name "AdoptJDK 11"
+						                       :path (expand-file-name "$HOME/.sdkman/candidates/java/11.0.10.hs-adpt/"))
+                                        (:name "Amazon Corretto 8"
+						                       :path (expand-file-name "$HOME/.sdkman/candidates/java/8.282.08.1-amzn/"))
+                                        ]
+      )
 
 
 ;; --- nov reader
@@ -1683,10 +1689,46 @@
 ;; --- mu4e
 (require 'mu4e)
 
-(setq mu4e-sent-folder "/Sent"
+(setq
+      mu4e-sent-folder "/Sent"
       mu4e-drafts-folder "/Drafts"
       mu4e-refile-folder "/Archive"
-      mu4e-trash-folder "/Trash")
+      mu4e-trash-folder "/Trash"
+      mu4e-attachment-dir (format "%s/dwl" (getenv "HOME"))
+      mu4e-compose-dont-reply-to-self t
+      mu4e-confirm-quit nil
+      mu4e-get-mail-command "mbsync -a"
+      mu4e-icalendar-diary-file (format "%s/diary.ics" (getenv "HOME"))
+      mail-user-agent 'mu4e-user-agent
+      mu4e-context-policy 'pick-first
+      )
+
+(add-hook 'mu4e-compose-mode-hook 'company-mode)
+
+
+;; --- bbdb
+(ensure-package 'bbdb)
+(require 'bbdb)
+
+;; enable bbdb in needed packages
+(bbdb-initialize 'message 'mu4e)
+
+
+(setq bbdb-mail-user-agent 'mu4e-user-agent)
+(setq mu4e-view-mode-hook 'bbdb-mua-auto-update)
+;; (setq mu4e-compose-complete-addresses nil)
+(setq bbdb-mua-pop-up t)
+(setq bbdb-mua-pop-up-window-size 5)
+(setq mu4e-view-show-addresses t)
+
+
+;; --- editorconfig
+
+(ensure-package 'editorconfig)
+(require 'editorconfig)
+
+(add-hook 'prog-mode-hook 'editorconfig-mode)
+(add-hook 'nxml-mode-hook 'editorconfig-mode)
 
 ;; --- diminish
 ;; cosmetic purposes

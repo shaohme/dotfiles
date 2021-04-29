@@ -19,7 +19,6 @@ order += "lm_sensors"
 order += "battery 0"
 order += "tztime local"
 
-
 battery 0 {
         format = "%status %percentage"
         integer_battery_capacity = true

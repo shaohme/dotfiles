@@ -1,0 +1,19 @@
+[Unit]
+Description=Run mail sync and indexing periodically
+RefuseManualStart=no
+RefuseManualStop=no
+
+[Timer]
+# when it is true systemd stores when the timer was last run and when
+# the machine boots up after a long time, it will automatically catch
+# up onto this timer if it should have run in the meantime
+Persistent=false
+# how many seconds after the boot should it run the first time
+OnBootSec=80
+# should be every 50min. aws-azure-login session is assumed to expire
+# after 1 hour
+OnCalendar=*:0/10
+Unit=mailsync.service
+
+[Install]
+WantedBy=timers.target

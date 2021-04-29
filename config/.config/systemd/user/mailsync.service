@@ -1,0 +1,11 @@
+[Unit]
+Description=Sync mail and run index daemons
+
+[Service]
+Type=oneshot
+ExecStart=%h/bin/mailsync.sh
+# RestartSec=5s
+# Restart=on-failure
+
+[Install]
+WantedBy=default.target sleep.target
