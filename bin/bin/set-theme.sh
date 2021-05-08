@@ -31,9 +31,11 @@ echo -n $LIGHT > $VAR_FILE
 cp $HOME/.Xresources.base $HOME/.Xresources
 cp $HOME/.config/i3/base.config $HOME/.config/i3/config
 cp $HOME/.config/gtk-3.0/settings.base.ini $HOME/.config/gtk-3.0/settings.ini
+rm -f $HOME/.config/kitty/theme.conf
 
 if [ $LIGHT -eq 0 ]; then
 	# set dark themes
+    ln -s $HOME/.config/kitty/dark.conf $HOME/.config/kitty/theme.conf 
     cat $HOME/.Xresources.dark-colors >> $HOME/.Xresources
     cat $HOME/.config/i3/dark-colors.config >> $HOME/.config/i3/config
     cp $HOME/.xsettingsd-dark-colors $HOME/.xsettingsd
@@ -41,6 +43,7 @@ if [ $LIGHT -eq 0 ]; then
 	WALLPAPER=default-dark
 else
 	# set light themes
+    ln -s $HOME/.config/kitty/light.conf $HOME/.config/kitty/theme.conf 
     cat $HOME/.Xresources.light-colors >> $HOME/.Xresources
     cat $HOME/.config/i3/light-colors.config >> $HOME/.config/i3/config
     cp $HOME/.xsettingsd-light-colors $HOME/.xsettingsd

@@ -27,6 +27,7 @@ $GOPATH/bin:\
 ${HOME}/.gem/ruby/2.5.0/bin:\
 ${HOME}/.gem/ruby/2.7.0/bin:\
 ${HOME}/.local/lib/idea/bin:\
+${HOME}/.local/lib/go/bin:\
 /usr/sbin:\
 $PATH"
 

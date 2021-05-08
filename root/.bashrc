@@ -179,6 +179,9 @@ alias cpma="quake3 +nosplash +set fs_game cpma"
 alias ssh-add-pkcs11="ssh-add -s /usr/lib/x86_64-linux-gnu/pkcs11/opensc-pkcs11.so"
 alias ssh-add-pkcs11-del="ssh-add -e /usr/lib/x86_64-linux-gnu/pkcs11/opensc-pkcs11.so"
 
+# kitty terminfo is usually not installed remotely
+alias ssh='TERM=xterm-color ssh'
+
 if [ -f ${HOME}/.bash_aliases ]; then
     . ${HOME}/.bash_aliases
 fi

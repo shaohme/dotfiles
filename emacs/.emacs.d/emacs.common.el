@@ -320,10 +320,11 @@
 (ensure-package 'with-editor)
 (require 'with-editor)
 
-;;  set the EDITOR var to use to make it use 'current' editor
-(add-hook 'shell-mode-hook  'with-editor-export-editor)
-(add-hook 'term-exec-hook   'with-editor-export-editor)
-(add-hook 'eshell-mode-hook 'with-editor-export-editor)
+;; set the EDITOR var to use to make it use 'current' editor.
+;; this seems to add extra printed prompt in the startup
+;; (add-hook 'shell-mode-hook  'with-editor-export-editor)
+;; (add-hook 'term-exec-hook   'with-editor-export-editor)
+;; (add-hook 'eshell-mode-hook 'with-editor-export-editor)
 
 
 ;; --- exec-path-from-shell
@@ -846,12 +847,12 @@
       notmuch-search-oldest-first nil
       notmuch-mua-cite-function #'message-cite-original-without-signature
       notmuch-saved-searches '((:name "inbox" :query "tag:inbox" :key "i")
-                               (:name "Recent mail" :query "*" :sort-order newest-first :key "r")
-                               (:name "unread" :query "tag:unread" :key "u")
+                               (:name "unread" :query "tag:unread and not tag:list" :key "u")
+                               (:name "unread-list" :query "tag:unread and tag:list" :key "l")
                                (:name "flagged" :query "tag:flagged" :key "f")
                                (:name "sent" :query "tag:sent" :key "t")
                                (:name "drafts" :query "tag:draft" :key "d")
-                               (:name "junk" :query "tag:spam" :key "j")
+                               (:name "junk" :query "tag:junk" :key "j")
                                (:name "all mail" :query "*" :key "a"))
       ;; Cache addresses for completion:
       notmuch-address-save-filename (concat notmuch-cache-dir "/addresses")
@@ -860,8 +861,14 @@
       ;; maybe it is a bug. by setting this nil notmuch unfortunately
       ;; also do not index the recently sent mail
       notmuch-maildir-use-notmuch-insert nil
+      notmuch-unthreaded-show-out nil
       )
 
+(defun init-notmuch-message-mode()
+  (setq-local company-backends '(notmuch-company company-ispell))
+  )
+
+(add-hook 'notmuch-message-mode-hook 'init-notmuch-message-mode)
 
 ;; --- counsel-projectile
 ;; Counsel-projectile provides further ivy integration into projectile
@@ -935,7 +942,7 @@
 ;; lsp-mode
 ;; LSP compatibility
 (ensure-package 'lsp-mode)
-(require 'lsp-clients)
+;; (require 'lsp-clients)
 (require 'lsp-completion)
 (require 'lsp-diagnostics)
 (ensure-package 'lsp-treemacs)
@@ -1002,7 +1009,8 @@
 
 
 ;; --- python mode
-(require 'python)
+(ensure-package 'python-mode)
+(require 'python-mode)
 (ensure-package 'pip-requirements)
 (require 'pip-requirements)
 ;; (ensure-package 'lsp-jedi)
@@ -1397,11 +1405,18 @@
 ;; --- java mode
 (ensure-package 'lsp-java)
 (require 'lsp-java)
+(require 'dap-java)
 
 (defun init-java-mode()
   (setq-local indent-tabs-mode nil)
   (setq-local tab-width 4)
   (setq dap-java-default-debug-port 5005)
+  (setq lsp-java-import-gradle-enabled nil
+        lsp-java-import-gradle-wrapper-enabled nil)
+  (setq lsp-java-import-gradle-wrapper-enabled nil
+        lsp-java-autobuild-enabled nil
+        lsp-java-import-maven-enabled t
+        lsp-java-import-gradle-enabled nil)
   (setq-local company-backends '((company-capf :separate company-dabbrev-code)))
   )
 
@@ -1410,7 +1425,7 @@
 (add-hook 'java-mode-hook #'init-java-mode)
 
 (define-key java-mode-map (kbd "C-c C-l") nil)
-(setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/0.70.0/jdt-language-server-0.70.0-202103051608.tar.gz"
+(setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/1.1.1/jdt-language-server-1.1.1-202105040117.tar.gz"
       lsp-java-configuration-runtimes '[(:name "current"
 						                       :path (expand-file-name "$HOME/.sdkman/candidates/java/current/")
                                                :default t)
@@ -1701,6 +1716,10 @@
       mu4e-icalendar-diary-file (format "%s/diary.ics" (getenv "HOME"))
       mail-user-agent 'mu4e-user-agent
       mu4e-context-policy 'pick-first
+      mu4e-bookmarks '((:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key 117)
+                       (:name "Today's messages" :query "date:today..now AND NOT Maildir:Junk" :key 116)
+                       (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key 119)
+                       (:name "Messages with images" :query "mime:image/*" :key 112))
       )
 
 (add-hook 'mu4e-compose-mode-hook 'company-mode)
@@ -1726,6 +1745,8 @@
 
 (ensure-package 'editorconfig)
 (require 'editorconfig)
+
+(setq editorconfig-mode-lighter "ec")
 
 (add-hook 'prog-mode-hook 'editorconfig-mode)
 (add-hook 'nxml-mode-hook 'editorconfig-mode)

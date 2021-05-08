@@ -10,9 +10,9 @@
         ("MELPA Stable" . "https://stable.melpa.org/packages/")
         ("MELPA"        . "https://melpa.org/packages/"))
       package-archive-priorities
-      '(("MELPA Stable" . 10)
+      '(("MELPA Stable" . 0)
         ("GNU ELPA"     . 5)
-        ("MELPA"        . 0)))
+        ("MELPA"        . 10)))
 
 (when (boundp 'package-pinned-packages)
   (setq package-pinned-packages
@@ -48,7 +48,9 @@
  '(package-selected-packages
    '(consult-notmuch moe-theme ample-theme counsel-projectile flycheck zenburn-theme xclip projectile ivy-xref ivy-rich counsel company amx))
  '(safe-local-variable-values
-   '((lsp-java-import-gradle-enabled)
+   '((lsp-java-import-gradle-wrapper-enabled)
+     (lsp-java-import-maven-enabled . t)
+     (lsp-java-import-gradle-enabled)
      (lsp-pyls-plugins-jedi-environment . "/home/mkj/syseventd/bin/python3")
      (lsp-pyls-plugins-jedi-environment . "/home/mkj/.virtualenvs/syseventd/bin/python")
      (lsp-pyls-plugins-jedi-environment . "/home/mkj/.virtualenvs/syseventd/")
