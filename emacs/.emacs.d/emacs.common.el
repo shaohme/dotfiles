@@ -1311,7 +1311,8 @@
 (add-hook 'nxml-mode-hook 'flycheck-mode)
 (add-hook 'nxml-mode-hook 'company-mode)
 (add-hook 'nxml-mode-hook 'hs-minor-mode)
-(add-hook 'nxml-mode-hook 'auto-rename-tag-mode)
+(add-hook 'nxml-mode-hook 'lsp)
+;; (add-hook 'nxml-mode-hook 'auto-rename-tag-mode)
 
 (add-to-list 'hs-special-modes-alist
              (list 'nxml-mode
@@ -1325,8 +1326,7 @@
 
 (setq magic-mode-alist (cons '("<\\?xml " . nxml-mode) magic-mode-alist))
 (fset 'xml-mode 'nxml-mode)
-(setq nxml-slash-auto-complete-flag t
-      lsp-xml-jar-file (expand-file-name (locate-user-emacs-file "org.eclipse.lemminx-0.16.0-uber.jar"))
+(setq nxml-slash-auto-complete-flag t      
       )
 
 ;; (define-key nxml-mode-map (kbd "C-c C-i") #'nxml-pretty-format)
@@ -1746,7 +1746,7 @@
 (ensure-package 'editorconfig)
 (require 'editorconfig)
 
-(setq editorconfig-mode-lighter "ec")
+(setq editorconfig-mode-lighter " ec")
 
 (add-hook 'prog-mode-hook 'editorconfig-mode)
 (add-hook 'nxml-mode-hook 'editorconfig-mode)
