@@ -9,7 +9,6 @@ else
     export ANDROID_HOME="${HOME}/.local/lib/android-sdk"
 fi
 export ANDROID_NDK_HOME="${ANDROID_HOME}/ndk"
-export RUST_SRC_PATH="/usr/lib/rustlib/src/rust"
 export GOPATH="${HOME}/gocode"
 export NPM_PACKAGES="${HOME}/.local"
 
@@ -68,6 +67,10 @@ fi
 if [ "$HN" = "dev6" ]; then
     export GPGKEY=7CBFA3101F57BA3890AC00F353A48C3B78F2850E
     export EMAIL="martin.jorgensen@shijigroup.com"
+fi
+if [ "$HN" = "nws" ]; then
+    export GPGKEY=62B2146BFB6047DBB89A80E11EED4573F176E739
+    export EMAIL="mkj@nine.dk"
 fi
 
 # export PYTHON_VIRTUALENV_DIR="${HOME}/.virtualenvs"

@@ -154,5 +154,10 @@ With argument, do this that many times."
   (delete-other-windows)
   )
 
+(defun recompile-elpa ()
+  (interactive)
+  (byte-recompile-directory "~/.emacs.d/elpa/" 0 t)
+  )
+
 (provide 'local-common)
 ;;; local-common.el ends here
