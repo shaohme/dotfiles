@@ -1,5 +1,5 @@
 [global]
-    font                 = Monospace 10
+    font                 = Monospace 12
     markup               = yes
     plain_text           = no
     format               = "%s\n%b"
@@ -17,13 +17,12 @@
     show_age_threshold   = 60
     idle_threshold       = 120
 
-    geometry             = "900x5-30+45"
-    shrink               = no
+    geometry             = "500x3-30+45"
     line_height          = 0
     notification_height  = 100
     separator_height     = 2
     padding              = 16
-    horizontal_padding   = 12
+    horizontal_padding   = 18
     frame_width          = 1
     frame_color          = "#1793d1"
 
@@ -34,7 +33,7 @@
     history_length       = 20
 
     icon_position        = left
-    icon_path            = /usr/share/icons/Adwaita/48x48/legacy/:/usr/share/icons/Adwaita/48x48/devices/
+    icon_path            = /usr/share/icons/Adwaita/24x24/legacy/:/usr/share/icons/Adwaita/24x24/devices/
 
     startup_notification = false
     browser = /usr/bin/firefox -new-tab

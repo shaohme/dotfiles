@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . /etc/profile
 . $HOME/.profile
@@ -25,5 +25,5 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 export AWT_TOOLKIT=XToolkit
 
 # making xdg-open Terminal=true .desktop applications in correct terminal program
-export TERMINAL="xterm -e "
+export TERMINAL="kitty"
 export XSESSION="i3"

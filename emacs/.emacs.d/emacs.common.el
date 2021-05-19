@@ -603,6 +603,8 @@
 (ensure-package 'selectrum-prescient)
 (require 'selectrum-prescient)
 
+(setq-default selectrum-fix-vertical-window-height t)
+
 (selectrum-mode +1)
 
 ;; to make sorting and filtering more intelligent
@@ -949,6 +951,7 @@
 (require 'lsp-treemacs)
 
 (setq lsp-eldoc-render-all t
+      lsp-eldoc-enable-hover nil
 	  lsp-file-watch-threshold 10000 	; we're handling big projects
 	  lsp-keymap-prefix "C-c C-l"
       lsp-completion-mode :none
@@ -1013,10 +1016,14 @@
 (require 'python-mode)
 (ensure-package 'pip-requirements)
 (require 'pip-requirements)
-;; (ensure-package 'lsp-jedi)
-;; (require 'lsp-jedi)
+(ensure-package 'lsp-jedi)
+(require 'lsp-jedi)
 
-(require 'lsp-pyls)
+;; (require 'lsp-pyls)
+
+;; uses deprecated palantir server
+(add-to-list 'lsp-disabled-clients 'pyls)
+;; (add-to-list 'lsp-enabled-clients 'jedi)
 
 ;; ;; replace flymake with flycheck
 (setq lsp-pyls-plugins-pylint-enabled t
@@ -1410,13 +1417,14 @@
 (defun init-java-mode()
   (setq-local indent-tabs-mode nil)
   (setq-local tab-width 4)
-  (setq dap-java-default-debug-port 5005)
-  (setq lsp-java-import-gradle-enabled nil
-        lsp-java-import-gradle-wrapper-enabled nil)
-  (setq lsp-java-import-gradle-wrapper-enabled nil
+  (setq dap-java-default-debug-port 5005
+        lsp-java-import-gradle-wrapper-enabled t
         lsp-java-autobuild-enabled nil
         lsp-java-import-maven-enabled t
-        lsp-java-import-gradle-enabled nil)
+        lsp-java-import-gradle-enabled t
+        ;; lsp-java-java-path "~/.sdkman/candidates/java/current/bin/java"
+        ;; lsp-java-import-gradle-java-home "~/.sdkman/candidates/java/current/bin/java"
+        )
   (setq-local company-backends '((company-capf :separate company-dabbrev-code)))
   )
 

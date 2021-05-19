@@ -30,12 +30,6 @@ ${HOME}/.local/lib/go/bin:\
 /usr/sbin:\
 $PATH"
 
-# make sure most shell sessions gets more complete PATH.
-# this seems needed especially for Emacs started in an X session
-if command -v pyenv 1>/dev/null 2>&1; then
-    eval "$(pyenv init -)"
-fi
-
 if [ ! -z "${ANDROID_NDK_HOME}" ]; then
     if [ -d "${ANDROID_NDK_HOME}" ]; then
         LATEST_NDK_DIR=$(ls -td ${ANDROID_NDK_HOME}/*/ | head -1)
@@ -52,9 +46,8 @@ export DOOMWADDIR="${HOME}/gms/doom"
 export LIBVIRT_DEFAULT_URI=qemu:///system
 export QEMU_AUDIO_DRV=pa
 export JAVA_HOME=/usr/lib/jvm/default-java
-export STUDIO_JDK=/usr/lib/jvm/default-java
+# export STUDIO_JDK=/usr/lib/jvm/default-java
 export NAME="Martin Kjær Jørgensen"
-export GOPRIVATE=bitbucket.shijidev.com
 export MPD_HOST="${HOME}/.mpd/socket"
 export MAVEN_OPTS="-Xmx8192m -Xms2048m -Djava.awt.headless=true"
 export PYENV_ROOT="${HOME}/dev/pyenv"
@@ -85,10 +78,13 @@ export VISUAL="${HOME}/bin/emacs"
 export EDITOR="${HOME}/bin/emacs"
 export ALTERNATE_EDITOR=/usr/bin/emacs
 
-if [ -f ${HOME}/.profile.local ]; then
-    . ${HOME}/.profile.local
-fi
+# make sure most shell sessions gets more complete PATH.
+# this seems needed especially for Emacs started in an X session
 
 if [ -f "$HOME/.cargo/env" ]; then
-    source "$HOME/.cargo/env"
+    . ${HOME}/.cargo/env
+fi
+
+if [ -f ${HOME}/.profile.local ]; then
+    . ${HOME}/.profile.local
 fi

@@ -24,6 +24,8 @@ else
   PS1='\w $ '
 fi
 
+export GPG_TTY="$( tty )"
+
 # make sure most shell sessions gets more complete PATH and enable completions
 if command -v pyenv 1>/dev/null 2>&1; then
     eval "$(pyenv init -)"
@@ -40,10 +42,9 @@ fi
 # fi
 
 if [ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
-    . $HOME/.sdkman/bin/sdkman-init.sh
+    . ${HOME}/.sdkman/bin/sdkman-init.sh
 fi
 
-export GPG_TTY="$( tty )"
 
 # case "$TERM" in
 #     xterm-color|*-256color) color_prompt=yes;;
