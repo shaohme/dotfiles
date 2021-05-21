@@ -484,7 +484,7 @@
       ;; company-idle-delay nil
 	  company-idle-delay 0.2 			; speed up completion
 	  company-dabbrev-code-other-buffers 'all
-	  company-backends '((company-keywords company-capf company-dabbrev-code company-dabbrev company-ispell company-files))
+	  company-backends '((company-keywords company-capf company-dabbrev-code company-dabbrev company-files))
 	  company-global-modes '(not comint-mode erc-mode help-mode gud-mode)
 	  company-dabbrev-downcase nil)	  ; make dabbrev completions case sensitive
 
@@ -541,6 +541,12 @@
 
 (add-to-list 'slime-lisp-implementations
 			 '(sbcl ("sbcl") :coding-system utf-8-unix))
+
+(defun init-slime-mode()
+  (setq-local company-backends '(company-slime company-keywords company-capf company-dabbrev-code company-dabbrev company-files))
+  )
+
+(add-hook 'slime-mode-hook 'init-slime-mode)
 
 ;; From http://bc.tech.coop/blog/070515.html
 (defun lispdoc ()
