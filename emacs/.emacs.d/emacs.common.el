@@ -1007,6 +1007,9 @@
 ;; --- groovy mode
 (ensure-package 'groovy-mode)
 (require 'groovy-mode)
+(require 'lsp-groovy)
+
+(setq lsp-groovy-classpath "~/.sdkman/candidates/groovy/current/lib")
 
 (add-hook 'groovy-mode-hook #'lsp)
 
