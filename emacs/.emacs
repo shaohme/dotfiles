@@ -48,7 +48,8 @@
  '(package-selected-packages
    '(consult-notmuch moe-theme ample-theme counsel-projectile flycheck zenburn-theme xclip projectile ivy-xref ivy-rich counsel company amx))
  '(safe-local-variable-values
-   '((lsp-java-import-gradle-wrapper-enabled)
+   '((lsp-java-java-path . "~/.sdkman/candidates/java/11.0.11.hs-adpt/bin/java")
+     (lsp-java-import-gradle-wrapper-enabled)
      (lsp-java-import-maven-enabled . t)
      (lsp-java-import-gradle-enabled)
      (lsp-pyls-plugins-jedi-environment . "/home/mkj/syseventd/bin/python3")

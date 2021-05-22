@@ -1431,8 +1431,6 @@
         lsp-java-autobuild-enabled nil
         lsp-java-import-maven-enabled t
         lsp-java-import-gradle-enabled t
-        ;; lsp-java-java-path "~/.sdkman/candidates/java/current/bin/java"
-        ;; lsp-java-import-gradle-java-home "~/.sdkman/candidates/java/current/bin/java"
         )
   (setq-local company-backends '((company-capf :separate company-dabbrev-code)))
   )
@@ -1440,17 +1438,23 @@
 (add-hook 'java-mode-hook #'lsp)
 (add-hook 'java-mode-hook #'subword-mode) ;navigate camelcase easier
 (add-hook 'java-mode-hook #'init-java-mode)
+;; seems to be needed for lsp-java to pickup dir-locals variable
+;; changes to java-mode 
+(add-hook 'java-mode-hook 'hack-local-variables)
+
 
 (define-key java-mode-map (kbd "C-c C-l") nil)
 (setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/1.1.1/jdt-language-server-1.1.1-202105040117.tar.gz"
+      lsp-java-java-path "~/.sdkman/candidates/java/current/bin/java"
       lsp-java-configuration-runtimes '[(:name "current"
-						                       :path (expand-file-name "$HOME/.sdkman/candidates/java/current/")
+	    				                       :path (expand-file-name "$HOME/.sdkman/candidates/java/current/")
                                                :default t)
-					                    (:name "AdoptJDK 11"
-						                       :path (expand-file-name "$HOME/.sdkman/candidates/java/11.0.10.hs-adpt/"))
-                                        (:name "Amazon Corretto 8"
-						                       :path (expand-file-name "$HOME/.sdkman/candidates/java/8.282.08.1-amzn/"))
+	    			                    (:name "AdoptJDK 11"
+	    				                       :path (expand-file-name "$HOME/.sdkman/candidates/java/11.0.11.hs-adpt/"))
+                                        (:name "AdoptJDK 8"
+	    				                       :path (expand-file-name "$HOME/.sdkman/candidates/java/8.0.292.hs-adpt/"))
                                         ]
+      
       )
 
 
