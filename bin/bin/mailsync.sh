@@ -1,6 +1,6 @@
 #!/bin/bash
 set -x
-set -e
+# set -e
 
 # MAILDIR=$HOME/MyMail
 
@@ -37,9 +37,11 @@ set -e
 
 mbsync -a
 
-notmuch new
+# mu index
 
-notmuch tag --input=$HOME/.tagmail.notmuch
+# notmuch new
+
+# notmuch tag --input=$HOME/.tagmail.notmuch
 
 # immediately archive all messages from "me"
 # notmuch tag -new -- tag:new and from:me@example.com

@@ -176,13 +176,62 @@
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 ;; remove list-buffers from keymap. often accidentally hit it when aiming for C-x b
-(define-key global-map (kbd "C-x C-b") nil)
+(define-key global-map (kbd "C-x C-b") 'ibuffer)
 
 (define-key global-map [menu] nil)
 ;; such a common everyday function. bind it also to something simpler
 (define-key global-map (kbd "M-o") 'other-window)
 ;; not using existing (tab-to-tab-stop) so binding it to imenu istead
 (define-key global-map (kbd "M-i") 'imenu)
+
+;; --- ibuffer additions
+
+(ensure-package 'ibuffer-vc)
+(require 'ibuffer-vc)
+(ensure-package 'ibuffer-projectile)
+(require 'ibuffer-projectile)
+
+(define-ibuffer-column size-h
+    (:name "Size" :inline t)
+    (file-size-human-readable (buffer-size)))
+
+
+;; Modify the default ibuffer-formats (toggle with `)
+(setq ibuffer-formats
+      '((mark modified read-only " "
+              (name 18 18 :left :elide)
+              " "
+              (size 9 -1 :right)
+              " "
+              (mode 16 16 :left :elide)
+              " "
+              project-relative-file)
+        (mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 12 12 :left :elide)
+              " "
+              vc-relative-file)
+        (mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 14 14 :left :elide)
+              " "
+              (vc-status 12 12 :left)
+              " "
+              vc-relative-file)))
+
+(setq ibuffer-filter-group-name-face 'font-lock-doc-face)
+
+(add-hook 'ibuffer-hook
+    (lambda ()
+      (ibuffer-projectile-set-filter-groups)
+      (unless (eq ibuffer-sorting-mode 'alphabetic)
+        (ibuffer-do-sort-by-alphabetic))))
 
 
 (require 'hideshow)
@@ -1531,7 +1580,7 @@
 
 ;; redefine key
 (define-key sql-mode-map (kbd "C-c C-f") nil)
-(define-key sql-mode-map (kbd "C-c C-i") 'sqlformat)
+(define-key sql-mode-map (kbd "C-c C-i") 'sqlformat-buffer)
 
 
 ;; --- latex auctex
@@ -1733,10 +1782,13 @@
       mu4e-attachment-dir (format "%s/dwl" (getenv "HOME"))
       mu4e-compose-dont-reply-to-self t
       mu4e-confirm-quit nil
+      mu4e-completing-read-function 'completing-read
+      ;; mu4e-index-update-in-background nil
       mu4e-get-mail-command "mbsync -a"
       mu4e-icalendar-diary-file (format "%s/diary.ics" (getenv "HOME"))
       mail-user-agent 'mu4e-user-agent
       mu4e-context-policy 'pick-first
+      mu4e-compose-context-policy 'pick-first
       mu4e-bookmarks '((:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key 117)
                        (:name "Today's messages" :query "date:today..now AND NOT Maildir:Junk" :key 116)
                        (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key 119)
@@ -1771,6 +1823,18 @@
 
 (add-hook 'prog-mode-hook 'editorconfig-mode)
 (add-hook 'nxml-mode-hook 'editorconfig-mode)
+
+
+;; --- wgrep
+(ensure-package 'wgrep)
+(require 'wgrep)
+
+(setq-default grep-highlight-matches t
+              grep-scroll-output t)
+;; hit w to enter editor mode
+(dolist (key (list (kbd "C-c C-q") (kbd "w")))
+    (define-key grep-mode-map key 'wgrep-change-to-wgrep-mode))
+
 
 ;; --- diminish
 ;; cosmetic purposes
