@@ -15,6 +15,20 @@ export NPM_PACKAGES="${HOME}/.local"
 export PATH="${HOME}/bin:\
 ${HOME}/.local/bin:\
 ${HOME}/dev/pyenv/bin:\
+${HOME}/dev/pyenv/shims:\
+${HOME}/.sdkman/candidates/visualvm/current/bin:\
+${HOME}/.sdkman/candidates/springboot/current/bin:\
+${HOME}/.sdkman/candidates/scala/current/bin:\
+${HOME}/.sdkman/candidates/sbt/current/bin:\
+${HOME}/.sdkman/candidates/pomchecker/current/bin:\
+${HOME}/.sdkman/candidates/maven/current/bin:\
+${HOME}/.sdkman/candidates/kotlin/current/bin:\
+${HOME}/.sdkman/candidates/java/current/bin:\
+${HOME}/.sdkman/candidates/groovy/current/bin:\
+${HOME}/.sdkman/candidates/grails/current/bin:\
+${HOME}/.sdkman/candidates/gradle/current/bin:\
+${HOME}/.sdkman/candidates/btrace/current/bin:\
+${HOME}/.sdkman/candidates/ant/current/bin:\
 ${ANDROID_HOME}/cmdline-tools/latest/bin:\
 ${ANDROID_HOME}/emulator:\
 ${ANDROID_HOME}/platform-tools:\
@@ -27,6 +41,9 @@ ${HOME}/.gem/ruby/2.5.0/bin:\
 ${HOME}/.gem/ruby/2.7.0/bin:\
 ${HOME}/.local/lib/idea/bin:\
 ${HOME}/.local/lib/go/bin:\
+${HOME}/.yarn/bin:\
+${HOME}/dev/kotlin-language-server/server/build/install/server/bin:\
+${HOME}/dev/kotlin-debug-adapter/adapter/build/install/adapter/bin:\
 /usr/sbin:\
 $PATH"
 

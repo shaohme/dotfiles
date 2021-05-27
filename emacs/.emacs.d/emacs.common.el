@@ -1774,8 +1774,7 @@
 ;; --- mu4e
 (require 'mu4e)
 
-(setq
-      mu4e-sent-folder "/Sent"
+(setq mu4e-sent-folder "/Sent"
       mu4e-drafts-folder "/Drafts"
       mu4e-refile-folder "/Archive"
       mu4e-trash-folder "/Trash"
@@ -1796,7 +1795,7 @@
       )
 
 (add-hook 'mu4e-compose-mode-hook 'company-mode)
-
+(add-hook 'mu4e-view-mode-hook 'epa-mail-decrypt)
 
 ;; --- bbdb
 (ensure-package 'bbdb)
