@@ -860,6 +860,8 @@
       mm-decrypt-option (quote known)
 	  ;; wait plain text when viewing
 	  mm-discouraged-alternatives (quote ("text/html" "text/richtext" "image/.*"))
+      mml-secure-smime-sign-with-sender t
+      mml-secure-opengpg-sign-with-sender t
 	  ;; use same extra headers
       nnmail-extra-headers gnus-extra-headers
       nndraft-directory (concat message-directory "drafts/")
