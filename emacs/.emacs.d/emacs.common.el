@@ -1102,6 +1102,8 @@
   ;; dabbrev in comments is nice
   (setq-local company-dabbrev-code-everywhere t)
   (setq-local company-backends '((company-capf company-dabbrev-code company-dabbrev)))
+  (setq flycheck-disabled-checkers '(lsp))
+  (flycheck-add-next-checker 'python-pycompile 'python-pylint)
   )
 
 (define-key python-mode-map (kbd "C-M-i") 'company-complete)
