@@ -1,3 +1,2 @@
 [MESSAGES CONTROL]
-disable=
-    no-member
+disable=no-member
