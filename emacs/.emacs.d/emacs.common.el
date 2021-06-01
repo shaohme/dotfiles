@@ -1136,6 +1136,7 @@
 (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
 
 (flycheck-add-mode 'html-tidy 'web-mode)
 
@@ -1194,18 +1195,26 @@
 (add-hook 'less-css-mode-hook 'skewer-less-mode)
 
 
+;; --- prettier
+(ensure-package 'prettier)
+(require 'prettier)
 
 
 
 
 ;; --- typescript/javascript tide mode
+(ensure-package 'rjsx-mode)
+(require 'rjsx-mode)
 (ensure-package 'tide)
 (require 'tide)
+(ensure-package 'prettier-js)
+(require 'prettier-js)
+
 
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
 
-(define-key tide-mode-map (kbd "C-c C-i") 'tide-format)
+(define-key tide-mode-map (kbd "C-c C-i") 'prettier-prettify)
 
 
 (defun setup-tide-mode ()
@@ -1213,25 +1222,28 @@
   (tide-setup)
   ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
   (eldoc-mode t)
-  (tide-hl-identifier-mode t))
+  (tide-hl-identifier-mode t)
+  (set (make-local-variable 'company-backends)
+         '((company-tide company-files :with company-yasnippet)
+           (company-dabbrev-code company-dabbrev)))
+  )
 
+
+(add-to-list 'auto-mode-alist '("\\.js.*$" . rjsx-mode))
+(add-hook 'rjsx-mode-hook 'tide-setup-hook)
 ;; configure javascript-tide checker to run after your default javascript checker
-;; (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
+(flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
 
 ;; configure jsx-tide checker to run after your default jsx checker
-;; (flycheck-add-mode 'javascript-eslint 'web-mode)
-;; (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
-
-;; configure jsx-tide checker to run after your default jsx checker
-;; (flycheck-add-mode 'javascript-eslint 'web-mode)
-;; (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+(flycheck-add-mode 'javascript-eslint 'web-mode)
+(flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
 
 ;; add tide mode to web-mode when editing
-(add-hook 'web-mode-hook
-          (lambda ()
-            (when (string-equal "jsx" (file-name-extension buffer-file-name))
-              (setup-tide-mode))))
-
+;; (add-hook 'web-mode-hook
+;;           (lambda ()
+;;             (when (string-equal "jsx" (file-name-extension buffer-file-name))
+;;               (setup-tide-mode))))
+(add-hook 'web-mode-hook #'setup-tide-mode)
 (add-hook 'typescript-mode-hook #'setup-tide-mode)
 (add-hook 'js2-mode-hook #'setup-tide-mode)
 
