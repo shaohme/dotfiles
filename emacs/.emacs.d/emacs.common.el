@@ -184,6 +184,24 @@
 ;; not using existing (tab-to-tab-stop) so binding it to imenu istead
 (define-key global-map (kbd "M-i") 'imenu)
 
+
+;; ---- anzu
+;; better search/replace
+
+(ensure-package 'anzu)
+(require 'anzu)
+
+(setq anzu-mode-lighter "")
+
+(global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+(global-set-key [remap query-replace] 'anzu-query-replace)
+
+(add-hook 'after-init-hook 'global-anzu-mode)
+
+
+
+
+
 ;; --- ibuffer additions
 
 (ensure-package 'ibuffer-vc)
@@ -682,7 +700,7 @@
 (ensure-package 'marginalia)
 (require 'marginalia)
 
-(marginalia-mode)
+(add-hook 'after-init-hook 'marginalia-mode)
 
 ;; When using Selectrum, ensure that Selectrum is refreshed when cycling annotations.
 (advice-add #'marginalia-cycle :after
