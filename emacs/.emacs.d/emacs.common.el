@@ -124,7 +124,7 @@
 
 ;;; easier dictionary switching
 (global-set-key (kbd "<f8>") 'switch-dictionary)
-
+(global-set-key [remap backward-kill-word] 'backward-delete-word)
 
 ;;; answer questions easier
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -264,7 +264,8 @@
     ;; move to the first difference
     (ediff-next-difference)
     ;; move to the merged buffer window
-    (winum-select-window-by-number 3)
+    ;; seems not to be defined
+    ;; (winum-select-window-by-number 3)
     ;; save the windows layout
     (window-configuration-to-register ?a))
 
@@ -301,7 +302,9 @@
 
 ;; (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
 ;; (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
-(setq eshell-banner-message "")
+
+;; unknown variable
+;; (setq eshell-banner-message "")
 
 ;; commented out because it doesn't seem to have any noticeable effect
 ;; (setenv "TERM" "xterm-256color")
@@ -486,12 +489,14 @@
       projectile-project-search-path '("~/dev/" "~/work/") ;default paths
 	  ;; attempt to disable project name on modeline. this should
 	  ;; speedup, also over TRAMP
+      projectile-globally-ignored-file-suffixes '("class")
 	  projectile-dynamic-mode-line nil
 	  ;; this should improve emacs performance when projectile is enabled
 	  ;; in a buffer gotten over tramp/ssh
 	  ;; projectile-file-exists-remote-cache-expire nil
       projectile-globally-ignored-directories
       (append '(
+                ".idea"
                 ".git"
                 ".svn"
                 "bin"
@@ -526,10 +531,10 @@
       (unless (file-remote-p default-directory) ad-do-it))
 
 ;; --- sorting and filtering algorithm for other packages to use
-(ensure-package 'prescient)
-(require 'prescient)
+;; (ensure-package 'prescient)
+;; (require 'prescient)
 
-(prescient-persist-mode 1)
+;; (prescient-persist-mode 1)
 
 ;; --- company
 ;; basic completion
@@ -538,8 +543,8 @@
 (require 'company-dabbrev)
 (require 'company-dabbrev-code)
 (require 'company-ispell)
-(ensure-package 'company-prescient)
-(require 'company-prescient)
+;; (ensure-package 'company-prescient)
+;; (require 'company-prescient)
 
 (setq company-selection-wrap-around t   ;wrap around candidates
       company-minimum-prefix-length 3 ;shorter prefix
@@ -555,7 +560,7 @@
 	  company-global-modes '(not comint-mode erc-mode help-mode gud-mode)
 	  company-dabbrev-downcase nil)	  ; make dabbrev completions case sensitive
 
-(add-hook 'company-mode-hook 'company-prescient-mode)
+;; (add-hook 'company-mode-hook 'company-prescient-mode)
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
 
@@ -671,17 +676,37 @@
 
 ;; --- selectrum
 
-(ensure-package 'selectrum)
-(require 'selectrum)
-(ensure-package 'selectrum-prescient)
-(require 'selectrum-prescient)
+;; (ensure-package 'selectrum)
+;; (require 'selectrum)
+;; (ensure-package 'selectrum-prescient)
+;; (require 'selectrum-prescient)
 
-(setq-default selectrum-fix-vertical-window-height t)
+;; (setq-default selectrum-fix-vertical-window-height t)
 
-(selectrum-mode +1)
+;; (selectrum-mode +1)
 
 ;; to make sorting and filtering more intelligent
-(selectrum-prescient-mode +1)
+;; (selectrum-prescient-mode +1)
+
+;; --- vertico
+(ensure-package 'vertico)
+(require 'vertico)
+
+(vertico-mode t)
+
+(require 'savehist)
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(savehist-mode t)
+
+(ensure-package 'orderless)
+(require 'orderless)
+
+;; Use the `orderless' completion style.
+;; Enable `partial-completion' for files to allow path expansion.
+;; You may prefer to use `initials' instead of `partial-completion'.
+(setq completion-styles '(orderless)
+      ;; completion-category-defaults nil
+      completion-category-overrides '((file (styles . (partial-completion)))))
 
 
 ;; --- ctrlf
@@ -703,19 +728,20 @@
 (add-hook 'after-init-hook 'marginalia-mode)
 
 ;; When using Selectrum, ensure that Selectrum is refreshed when cycling annotations.
-(advice-add #'marginalia-cycle :after
-            (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
+;; (advice-add #'marginalia-cycle :after
+;;             (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
 
 ;; add key to cycle annotations
-(define-key minibuffer-local-map (kbd "M-A") 'marginalia-cycle)
+;; (define-key minibuffer-local-map (kbd "M-A") 'marginalia-cycle)
 
 ;; show more heavy annotations by default. like docs, additional strings, keybindings on M-x
-(setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+;; (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
 
 
 ;; --- consult
 (ensure-package 'consult)
 (require 'consult)
+(require 'consult-xref)
 (ensure-package 'consult-flycheck)
 (require 'consult-flycheck)
 (ensure-package 'consult-recoll)
@@ -727,10 +753,10 @@
 ;; annoying, and causes emacs to load major modes when previewing,
 ;; which might include LSP etc. making it slow
 ;; (setq consult-preview-key nil)
-;; (setq consult-preview-key (kbd "M-p"))
-
-(setq consult-config `((consult-file :preview-key nil)
-                       (consult-ripgrep :preview-key nil)))
+;; (consult-customize `((consult-file :preview-key nil)
+;;                      (consult-b :preview-key nil)
+;;                      (consult-ripgrep :preview-key nil)))
+(setq consult-preview-key (kbd "M-."))
 
 ;; leverage projectile
 (setq consult-project-root-function #'projectile-project-root)
@@ -879,7 +905,7 @@
 	  ;; wait plain text when viewing
 	  mm-discouraged-alternatives (quote ("text/html" "text/richtext" "image/.*"))
       mml-secure-smime-sign-with-sender t
-      mml-secure-opengpg-sign-with-sender t
+      mml-secure-openpgp-sign-with-sender t
 	  ;; use same extra headers
       nnmail-extra-headers gnus-extra-headers
       nndraft-directory (concat message-directory "drafts/")
@@ -1084,7 +1110,9 @@
 (require 'groovy-mode)
 (require 'lsp-groovy)
 
-(setq lsp-groovy-classpath "~/.sdkman/candidates/groovy/current/lib")
+;;; ["~/.sdkman/candidates/groovy/current/lib" "/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-test-3.0.8.jar" "/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-test-junit5-3.0.8.jar"]
+;; (setq lsp-groovy-classpath ["/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-3.0.8.jar" "/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-test-3.0.8.jar" "/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-test-junit5-3.0.8.jar" "/home/mkj/.sdkman/candidates/groovy/current/lib/junit-jupiter-api-5.7.0.jar"])
+;; (setq lsp-groovy-classpath ["/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-3.0.8.jar"])
 
 (add-hook 'groovy-mode-hook #'lsp)
 
@@ -1104,8 +1132,7 @@
 ;; (add-to-list 'lsp-enabled-clients 'jedi)
 
 ;; ;; replace flymake with flycheck
-(setq lsp-pyls-plugins-pylint-enabled t
-      lsp-jedi-diagnostics-enable t
+(setq lsp-jedi-diagnostics-enable t
       )
 
 
@@ -1123,14 +1150,21 @@
   (setq-local company-dabbrev-code-everywhere t)
   (setq-local company-backends '((company-capf company-dabbrev-code company-dabbrev)))
   (setq flycheck-disabled-checkers '(lsp))
+  (setq-local flycheck-checkers '(python-pycompile python-pylint python-flake8))
   (flycheck-add-next-checker 'python-pycompile 'python-pylint)
+  ;; only use lsp for essentials. lsp+jedi flycheck doesn't work well
+  (setq-local lsp-diagnostics-provider nil)
+  (setq-local lsp-auto-configure nil)
   )
 
 (define-key python-mode-map (kbd "C-M-i") 'company-complete)
 
 (add-hook 'python-mode-hook #'superword-mode) ; become snake-case aware
-(add-hook 'python-mode-hook #'lsp)
+;; add init before lsp to disable some lsp features
 (add-hook 'python-mode-hook #'init-python-mode)
+(add-hook 'python-mode-hook #'lsp)
+;; (add-hook 'python-mode-hook '(lambda ()
+;;                                (flycheck-select-checker 'python-pycompile)))
 
 ;; (add-to-list 'lsp-disabled-clients 'pyls)
 ;; (add-to-list 'lsp-enabled-clients 'jedi)
@@ -1391,11 +1425,11 @@
 ;; --- xml
 (require 'nxml-mode)
 (ensure-package 'xml-format)
+(require 'xml-format)
 ;; convenience. rename start/end tags when altering
 (ensure-package 'auto-rename-tag)
 (require 'auto-rename-tag)
 (require 'lsp-xml)
-;; (require 'xml-format)
 
 ;; seems broken. takes precedence over other backends
 ;; (require 'company-xsd)
@@ -1477,7 +1511,11 @@
 (ensure-package 'company-nginx)
 (require 'company-nginx)
 
-(add-hook 'nginx-mode-hook #'company-nginx-keywords)
+(defun init-nginx-mode()
+  (setq-local company-backends '((company-nginx company-files company-capf company-dabbrev-code company-dabbrev)))
+  )
+
+(add-hook 'nginx-mode-hook 'init-nginx-mode)
 (add-to-list 'auto-mode-alist '("/nginx/sites-\\(?:available\\|enabled\\)/" . nginx-mode))
 
 
@@ -1527,7 +1565,7 @@
 
 
 (define-key java-mode-map (kbd "C-c C-l") nil)
-(setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/1.1.1/jdt-language-server-1.1.1-202105040117.tar.gz"
+(setq lsp-java-jdt-download-url "https://download.eclipse.org/jdtls/milestones/1.1.2/jdt-language-server-1.1.2-202105191944.tar.gz"
       lsp-java-java-path "~/.sdkman/candidates/java/current/bin/java"
       lsp-java-configuration-runtimes '[(:name "current"
 	    				                       :path (expand-file-name "$HOME/.sdkman/candidates/java/current/")
