@@ -564,6 +564,9 @@
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
 
+(global-set-key [remap complete-symbol] 'company-complete)
+
+
 ;; --- yasnippet
 ;; useful to have and recommended by LSP defaults
 (ensure-package 'yasnippet)
