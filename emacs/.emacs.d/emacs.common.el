@@ -473,6 +473,25 @@
 (require 'treemacs-icons-dired)
 
 
+;; --- dired-single
+(ensure-package 'dired-single)
+(require 'dired-single)
+
+(defun init-dired-mode ()
+  "Bunch of stuff to run for dired, either immediately or when it's
+   loaded."
+  (define-key dired-mode-map [remap dired-find-file] 'dired-single-buffer)
+  (define-key dired-mode-map [remap dired-mouse-find-file-other-window] 'dired-single-buffer-mouse)
+  (define-key dired-mode-map [remap dired-up-directory] 'dired-single-up-directory))
+
+;; if dired's already loaded, then the keymap will be bound
+(if (boundp 'dired-mode-map)
+    ;; we're good to go; just add our bindings
+    (init-dired-mode)
+  ;; it's not loaded yet, so add our bindings to the load-hook
+  (add-hook 'dired-load-hook 'init-dired-mode))
+
+
 ;; --- projectile
 ;; make emacs project aware
 (ensure-package 'projectile)
@@ -487,9 +506,10 @@
 
 (setq ;; projectile-completion-system 'ivy ;make ivy aware
       projectile-project-search-path '("~/dev/" "~/work/") ;default paths
-	  ;; attempt to disable project name on modeline. this should
+      ;; shorten lighter
+      projectile-mode-line-prefix " P"
+      ;; attempt to disable project name on modelivne. this should
 	  ;; speedup, also over TRAMP
-      projectile-globally-ignored-file-suffixes '("class")
 	  projectile-dynamic-mode-line nil
 	  ;; this should improve emacs performance when projectile is enabled
 	  ;; in a buffer gotten over tramp/ssh
@@ -531,10 +551,13 @@
       (unless (file-remote-p default-directory) ad-do-it))
 
 ;; --- sorting and filtering algorithm for other packages to use
-;; (ensure-package 'prescient)
-;; (require 'prescient)
+(ensure-package 'prescient)
+(require 'prescient)
 
-;; (prescient-persist-mode 1)
+;; simplify filter for now. defaults + fuzzy seems to match all too much
+(setq prescient-filter-method '(literal))
+
+(prescient-persist-mode 1)
 
 ;; --- company
 ;; basic completion
@@ -543,8 +566,8 @@
 (require 'company-dabbrev)
 (require 'company-dabbrev-code)
 (require 'company-ispell)
-;; (ensure-package 'company-prescient)
-;; (require 'company-prescient)
+(ensure-package 'company-prescient)
+(require 'company-prescient)
 
 (setq company-selection-wrap-around t   ;wrap around candidates
       company-minimum-prefix-length 3 ;shorter prefix
@@ -560,11 +583,12 @@
 	  company-global-modes '(not comint-mode erc-mode help-mode gud-mode)
 	  company-dabbrev-downcase nil)	  ; make dabbrev completions case sensitive
 
-;; (add-hook 'company-mode-hook 'company-prescient-mode)
+(add-hook 'company-mode-hook 'company-prescient-mode)
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
 
 (global-set-key [remap complete-symbol] 'company-complete)
+
 
 
 ;; --- yasnippet
@@ -595,11 +619,22 @@
 
 
 
+
 ;;; --- emacs lisp
+
 (setq ;;; have flycheck use emacs load-path when searching
       ;;; for packages
       flycheck-emacs-lisp-load-path load-path
       )
+
+(defun init-elisp-mode()
+  ;; removed company-dabbrev from the list as it returned duplicated
+  ;; already found by company-dabbrev-code
+  (setq-local company-backends '(company-keywords company-capf company-dabbrev-code company-files))
+  )
+
+(add-hook 'emacs-lisp-mode-hook 'init-elisp-mode)
+
 
 
 ;; --- common lisp
@@ -679,37 +714,17 @@
 
 ;; --- selectrum
 
-;; (ensure-package 'selectrum)
-;; (require 'selectrum)
-;; (ensure-package 'selectrum-prescient)
-;; (require 'selectrum-prescient)
+(ensure-package 'selectrum)
+(require 'selectrum)
+(ensure-package 'selectrum-prescient)
+(require 'selectrum-prescient)
 
 ;; (setq-default selectrum-fix-vertical-window-height t)
 
-;; (selectrum-mode +1)
+(selectrum-mode +1)
 
 ;; to make sorting and filtering more intelligent
-;; (selectrum-prescient-mode +1)
-
-;; --- vertico
-(ensure-package 'vertico)
-(require 'vertico)
-
-(vertico-mode t)
-
-(require 'savehist)
-;; Persist history over Emacs restarts. Vertico sorts by history position.
-(savehist-mode t)
-
-(ensure-package 'orderless)
-(require 'orderless)
-
-;; Use the `orderless' completion style.
-;; Enable `partial-completion' for files to allow path expansion.
-;; You may prefer to use `initials' instead of `partial-completion'.
-(setq completion-styles '(orderless)
-      ;; completion-category-defaults nil
-      completion-category-overrides '((file (styles . (partial-completion)))))
+(selectrum-prescient-mode +1)
 
 
 ;; --- ctrlf
@@ -730,15 +745,8 @@
 
 (add-hook 'after-init-hook 'marginalia-mode)
 
-;; When using Selectrum, ensure that Selectrum is refreshed when cycling annotations.
-;; (advice-add #'marginalia-cycle :after
-;;             (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
-
 ;; add key to cycle annotations
-;; (define-key minibuffer-local-map (kbd "M-A") 'marginalia-cycle)
-
-;; show more heavy annotations by default. like docs, additional strings, keybindings on M-x
-;; (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+(define-key minibuffer-local-map (kbd "M-A") 'marginalia-cycle)
 
 
 ;; --- consult
@@ -774,65 +782,6 @@
 (define-key global-map (kbd "C-x b") 'consult-buffer)
 
 (define-key flycheck-command-map "!"  #'consult-flycheck)
-
-
-
-;;; Ivy/Counsel/Swiper
-;; narrowing framework Ivy
-;; (ensure-package 'ivy)
-;; (require 'ivy)
-;; additions to Ivy
-;; (ensure-package 'ivy-rich)
-;; (require 'ivy-rich)
-;; xref intergration with ivy
-;; (ensure-package 'ivy-xref)
-;; (require 'ivy-xref)
-;; parts of ivy
-;; (ensure-package 'counsel)
-;; (require 'counsel)
-;; fast textbuffer searching
-;; (ensure-package 'swiper)
-;; (require 'swiper)
-;; alternative to amx/smex etc.
-;; (ensure-package 'ivy-prescient)
-;; (require 'ivy-prescient)
-
-;; ;; as per recommendation from ivy-rich website
-;; (setq ivy-use-virtual-buffers t
-;;       ivy-rich-path-style 'abbrev 		; or 'full
-;;       ivy-count-format "(%d/%d) "
-;; 	  ;; make prompt selectable. for instance, while saving buffer to a new
-;; 	  ;; file and not wanting to select any of the suggestions
-;; 	  ivy-use-selectable-prompt t
-;;       enable-recursive-minibuffers t
-;; 	  ;; using these options, try fix slowdown when switching buffers
-;; 	  ;; with switch-to-buffer while having tramp sessions running
-;; 	  ivy-rich-parse-remote-buffer nil
-;; 	  ivy-rich-parse-remote-file-path nil
-;; 	  )
-;; (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-
-;; ;; xref initialization is different in Emacs 27 - there are two different
-;; ;; variables which can be set rather than just one
-;; (when (>= emacs-major-version 27)
-;;   (setq xref-show-definitions-function #'ivy-xref-show-defs))
-;; ;; Necessary in Emacs <27. In Emacs 27 it will affect all xref-based
-;; ;; commands other than xref-find-definitions (e.g. project-find-regexp)
-;; ;; as well
-;; (setq xref-show-xrefs-function #'ivy-xref-show-xrefs)
-
-
-;; enable ivy and rich mode
-;; (ivy-mode 1)
-;; (ivy-rich-mode 1)
-
-;; used to add history to minibuffer selections like M-x
-;; instead of smex which produces compile errors on install
-;; (ivy-prescient-mode 1)
-
-;; replace default keys
-;; (define-key global-map [remap isearch-forward] #'swiper)
-;; (define-key global-map [remap execute-extended-command] #'counsel-M-x)
 
 
 ;; --- gnus
@@ -976,26 +925,6 @@
 
 (add-hook 'notmuch-message-mode-hook 'init-notmuch-message-mode)
 
-;; --- counsel-projectile
-;; Counsel-projectile provides further ivy integration into projectile
-;; by taking advantage of ivy's support for selecting from a list of
-;; actions and applying an action without leaving the completion
-;; session
-;; (ensure-package 'counsel-projectile)
-;; (require 'counsel-projectile)
-;; (ensure-package 'counsel-tramp)
-;; (require 'counsel-tramp)
-
-;; (define-key global-map (kbd "C-c s") 'counsel-tramp)
-
-;; no need to reassign keys with counsel/ivy aware
-;; alternatives. counsel-projectile-mode does that.
-
-;; dont add counsel-projectile to projectile-mode-hook. lisp max depth
-;; errors occurs
-;; (add-hook 'prog-mode-hook 'counsel-projectile-mode)
-;; (add-hook 'conf-mode-hook 'counsel-projectile-mode)
-;; (add-hook 'text-mode-hook 'counsel-projectile-mode)
 
 ;; --- indent tools
 ;; Smarter way to indent code
@@ -1049,23 +978,23 @@
 ;; LSP compatibility
 (ensure-package 'lsp-mode)
 ;; (require 'lsp-clients)
+;; enable lsp-ui for more fancy UI features, like docs and flycheck errors
+;; shown in buffer
+;; (ensure-package 'lsp-ui)
+;; (require 'lsp-ui)
 (require 'lsp-completion)
 (require 'lsp-diagnostics)
 (ensure-package 'lsp-treemacs)
 (require 'lsp-treemacs)
 
-(setq lsp-eldoc-render-all t
-      lsp-eldoc-enable-hover nil
+(setq lsp-eldoc-render-all nil          ; too much for now. trying this out
+      lsp-eldoc-enable-hover t          ; render eldoc in minibuffer
 	  lsp-file-watch-threshold 10000 	; we're handling big projects
 	  lsp-keymap-prefix "C-c C-l"
       lsp-completion-mode :none
 	  lsp-completion-enable-additional-text-edit t)
 
 
-;; enable lsp-ui for more fancy UI features, like docs and flycheck errors
-;; shown in buffer
-;; (ensure-package 'lsp-ui)
-;; (require 'lsp-ui)
 ;; disable lsp diagnostics (flycheck) for now.
 ;; it sets lsp as sole or default flycheck provider
 ;; and makes errors when idle if enabled.
@@ -1462,7 +1391,7 @@
 
 (setq magic-mode-alist (cons '("<\\?xml " . nxml-mode) magic-mode-alist))
 (fset 'xml-mode 'nxml-mode)
-(setq nxml-slash-auto-complete-flag t      
+(setq nxml-slash-auto-complete-flag t
       )
 
 ;; (define-key nxml-mode-map (kbd "C-c C-i") #'nxml-pretty-format)
@@ -1559,11 +1488,11 @@
   (setq-local company-backends '((company-capf :separate company-dabbrev-code)))
   )
 
-(add-hook 'java-mode-hook #'lsp)
-(add-hook 'java-mode-hook #'subword-mode) ;navigate camelcase easier
-(add-hook 'java-mode-hook #'init-java-mode)
+(add-hook 'java-mode-hook 'subword-mode) ;navigate camelcase easier
+(add-hook 'java-mode-hook 'init-java-mode)
+(add-hook 'java-mode-hook 'lsp)
 ;; seems to be needed for lsp-java to pickup dir-locals variable
-;; changes to java-mode 
+;; changes to java-mode
 (add-hook 'java-mode-hook 'hack-local-variables)
 
 
@@ -1578,7 +1507,7 @@
                                         (:name "AdoptJDK 8"
 	    				                       :path (expand-file-name "$HOME/.sdkman/candidates/java/8.0.292.hs-adpt/"))
                                         ]
-      
+
       )
 
 
