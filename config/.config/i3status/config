@@ -9,32 +9,37 @@
 general {
         colors = true
         interval = 1
-        color_good = "#50fa7b"
-        color_degraded  = "#FEC42F"
-        color_bad = "#ff5555"
 }
 
 order += "sysdata"
 order += "lm_sensors"
-order += "battery 0"
+order += "battery_level"
 order += "tztime local"
 
-battery 0 {
-        format = "%status %percentage"
-        integer_battery_capacity = true
-        format_down = "N/A"
-        status_chr = "CHR"
-        status_bat = "BAT"
-        status_unk = "UNK"
-        status_full = "FULL"
-        path = "/sys/class/power_supply/BAT%d/uevent"
-        low_threshold = 10
-}
-
-# battery_level {
-#               cache_timeout = 3
-#               format = "B {percent}%"
+# battery 0 {
+#         format = "%status %percentage"
+#         integer_battery_capacity = true
+#         format_down = "N/A"
+#         status_chr = "CHR"
+#         status_bat = "BAT"
+#         status_unk = "UNK"
+#         status_full = "FULL"
+#         path = "/sys/class/power_supply/BAT%d/uevent"
+#         low_threshold = 10
 # }
+
+battery_level {
+          threshold_full = 95
+          threshold_degraded = 20
+          measurement_mode = "sys"
+          cache_timeout = 3
+          hide_seconds = True
+          format = "{icon} {percent}%"
+          color_good = "#0C7E0E"
+          color_bad = "#DA002C"
+          color_degraded  = "#FF7718"
+          color_charging = "#FF7718"
+}
 
 cpu_usage {
         format = "%usage"

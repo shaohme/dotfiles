@@ -1481,7 +1481,7 @@
   (setq-local tab-width 4)
   (setq dap-java-default-debug-port 5005
         lsp-java-import-gradle-wrapper-enabled t
-        lsp-java-autobuild-enabled nil
+        lsp-java-autobuild-enabled t
         lsp-java-import-maven-enabled t
         lsp-java-import-gradle-enabled t
         )
