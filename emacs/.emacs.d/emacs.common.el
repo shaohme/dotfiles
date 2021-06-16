@@ -50,6 +50,8 @@
 ;; paste where mouse is located
 (setq-default mouse-yank-at-point t)
 
+(require 'warnings)
+
 (setq ;; clean startup screen
       user-full-name "Martin Kjær Jørgensen"
       initial-major-mode 'text-mode
@@ -89,6 +91,9 @@
 	  tramp-default-method "ssh"
 	  ;; limit mini buffer size
 	  ;; max-mini-window-height 0.10
+      ;; only display warning frame when error. this is mostly
+      ;; to ignore flycheck checker error limit warnings
+      display-warning-minimum-level :error
       )
 
 (when (>= emacs-major-version 27)
@@ -587,7 +592,6 @@
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
 
-(global-set-key [remap complete-symbol] 'company-complete)
 
 
 
@@ -639,21 +643,21 @@
 
 ;; --- common lisp
 (ensure-package 'slime)
-(require 'slime)
+(require 'slime-autoloads)
 (ensure-package 'slime-company)
 (require 'slime-company)
 
 (setq slime-company-completion 'fuzzy
 	  inferior-lisp-program "sbcl"
-      slime-company-after-completion 'slime-company-just-one-space)
+      slime-company-after-completion nil)
 
-(slime-setup '(slime-fancy slime-repl slime-fuzzy slime-company))
+(slime-setup '(slime-repl slime-fuzzy slime-company))
 
 (add-to-list 'slime-lisp-implementations
 			 '(sbcl ("sbcl") :coding-system utf-8-unix))
 
 (defun init-slime-mode()
-  (setq-local company-backends '(company-slime company-keywords company-capf company-dabbrev-code company-dabbrev company-files))
+  (setq-local company-backends '(company-slime company-dabbrev company-files company-keywords))
   )
 
 (add-hook 'slime-mode-hook 'init-slime-mode)
@@ -1022,6 +1026,7 @@
 ;; --- golang
 (ensure-package 'go-mode)
 (require 'go-mode)
+(require 'dap-go)
 
 (defun init-go-mode()
   ;; go-vet disabled because its command "go tool vet" is deprecated
@@ -1182,6 +1187,30 @@
 ;; --- prettier
 (ensure-package 'prettier)
 (require 'prettier)
+
+
+;; --- vue
+(ensure-package 'vue-mode)
+(require 'vue-mode)
+(require 'lsp-vetur)
+(require 'prettier-js)
+
+(defun init-vue-mode()
+  (setq prettier-js-args '("--parser vue"))
+  (subword-mode +1)
+  (smartparens-mode -1)
+  )
+
+;; use prettier-js for formatting instead
+(setq lsp-vetur-format-default-formatter-css "none")
+(setq lsp-vetur-format-default-formatter-html "none")
+(setq lsp-vetur-format-default-formatter-js "none")
+(setq lsp-vetur-validation-template nil)
+
+(add-to-list 'auto-mode-alist '("\\.vue" . vue-mode))
+
+(add-hook 'vue-mode-hook #'prettier-js-mode)
+(add-hook 'vue-mode-hook #'lsp)
 
 
 
@@ -1485,7 +1514,7 @@
         lsp-java-import-maven-enabled t
         lsp-java-import-gradle-enabled t
         )
-  (setq-local company-backends '((company-capf :separate company-dabbrev-code)))
+  (setq-local company-backends '((company-capf company-dabbrev-code)))
   )
 
 (add-hook 'java-mode-hook 'subword-mode) ;navigate camelcase easier
@@ -1573,6 +1602,8 @@
 ;; --- cmake mode
 (ensure-package 'cmake-mode)
 (require 'cmake-mode)
+(ensure-package 'cmake-font-lock)
+(require 'cmake-font-lock)
 
 
 ;; --- sql mode
@@ -1740,6 +1771,20 @@
 (global-set-key (kbd "C-c c") 'org-capture)
 
 
+;; --- org-roam
+
+(ensure-package 'org-roam)
+(require 'org-roam)
+
+(add-hook 'after-init-hook 'org-roam-mode)
+
+(define-key org-roam-mode-map (kbd "C-c n l") 'org-roam)
+(define-key org-roam-mode-map (kbd "C-c n f") 'org-roam-find-file)
+(define-key org-roam-mode-map (kbd "C-c n g") 'org-roam-graph)
+(define-key org-mode-map (kbd "C-c n i") 'org-roam-insert)
+(define-key org-mode-map (kbd "C-c n I") 'org-roam-insert-immediate)
+
+
 ;; --- google-translate
 ;; used by define-it but needs additional config
 (ensure-package 'google-translate)
@@ -1783,7 +1828,11 @@
       mu4e-refile-folder "/Archive"
       mu4e-trash-folder "/Trash"
       mu4e-attachment-dir (format "%s/dwl" (getenv "HOME"))
+      ;; should be better interop with mbsync
+      mu4e-change-filenames-when-moving t
       mu4e-compose-dont-reply-to-self t
+      ;; more pleasant reading flow view
+      mu4e-compose-format-flowed t
       mu4e-confirm-quit nil
       mu4e-completing-read-function 'completing-read
       ;; mu4e-index-update-in-background nil
@@ -1796,6 +1845,10 @@
                        (:name "Today's messages" :query "date:today..now AND NOT Maildir:Junk" :key 116)
                        (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key 119)
                        (:name "Messages with images" :query "mime:image/*" :key 112))
+      mu4e-maildir-shortcuts '(("/INBOX" . ?i)
+                               ("/Drafts" . ?d)
+                               ("/Sent" . ?s)
+                               ("/Trash" . ?t))
       )
 
 (add-hook 'mu4e-compose-mode-hook 'company-mode)
@@ -1837,6 +1890,36 @@
 ;; hit w to enter editor mode
 (dolist (key (list (kbd "C-c C-q") (kbd "w")))
     (define-key grep-mode-map key 'wgrep-change-to-wgrep-mode))
+
+
+;; --- clojure
+(ensure-package 'cider)
+(require 'cider)
+
+
+;; --- C/C++ modes
+(ensure-package 'ccls)
+(require 'ccls)
+(require 'dap-gdb-lldb)
+
+(add-hook 'c-mode-hook #'lsp)
+(add-hook 'c++-mode-hook #'lsp)
+(add-hook 'objc-mode-hook #'lsp)
+
+
+;; --- restclient
+(ensure-package 'restclient)
+(require 'restclient)
+(ensure-package 'company-restclient)
+(require 'company-restclient)
+
+(defun init-restclient-mode()
+  (setq-local company-backends '(company-restclient company-keywords company-capf company-dabbrev company-files))
+  )
+
+(add-hook 'restclient-mode-hook 'company-mode)
+(add-hook 'restclient-mode-hook 'init-restclient-mode)
+
 
 
 ;; --- diminish
