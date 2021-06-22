@@ -592,6 +592,7 @@
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
 
+(define-key company-mode-map (kbd "C-M-i") 'company-complete)
 
 
 
@@ -1047,11 +1048,37 @@
 (require 'groovy-mode)
 (require 'lsp-groovy)
 
-;;; ["~/.sdkman/candidates/groovy/current/lib" "/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-test-3.0.8.jar" "/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-test-junit5-3.0.8.jar"]
-;; (setq lsp-groovy-classpath ["/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-3.0.8.jar" "/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-test-3.0.8.jar" "/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-test-junit5-3.0.8.jar" "/home/mkj/.sdkman/candidates/groovy/current/lib/junit-jupiter-api-5.7.0.jar"])
-;; (setq lsp-groovy-classpath ["/home/mkj/.sdkman/candidates/groovy/current/lib/groovy-3.0.8.jar"])
+(defun load-groovy-classpath ()
+  (require 'esxml)
+  (require 'esxml-query)
+  (when (buffer-file-name)
+    (let* ((bfn (buffer-file-name))
+           (root (with-temp-buffer
+                   (insert-file-contents (expand-file-name ".classpath" (locate-dominating-file bfn ".classpath")))
+                   (libxml-parse-xml-region (point-min) (point-max))))
+           (nodes (esxml-query-all "classpath>classpathentry[kind=lib]" root))
+           (jar-list ()))
+      (dolist (node nodes)
+        (append jar-list (esxml-node-attribute 'path node))
+        (add-to-list 'jar-list (esxml-node-attribute 'path node)))
+      
+      (setq-local lsp-groovy-classpath (vconcat [] jar-list))
 
+      ;; (message "out: %s" (expand-file-name ".classpath" (locate-dominating-file "/home/mkj/func.el" ".classpath")))
+      ;; (message "out: %s" (expand-file-name (locate-dominating-file (buffer-file-name) ".classpath") ".classpath"))
+      ;; (print  (get-buffer "cl-list"))
+      )
+    )
+  )
+
+(defun post-init-groovy-mode()
+  (setq-local company-backends '(company-dabbrev-code :with company-capf  company-yasnippet company-files))
+  )
+
+
+(add-hook 'groovy-mode-hook #'load-groovy-classpath)
 (add-hook 'groovy-mode-hook #'lsp)
+(add-hook 'groovy-mode-hook #'post-init-groovy-mode)
 
 
 ;; --- python mode
