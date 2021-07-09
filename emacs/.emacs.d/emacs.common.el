@@ -140,7 +140,6 @@
 ;; (add-hook 'flyspell-mode-hook #'after-init-flyspell-mode)
 ;; enable flyspell in all prog-modes only for comments and strings
 ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-(add-hook 'markdown-mode-hook 'flyspell-mode)
 ;; annoying. especially in yml mode
 ;; (add-hook 'text-mode-hook 'flyspell-mode)
 
@@ -148,7 +147,7 @@
 ;; add eletric pair on all prog modes. should not be intruding any modes.
 (add-hook 'prog-mode-hook 'electric-pair-mode)
 ;; might as well delete trailing whitespace
-;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; have list of recent files
 (recentf-mode t)
@@ -945,6 +944,8 @@
 ;; basic tools for handling git files and git repos
 (ensure-package 'magit)
 (require 'magit)
+(ensure-package 'forge)
+(require 'forge)
 (ensure-package 'treemacs-magit)
 (require 'treemacs-magit)
 
@@ -1061,7 +1062,7 @@
       (dolist (node nodes)
         (append jar-list (esxml-node-attribute 'path node))
         (add-to-list 'jar-list (esxml-node-attribute 'path node)))
-      
+
       (setq-local lsp-groovy-classpath (vconcat [] jar-list))
 
       ;; (message "out: %s" (expand-file-name ".classpath" (locate-dominating-file "/home/mkj/func.el" ".classpath")))
@@ -1212,31 +1213,32 @@
 
 
 ;; --- prettier
-(ensure-package 'prettier)
-(require 'prettier)
+;; -- disabled. latest package seems to stop emacs init during startup
+;; (ensure-package 'prettier)
+;; (require 'prettier)
 
 
 ;; --- vue
 (ensure-package 'vue-mode)
 (require 'vue-mode)
 (require 'lsp-vetur)
-(require 'prettier-js)
+;; (require 'prettier-js)
 
 (defun init-vue-mode()
-  (setq prettier-js-args '("--parser vue"))
+  ;; (setq prettier-js-args '("--parser vue"))
   (subword-mode +1)
   (smartparens-mode -1)
   )
 
 ;; use prettier-js for formatting instead
-(setq lsp-vetur-format-default-formatter-css "none")
-(setq lsp-vetur-format-default-formatter-html "none")
-(setq lsp-vetur-format-default-formatter-js "none")
-(setq lsp-vetur-validation-template nil)
+;; (setq lsp-vetur-format-default-formatter-css "none")
+;; (setq lsp-vetur-format-default-formatter-html "none")
+;; (setq lsp-vetur-format-default-formatter-js "none")
+;; (setq lsp-vetur-validation-template nil)
 
 (add-to-list 'auto-mode-alist '("\\.vue" . vue-mode))
 
-(add-hook 'vue-mode-hook #'prettier-js-mode)
+;; (add-hook 'vue-mode-hook #'prettier-js-mode)
 (add-hook 'vue-mode-hook #'lsp)
 
 
@@ -1247,14 +1249,14 @@
 (require 'rjsx-mode)
 (ensure-package 'tide)
 (require 'tide)
-(ensure-package 'prettier-js)
-(require 'prettier-js)
+;; (ensure-package 'prettier-js)
+;; (require 'prettier-js)
 
 
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
 
-(define-key tide-mode-map (kbd "C-c C-i") 'prettier-prettify)
+;; (define-key tide-mode-map (kbd "C-c C-i") 'prettier-prettify)
 
 
 (defun setup-tide-mode ()
@@ -1477,6 +1479,12 @@
 ;; use github markdown for readmes
 (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
 
+(add-hook 'gfm-mode-hook 'flycheck-mode)
+(add-hook 'gfm-mode-hook 'company-mode)
+
+(add-hook 'markdown-mode-hook 'flycheck-mode)
+(add-hook 'markdown-mode-hook 'company-mode)
+
 
 ;; --- docker
 (ensure-package 'docker)
@@ -1637,8 +1645,6 @@
 (ensure-package 'sqlformat)
 (require 'sqlformat)
 (require 'sql)
-
-(add-hook 'sql-mode-hook 'sqlformat-mode)
 
 ;; redefine key
 (define-key sql-mode-map (kbd "C-c C-f") nil)

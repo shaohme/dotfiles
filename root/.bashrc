@@ -72,6 +72,18 @@ if command -v minikube &> /dev/null; then
     source <(minikube completion bash)
 fi
 
+if command -v oc &> /dev/null; then
+    source <(oc completion bash)
+fi
+
+if command -v minishift &> /dev/null; then
+    source <(minishift completion bash)
+fi
+
+if command -v helm &> /dev/null; then
+    source <(helm completion bash)
+fi
+
 if [ -f "$HOME/.cargo/env" ]; then
     source "$HOME/.cargo/env"
 fi
@@ -167,6 +179,14 @@ decode_base64_url() {
 
 decode_jwt(){
    decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
+}
+
+function ocd() {
+    helm template . --set global.image.tag=git-"$@" -f values-local.yaml | oc apply -f -;
+}
+
+function ocdd() {
+    helm template . --set global.image.tag=git-"$@" -f values-debugging.yaml | oc apply -f -;
 }
 
 # Decode JWT header
