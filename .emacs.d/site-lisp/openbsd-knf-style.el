@@ -190,10 +190,6 @@ arglist-cont-nonempty"
 		       ))
     ))
 
-(defun openbsd-set-knf-style ()
-  "Set OpenBSD style in a 'c-mode-common-hook'.
-Or interactively enable it in a buffer."
-  (interactive)
-  (c-add-style "OpenBSD" openbsd-knf-style t))
+(c-add-style "openbsd" openbsd-knf-style)
 
 (provide 'openbsd-knf-style)
