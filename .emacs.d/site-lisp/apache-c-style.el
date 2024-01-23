@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(defconst apache-c-gnu-indent-args '("-i4" "-npsl" "-di0" "-br" "-nce" "-d0" "-cli0" "-npcs" "-nfc1" "-nut") "Arguments for gnu indent program")
+(defconst apache-c-gnu-indent-options '("-i4" "-npsl" "-di0" "-br" "-nce" "-d0" "-cli0" "-npcs" "-nfc1" "-nut") "Arguments for gnu indent program")
 
 (defconst apache-c-style
   '(

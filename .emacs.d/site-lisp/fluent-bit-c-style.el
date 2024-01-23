@@ -59,7 +59,13 @@ Example:
 (defconst fluent-bit-c-style--defaults
   '((fill-column . 90)))
 
+;; -nbbo is the prettiest when line breaking
+(defconst fluent-bit-c-style--gnu-indent-options
+  '("-l90" "-nbbo"))
+
 (defconst fluent-bit-c-style (asoc-merge apache-c-style fluent-bit-c-style--defaults))
+
+(defconst fluent-bit-c-gnu-indent-options (append apache-c-gnu-indent-options fluent-bit-c-style--gnu-indent-options))
 
 (c-add-style "fluent-bit-c" fluent-bit-c-style)
 
