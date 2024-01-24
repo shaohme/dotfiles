@@ -69,5 +69,6 @@ Example:
 
 (c-add-style "fluent-bit-c" fluent-bit-c-style)
 
+
 (provide 'fluent-bit-c-style)
 ;;; fluent-bit-c-style.el ends here
