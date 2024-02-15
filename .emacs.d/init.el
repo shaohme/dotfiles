@@ -17,6 +17,7 @@
 		         (not (string-suffix-p file-var ".el")))
 	    (add-to-list 'load-path file-var)))))
 
+
 ;; load local development packages
 (maybe-load-dir-recursively (expand-file-name "site-lisp" user-emacs-directory))
 (maybe-load-dir-recursively (expand-file-name "~/dev/flymake-yamllint"))
@@ -33,7 +34,6 @@
 
 
 (defvar emacs-host-local (expand-file-name (format "local-%s.el" (system-name)) user-emacs-directory))
-(defvar emacs-org-shared (expand-file-name "org-shared.el" user-emacs-directory))
 (defvar emacs-shared (expand-file-name "shared.el" user-emacs-directory))
 (defvar emacs-secrets (expand-file-name "secrets.el" user-emacs-directory))
 (defvar emacs-host-custom (expand-file-name (format "custom-%s.el" (system-name)) user-emacs-directory))
@@ -902,8 +902,8 @@ temporarily reverses the meaning of this variable."
 (require 'consult-imenu)
 (require 'consult-register)
 (require 'consult-kmacro)
-(require 'consult-org)
 (require 'consult-dir)
+(require 'consult-org)
 
 ;; disable preview for now. even though its a major feature, its also
 ;; annoying, and causes emacs to load major modes when previewing,
@@ -991,7 +991,6 @@ temporarily reverses the meaning of this variable."
 (require 'flymake)
 (require 'flymake-proselint)
 
-
 (defun init-tabulated-buffer()
   "TODO: Ugly hack to sort flymake buffer by severity."
   (when (derived-mode-p 'flymake-diagnostics-buffer-mode)
@@ -1067,8 +1066,7 @@ temporarily reverses the meaning of this variable."
 (require 'org-chef)
 
 
-(load-file emacs-org-shared)
-
+(load-file (expand-file-name "org-shared.el" user-emacs-directory))
 (require 'org-shared)
 
 
@@ -1810,7 +1808,7 @@ there is no current file, eval the current buffer."
 
 ;; flymake is not populated with all relevant paths during startup
 ;; so we set it manually
-(setq elisp-flymake-byte-compile-load-path load-path)
+;; (setq elisp-flymake-byte-compile-load-path load-path)
 
 (add-hook 'emacs-lisp-mode-hook #'init-elisp-mode)
 (add-hook 'emacs-lisp-mode-hook #'flymake-mode)
