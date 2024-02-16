@@ -2352,10 +2352,11 @@ there is no current file, eval the current buffer."
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jinja\\'" . web-mode))
 
 
-(setq web-mode-markup-indent-offset 4)
-(setq web-mode-css-indent-offset 4)
+(setq web-mode-markup-indent-offset 2)
+(setq web-mode-css-indent-offset 2)
 (setq web-mode-code-indent-offset 4)
 (setq web-mode-enable-auto-pairing t)
 (setq web-mode-enable-auto-closing t)
@@ -2367,10 +2368,17 @@ there is no current file, eval the current buffer."
 (setq web-mode-enable-current-element-highlight t)
 (setq web-mode-enable-current-column-highlight t)
 (setq web-mode-engines-alist '(("php"    . "\\.phtml\\'")
-                               ("blade"  . "\\.blade\\.")))
+                               ("blade"  . "\\.blade\\.")
+                               ("django"  . "\\.jinja\\'")))
 
-(add-hook 'web-mode-hook #'rainbow-mode)
-(add-hook 'web-mode-hook #'flymake-mode)
+
+(defun init-web-mode-hook()
+  (setq standard-indent 2)
+  (setq tab-width 2))
+
+;; (add-hook 'web-mode-hook #'rainbow-mode)
+;; (add-hook 'web-mode-hook #'flymake-mode)
+(add-hook 'web-mode-hook #'init-web-mode-hook)
 
 
 ;; only needed because of php-mode
