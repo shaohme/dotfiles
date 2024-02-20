@@ -85,7 +85,7 @@
                                 (mediawiki . "melpa")
                                 (consult-dir . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat org-tidy numpydoc consult-dir mediawiki org-chef org-gtd org-contrib importmagic flymake-eldev go-dlv))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat org-tidy numpydoc consult-dir mediawiki org-chef org-gtd org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -331,11 +331,11 @@ With argument, do this that many times."
                         "COMMIT_EDITMSG\\'"
                         ".*-autoloads\\.el\\'"
                         "[/\\]\\.elpa/"
-			"/tmp/"
-			"/su:"
-			"/sudo:"
-			"/ssh:"
-			(concat package-user-dir "/.*-autoloads\\.el\\'")))
+                        "/tmp/"
+                        "/su:"
+                        "/sudo:"
+                        "/ssh:"
+                        (concat package-user-dir "/.*-autoloads\\.el\\'")))
 
 ;; have list of recent files
 (recentf-mode t)
@@ -640,6 +640,9 @@ during reading."
 (define-key ibuffer-mode-map (kbd "M-o") #'my-other-window)
 
 
+(require 'vcard)
+
+
 ;; --- which-key mode
 ;; show keybindings in popup when typing
 (require 'which-key)
@@ -907,10 +910,12 @@ temporarily reverses the meaning of this variable."
 
 ;; disable preview for now. even though its a major feature, its also
 ;; annoying, and causes emacs to load major modes when previewing,
-;; which might include LSP etc. making it slow
-(setq consult-preview-key nil)
+;; which might include LSP etc. making it slow.
+;;
+;;
+;; (setq consult-preview-key nil)
 
-(setq consult-narrow-key "<")
+;; (setq consult-narrow-key "<")
 
 (setq xref-show-xrefs-function #'consult-xref)
 (setq xref-show-definitions-function #'consult-xref)
@@ -946,7 +951,7 @@ temporarily reverses the meaning of this variable."
 
 ;; `basic' is added to as fallback
 (setq completion-styles '(orderless basic))
-(setq completion-category-defaults nil)
+;; (setq completion-category-defaults nil)
 (setq completion-ignore-case t)
 (setq read-file-name-completion-ignore-case t)
 (setq read-buffer-completion-ignore-case t)
@@ -3278,75 +3283,9 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 (require 'transient)
 
-(transient-define-prefix cc/isearch-menu ()
-  "isearch Menu"
-  [["Edit Search String"
-    ("e"
-     "Edit the search string (recursive)"
-     isearch-edit-string
-     :transient nil)
-    ("w"
-     "Pull next word or character word from buffer"
-     isearch-yank-word-or-char
-     :transient nil)
-    ("s"
-     "Pull next symbol or character from buffer"
-     isearch-yank-symbol-or-char
-     :transient nil)
-    ("l"
-     "Pull rest of line from buffer"
-     isearch-yank-line
-     :transient nil)
-    ("y"
-     "Pull string from kill ring"
-     isearch-yank-kill
-     :transient nil)
-    ("t"
-     "Pull thing from buffer"
-     isearch-forward-thing-at-point
-     :transient nil)]
+(require 'cc-isearch-menu)
 
-   ["Replace"
-    ("q"
-     "Start ‘query-replace’"
-     isearch-query-replace
-     :if-nil buffer-read-only
-     :transient nil)
-    ("x"
-     "Start ‘query-replace-regexp’"
-     isearch-query-replace-regexp
-     :if-nil buffer-read-only
-     :transient nil)]]
-
-  [["Toggle"
-    ("X"
-     "Toggle regexp searching"
-     isearch-toggle-regexp
-     :transient nil)
-    ("S"
-     "Toggle symbol searching"
-     isearch-toggle-symbol
-     :transient nil)
-    ("W"
-     "Toggle word searching"
-     isearch-toggle-word
-     :transient nil)
-    ("F"
-     "Toggle case fold"
-     isearch-toggle-case-fold
-     :transient nil)
-    ("L"
-     "Toggle lax whitespace"
-     isearch-toggle-lax-whitespace
-     :transient nil)]
-
-   ["Misc"
-    ("o"
-     "occur"
-     isearch-occur
-     :transient nil)]])
-
-(define-key isearch-mode-map (kbd "<f3>") 'cc/isearch-menu)
+(define-key isearch-mode-map (kbd "<f3>") 'cc-isearch-menu-transient)
 
 
 (defun my-shrink-window (arg)
