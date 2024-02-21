@@ -2097,7 +2097,7 @@ there is no current file, eval the current buffer."
 (setq shfmt-arguments (list "-i" (format "%d" tab-width)))
 
 (define-key sh-mode-map my-format-kbd #'shfmt-buffer)
-
+(add-hook 'sh-mode-hook #'flymake-mode)
 
 
 ;; --- lua mode
