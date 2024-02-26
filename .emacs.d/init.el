@@ -274,8 +274,13 @@ With argument, do this that many times."
 (defvar my-help-at-point (kbd "C-h .") "Default keybind for showing help at point.")
 (defvar my-comment-kbd (kbd "M-;") "Default keybind for DWIM commenting code.")
 
+
+(defun maybe-delete-trailing-whitespace ()
+  (when (not (derived-mode-p 'fundamental-mode))
+    (delete-trailing-whitespace)))
+
 ;; might as well delete trailing whitespace
-(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(add-hook 'before-save-hook #'maybe-delete-trailing-whitespace)
 
 ;;; --- so-long
 ;;; this mode steps in and disable the intended major mode
