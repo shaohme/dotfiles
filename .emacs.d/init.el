@@ -1075,6 +1075,8 @@ temporarily reverses the meaning of this variable."
 (require 'org-tidy)
 (require 'org-chef)
 
+(setq org-agenda-inhibit-startup t)
+
 
 (load-file (expand-file-name "org-shared.el" user-emacs-directory))
 (require 'org-shared)
@@ -1547,7 +1549,7 @@ temporarily reverses the meaning of this variable."
 (defun my-mu4e-update-index()
   (interactive)
   (message "Updating mu4e index ...")
-  (mu4e-update-index)
+  (mu4e-update-index-nonlazy)
   (revert-buffer nil t t)
   (message "mu4e index updated"))
 
@@ -1565,9 +1567,9 @@ temporarily reverses the meaning of this variable."
   (define-key mu4e-main-mode-map (kbd "q") #'my-mu4e-quit)
   (define-key mu4e-main-mode-map (kbd "g") #'my-mu4e-update-index)
   (add-hook 'mu4e-view-mode-hook #'epa-mail-decrypt)
-  (add-hook 'mu4e-context-changed-hook (lambda ()
-                                         (when (derived-mode-p 'mu4e-main-mode)
-                                           (revert-buffer))))
+  ;; (add-hook 'mu4e-context-changed-hook (lambda ()
+  ;;                                        (when (derived-mode-p 'mu4e-main-mode)
+  ;;                                          (revert-buffer))))
 
   (defun my-mu4e-browse-url-mail (url)
     (if (mu4e-running-p)
@@ -1821,7 +1823,7 @@ there is no current file, eval the current buffer."
 ;; (setq elisp-flymake-byte-compile-load-path load-path)
 
 (add-hook 'emacs-lisp-mode-hook #'init-elisp-mode)
-(add-hook 'emacs-lisp-mode-hook #'flymake-mode)
+;; (add-hook 'emacs-lisp-mode-hook #'flymake-mode)
                                         ;
 ;; nice to have evaluated result next to cursor on eval-*
 (add-hook 'emacs-lisp-mode-hook #'eros-mode)
@@ -2865,6 +2867,20 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (add-hook 'elfeed-new-entry-hook
           (elfeed-make-tagger :before "2 weeks ago"
                               :remove 'unread))
+;; ((nil "^\\s-*(\\(transient-define-\\(?:argument\\|\\(?:in\\|pre\\|suf\\)fix\\)\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
+;; SECTION cppp
+;;; -- a section
+
+(setq imenu-generic-expression '(("Sections"  "^\\?SECTION +\\(\\w+\\b\\)" 1)
+                                 ("Sections" "^;;;? ---?\\(.+\\)" 1)
+ (nil "^\\s-*(\\(transient-define-\\(?:argument\\|\\(?:in\\|pre\\|suf\\)fix\\)\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
+ (nil "^\\s-*(\\(cl-def\\(?:generic\\|ine-compiler-macro\\|m\\(?:acro\\|ethod\\)\\|subst\\|un\\)\\|def\\(?:advice\\|generic\\|ine-\\(?:advice\\|compil\\(?:ation-mode\\|er-macro\\)\\|derived-mode\\|g\\(?:\\(?:eneric\\|lobal\\(?:\\(?:ized\\)?-minor\\)\\)-mode\\)\\|inline\\|m\\(?:ethod-combination\\|inor-mode\\|odify-macro\\)\\|s\\(?:etf-expander\\|keleton\\)\\)\\|m\\(?:acro\\|ethod\\)\\|s\\(?:etf\\|ubst\\)\\|un\\*?\\)\\|ert-deftest\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
+ (nil "^\\s-*(\\(def\\(?:\\(?:ine-obsolete-function-\\)?alias\\)\\)\\s-+'\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
+ (#1="Variables" "^\\s-*(\\(def\\(?:c\\(?:onst\\(?:ant\\)?\\|ustom\\)\\|ine-symbol-macro\\|parameter\\)\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
+ (#1# "^\\s-*(defvar\\(?:-local\\)?\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)[[:space:]
+]+[^)]" 1)
+ ("Types" "^\\s-*(\\(cl-def\\(?:struct\\|type\\)\\|def\\(?:class\\|face\\|group\\|ine-\\(?:condition\\|error\\|widget\\)\\|package\\|struct\\|t\\(?:\\(?:hem\\|yp\\)e\\)\\)\\)\\s-+'?\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)))
+
 
 
 
