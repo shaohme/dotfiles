@@ -832,6 +832,8 @@ temporarily reverses the meaning of this variable."
 ;; Support a slightly more idiomatic quit binding in re-builder
 (define-key reb-mode-map (kbd "C-c C-k") 'reb-quit)
 
+(setq reb-re-syntax 'string)
+
 
 ;; --- eldoc
 (require 'eldoc)
@@ -1814,6 +1816,9 @@ there is no current file, eval the current buffer."
 (defun init-elisp-mode()
   ;; (face-remap-add-relative 'default :height 0.8)
   (setq mode-name "ELisp")
+  ;; add sections. `imenu-generic-expression' is buffer local.
+  ;; FIXME: create proper category instead of multiple "Sections" -prefixed entries.
+  (add-to-list 'imenu-generic-expression '("Sections" "^;;;? ---?\\(.+\\)" 1))
   (make-local-variable 'hippie-expand-try-functions-list)
   (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol-partially t)
   (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol t ))
@@ -2867,21 +2872,6 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (add-hook 'elfeed-new-entry-hook
           (elfeed-make-tagger :before "2 weeks ago"
                               :remove 'unread))
-;; ((nil "^\\s-*(\\(transient-define-\\(?:argument\\|\\(?:in\\|pre\\|suf\\)fix\\)\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
-;; SECTION cppp
-;;; -- a section
-
-(setq imenu-generic-expression '(("Sections"  "^\\?SECTION +\\(\\w+\\b\\)" 1)
-                                 ("Sections" "^;;;? ---?\\(.+\\)" 1)
- (nil "^\\s-*(\\(transient-define-\\(?:argument\\|\\(?:in\\|pre\\|suf\\)fix\\)\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
- (nil "^\\s-*(\\(cl-def\\(?:generic\\|ine-compiler-macro\\|m\\(?:acro\\|ethod\\)\\|subst\\|un\\)\\|def\\(?:advice\\|generic\\|ine-\\(?:advice\\|compil\\(?:ation-mode\\|er-macro\\)\\|derived-mode\\|g\\(?:\\(?:eneric\\|lobal\\(?:\\(?:ized\\)?-minor\\)\\)-mode\\)\\|inline\\|m\\(?:ethod-combination\\|inor-mode\\|odify-macro\\)\\|s\\(?:etf-expander\\|keleton\\)\\)\\|m\\(?:acro\\|ethod\\)\\|s\\(?:etf\\|ubst\\)\\|un\\*?\\)\\|ert-deftest\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
- (nil "^\\s-*(\\(def\\(?:\\(?:ine-obsolete-function-\\)?alias\\)\\)\\s-+'\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
- (#1="Variables" "^\\s-*(\\(def\\(?:c\\(?:onst\\(?:ant\\)?\\|ustom\\)\\|ine-symbol-macro\\|parameter\\)\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
- (#1# "^\\s-*(defvar\\(?:-local\\)?\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)[[:space:]
-]+[^)]" 1)
- ("Types" "^\\s-*(\\(cl-def\\(?:struct\\|type\\)\\|def\\(?:class\\|face\\|group\\|ine-\\(?:condition\\|error\\|widget\\)\\|package\\|struct\\|t\\(?:\\(?:hem\\|yp\\)e\\)\\)\\)\\s-+'?\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)))
-
-
 
 
 (defface important-elfeed-entry
