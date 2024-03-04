@@ -83,9 +83,11 @@
                                 ;; stable version incompatible with >27.2
                                 (inflections . "melpa")
                                 (mediawiki . "melpa")
-                                (consult-dir . "melpa")))
+                                (consult-dir . "melpa")
+                                (d-mode . "melpa")
+                                (haxe-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat org-tidy numpydoc consult-dir mediawiki org-chef org-gtd org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat org-tidy numpydoc consult-dir mediawiki org-chef org-gtd org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -1760,6 +1762,7 @@ Ticket IDs should be separated with whitespaces."
 (setq eglot-server-programs (delq (assoc '(python-mode python-ts-mode) eglot-server-programs) eglot-server-programs))
 (setq eglot-server-programs (delq (assoc '(c-mode c-ts-mode c++-mode c++-ts-mode) eglot-server-programs) eglot-server-programs))
 
+(add-to-list 'eglot-server-programs (list '(f90-mode) "fortls" "--notify_init" "--nthreads=4"))
 (add-to-list 'eglot-server-programs (list '(toml-ts-mode) "taplo-full" "lsp" "stdio" "--colors" "never"))
 
 (add-to-list 'eglot-server-programs (list '(c-mode c-ts-mode c++-mode c++-ts-mode) "clangd" "--limit-results=900" "--completion-style=detailed" (format "-j=%d" (num-processors)) "--header-insertion=never" "--header-insertion-decorators=false" "--pch-storage=memory"))
@@ -2366,7 +2369,7 @@ there is no current file, eval the current buffer."
 (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.jinja\\'" . web-mode))
