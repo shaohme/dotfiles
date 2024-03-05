@@ -1764,6 +1764,7 @@ Ticket IDs should be separated with whitespaces."
 
 (add-to-list 'eglot-server-programs (list '(f90-mode) "fortls" "--notify_init" "--nthreads=4"))
 (add-to-list 'eglot-server-programs (list '(toml-ts-mode) "taplo-full" "lsp" "stdio" "--colors" "never"))
+(add-to-list 'eglot-server-programs (list '(nxml-mode) "lemminx"))
 
 (add-to-list 'eglot-server-programs (list '(c-mode c-ts-mode c++-mode c++-ts-mode) "clangd" "--limit-results=900" "--completion-style=detailed" (format "-j=%d" (num-processors)) "--header-insertion=never" "--header-insertion-decorators=false" "--pch-storage=memory"))
 (add-to-list 'eglot-server-programs
