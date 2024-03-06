@@ -3104,6 +3104,10 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (setq-default ada-xref-backend 'eglot)
 
 
+;; --- haxe mode
+
+(require 'haxe-mode)
+
 
 (require 'treesit)
 
