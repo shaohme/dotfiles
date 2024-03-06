@@ -3095,6 +3095,15 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (add-to-list 'auto-mode-alist '("\\.rest*\\'" . restclient-mode))
 
 
+;; --- ada mode
+
+(require 'ada-mode)
+
+(setq-default ada-face-backend 'none)
+(setq-default ada-indent-backend 'none)
+(setq-default ada-xref-backend 'eglot)
+
+
 
 (require 'treesit)
 
