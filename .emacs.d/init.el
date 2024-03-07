@@ -1081,6 +1081,8 @@ temporarily reverses the meaning of this variable."
 
 (setq org-agenda-inhibit-startup t)
 
+(load-file (expand-file-name "init-org.el" user-emacs-directory))
+(require 'init-org)
 
 (load-file (expand-file-name "org-shared.el" user-emacs-directory))
 (require 'org-shared)
