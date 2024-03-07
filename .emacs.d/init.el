@@ -87,7 +87,7 @@
                                 (d-mode . "melpa")
                                 (haxe-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat org-tidy numpydoc consult-dir mediawiki org-chef org-gtd org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat org-tidy numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -168,10 +168,10 @@
 
 (setq max-mini-window-height 0.40)
 
-(defvar-local my-saves-directory-path (expand-file-name "saves" user-emacs-directory))
+(defvar-local my/saves-directory-path (expand-file-name "saves" user-emacs-directory))
 
-(make-directory my-saves-directory-path t)
-(setq backup-directory-alist `(("." . ,my-saves-directory-path)))
+(make-directory my/saves-directory-path t)
+(setq backup-directory-alist `(("." . ,my/saves-directory-path)))
 
 
 (require 'cus-edit)
@@ -221,11 +221,11 @@ With argument, do this that many times."
 (require 'window)
 ;;; windows
 
-(defun my-other-window (count &optional all-frames interactive)
+(defun my/other-window (count &optional all-frames interactive)
   (interactive "p\ni\np")
   (other-window count all-frames interactive))
 
-(define-key global-map (kbd "M-o") #'my-other-window)
+(define-key global-map (kbd "M-o") #'my/other-window)
 (define-key global-map (kbd "<f9>") #'window-toggle-side-windows)
 (define-key global-map (kbd "s-[") #'(lambda () (interactive)(shrink-window 2)))
 (define-key global-map (kbd "s-]") #'(lambda () (interactive)(enlarge-window 2)))
@@ -269,12 +269,12 @@ With argument, do this that many times."
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 
 
-(defvar my-format-kbd (kbd "C-c TAB") "Default keybind for formatting buffers.")
-(defvar my-compile-kbd (kbd "C-c C-c") "Default keybind for compiling program.")
-;; (defvar my-lsp-code-actions-kbd (kbd "C-c e a") "Default keybind for LSP code actions.")
-;; (defvar my-lsp-restart-kbd (kbd "C-c e r") "Default keybind for LSP restart.")
-(defvar my-help-at-point (kbd "C-h .") "Default keybind for showing help at point.")
-(defvar my-comment-kbd (kbd "M-;") "Default keybind for DWIM commenting code.")
+(defvar my/format-kbd (kbd "C-c TAB") "Default keybind for formatting buffers.")
+(defvar my/compile-kbd (kbd "C-c C-c") "Default keybind for compiling program.")
+;; (defvar my/lsp-code-actions-kbd (kbd "C-c e a") "Default keybind for LSP code actions.")
+;; (defvar my/lsp-restart-kbd (kbd "C-c e r") "Default keybind for LSP restart.")
+(defvar my/help-at-point (kbd "C-h .") "Default keybind for showing help at point.")
+(defvar my/comment-kbd (kbd "M-;") "Default keybind for DWIM commenting code.")
 
 
 (defun maybe-delete-trailing-whitespace ()
@@ -295,7 +295,7 @@ With argument, do this that many times."
 ;;; --- makefile
 (require 'make-mode)
 
-(define-key makefile-mode-map my-comment-kbd #'comment-dwim)
+(define-key makefile-mode-map my/comment-kbd #'comment-dwim)
 (define-key makefile-mode-map (kbd "C-M-i") #'completion-at-point)
 
 (add-to-list 'auto-mode-alist '("Makefile.*" . makefile-mode))
@@ -315,10 +315,10 @@ With argument, do this that many times."
                                    vc-ignore-dir-regexp
                                    tramp-file-name-regexp))
 
-(defvar my-tramp-auto-save-directory (expand-file-name "tramp-auto-save" user-emacs-directory))
-(make-directory my-tramp-auto-save-directory t)
+(defvar my/tramp-auto-save-directory (expand-file-name "tramp-auto-save" user-emacs-directory))
+(make-directory my/tramp-auto-save-directory t)
 
-(setq tramp-auto-save-directory my-tramp-auto-save-directory)
+(setq tramp-auto-save-directory my/tramp-auto-save-directory)
 
 ;;; make TRAMP reuse ssh controlmaster
 (setq tramp-ssh-controlmaster-options (concat "-o ControlPath=~/.ssh/master-%%r-at-%%h-%%p "
@@ -417,7 +417,7 @@ With argument, do this that many times."
 (setq dictionary-port 2628)
 (setq dictionary-default-dictionary "!")
 
-(defun my-help-at-pt (&optional arg)
+(defun my/help-at-pt (&optional arg)
   (interactive "P")
   (let ((res (display-local-help arg)))
     (if (string-match "No local help at point" res)
@@ -430,7 +430,7 @@ With argument, do this that many times."
 ;; save bookmarks to file after 1 is added
 (setq bookmark-save-flag 1)
 
-(defun my-bookmark-set ()
+(defun my/bookmark-set ()
   "Overwrite a given bookmark.
 Use `completing-read' to make it easier overwriting existing
 bookmarks. Like when updating the same bookmark multiple times
@@ -440,7 +440,7 @@ during reading."
     (bookmark-set-internal nil chosen 'overwrite)))
 
 
-(define-key global-map [remap bookmark-set] 'my-bookmark-set)
+(define-key global-map [remap bookmark-set] 'my/bookmark-set)
 
 
 ;; --- hippie-expand
@@ -556,17 +556,33 @@ during reading."
 
 (require 'image-mode)
 
-(defun my-image-mode-print-size()
+(defun my/image-mode-print-size()
   (interactive)
   (message "Size: %s" (image-display-size (image-get-display-property) t)))
 
-(defun my-image-mode-quit()
+(defun my/first-image-position()
+  ;; FIXME: quick hack to get image at cursor for image mode. `point'
+  ;; have been observed to be at values like 7685
+  (goto-char 1))
+
+(defun my/image-mode-quit()
   (interactive)
   (quit-window t nil))
 
+(defun my/image-increase-size()
+  (interactive)
+  (let ((pos (my/first-image-position)))
+    (image-increase-size nil pos)))
 
-(define-key image-mode-map (kbd "i p") #'my-image-mode-print-size)
-(define-key image-mode-map (kbd "q") #'my-image-mode-quit)
+(defun my/image-decrease-size()
+  (interactive)
+  (let ((pos (my/first-image-position)))
+    (image-decrease-size nil pos)))
+
+(define-key image-mode-map (kbd "p") #'my/image-mode-print-size)
+(define-key image-mode-map (kbd "+") #'my/image-increase-size)
+(define-key image-mode-map (kbd "-") #'my/image-decrease-size)
+(define-key image-mode-map (kbd "q") #'my/image-mode-quit)
 
 
 (require 'pulsar nil t)
@@ -579,7 +595,7 @@ during reading."
           move-to-window-line-top-bottom
           reposition-window
           bookmark-jump
-          my-other-window
+          my/other-window
           other-window
           delete-window
           delete-other-windows
@@ -644,7 +660,7 @@ during reading."
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; otherwise its bound to `ibuffer-visit-buffer-1-window'
-(define-key ibuffer-mode-map (kbd "M-o") #'my-other-window)
+(define-key ibuffer-mode-map (kbd "M-o") #'my/other-window)
 
 
 (require 'vcard)
@@ -763,7 +779,7 @@ during reading."
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 
-(defun my-ediff-quit-manually (reverse-default-keep-variants)
+(defun my/ediff-quit-manually (reverse-default-keep-variants)
   "Finish an Ediff session and exit Ediff.
 Unselects the selected difference, if any, restores the read-only and modified
 flags of the compared file buffers, kills Ediff buffers for this session
@@ -784,7 +800,7 @@ temporarily reverses the meaning of this variable."
 	  (set-buffer ctl-buf)
 	  (ediff-really-quit reverse-default-keep-variants))))
 
-(defun my-ediff-startup-hook-setup ()
+(defun my/ediff-startup-hook-setup ()
   ;; move to the first difference
   (ediff-next-difference)
   ;; move to the merged buffer window
@@ -792,25 +808,25 @@ temporarily reverses the meaning of this variable."
   ;; (winum-select-window-by-number 3)
   ;; save the windows layout
   (window-configuration-to-register ?a)
-  (local-set-key (kbd "q") #'my-ediff-quit-manually))
+  (local-set-key (kbd "q") #'my/ediff-quit-manually))
 
-(add-hook 'ediff-startup-hook #'my-ediff-startup-hook-setup)
+(add-hook 'ediff-startup-hook #'my/ediff-startup-hook-setup)
 
 ;; ediff does not seem to combine both A and B buffers into C when
 ;; typing '+' . found this fix to manually combine the two diff
 ;; instead and copy to C without <<<<<<<<< and >>>>>>>> headers too
-(defun my-ediff-copy-both-to-c ()
+(defun my/ediff-copy-both-to-c ()
   (interactive)
   (ediff-copy-diff ediff-current-difference nil 'C nil
                    (concat
                     (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
                     (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
 
-(defun my-add-d-to-ediff-mode-map () (define-key ediff-mode-map "d" 'my-ediff-copy-both-to-c))
+(defun my/add-d-to-ediff-mode-map () (define-key ediff-mode-map "d" 'my/ediff-copy-both-to-c))
 
-(add-hook 'ediff-keymap-setup-hook 'my-add-d-to-ediff-mode-map)
+(add-hook 'ediff-keymap-setup-hook 'my/add-d-to-ediff-mode-map)
 
-(defun my-ediff-quit ()
+(defun my/ediff-quit ()
   ;; killing windows sometimes break, ex. in diffs
   ;; (ediff-kill-buffer-carefully ediff-window-A)
   ;; (ediff-kill-buffer-carefully ediff-window-B)
@@ -822,7 +838,7 @@ temporarily reverses the meaning of this variable."
   (ediff-kill-buffer-carefully "*Ediff Control Panel*"))
 
 ;; try cleanup after ediff windows
-(add-hook 'ediff-quit-hook #'my-ediff-quit)
+(add-hook 'ediff-quit-hook #'my/ediff-quit)
 
 ;; removed diff-goto-source from default keymap.
 ;; interferes with buffer navigation key
@@ -1088,10 +1104,6 @@ temporarily reverses the meaning of this variable."
 (require 'org-shared)
 
 
-(setq-default org-gtd-update-ack "3.0.0")
-
-(require 'org-gtd)
-
 (setq org-refile-targets '(("gtd.org" :maxlevel . 3)
                            ("someday.org" :level . 1)
                            ("tickler.org" :maxlevel . 2)))
@@ -1143,7 +1155,7 @@ temporarily reverses the meaning of this variable."
                                "* TODO Reply to \"%a\" %?\n/Entered on/ %U")))
 
 
-(defun my-org-export-plantuml (current-backend)
+(defun my/org-export-plantuml (current-backend)
   "Try export all plantuml files before exporting org files."
   (interactive)
   (let* ((file-name (buffer-file-name))
@@ -1155,7 +1167,7 @@ temporarily reverses the meaning of this variable."
       (message "Done exporting plantuml in dir %s" parent-dir))))
 
 (when (> emacs-major-version 28)
-  (add-to-list 'org-export-before-parsing-functions #'my-org-export-plantuml))
+  (add-to-list 'org-export-before-parsing-functions #'my/org-export-plantuml))
 
 (defun make-capture-frame (&optional capture-url)
   "Create a new frame and run org-capture."
@@ -1164,29 +1176,31 @@ temporarily reverses the meaning of this variable."
 
 
 ;; --- org-agenda
-(setq org-agenda-custom-commands
-      '(("f" occur-tree "TODO")
-        ("g" "Get Things Done (GTD)"
-         ((agenda ""
-                  ((org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'deadline))
-                   (org-deadline-warning-days 0)))
-          (todo "TODO"
-                ((org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'deadline))
-                 (org-agenda-prefix-format "  %i %-12:c [%e] ")
-                 (org-agenda-overriding-header "\nTasks\n")))
-          (agenda nil
-                  ((org-agenda-entry-types '(:deadline))
-                   (org-agenda-format-date "")
-                   (org-deadline-warning-days 7)
-                   (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
-                   (org-agenda-overriding-header "\nDeadlines")))
-          (tags-todo "inbox"
-                     ((org-agenda-prefix-format "  %?-12t% s")
-                      (org-agenda-overriding-header "\nInbox\n")))
-          ))))
+
+;; NOTICE. using `tags-todo' prevents `org-agenda-goto-today' and similar
+;; (setq org-agenda-custom-commands '(("n" "Agenda and all TODOs"
+;;   ((agenda "")
+;;    (alltodo "")))))
+;; (setq org-agenda-custom-commands
+;;       '(("f" occur-tree "TODO")
+;;         ("g" "Get Things Done (GTD)"
+;;          ((agenda ""
+;;                   ((org-agenda-skip-function
+;;                     '(org-agenda-skip-entry-if 'deadline))
+;;                    (org-deadline-warning-days 0)))
+;;           (agenda nil
+;;                   ((org-agenda-entry-types '(:deadline))
+;;                    (org-agenda-format-date "")
+;;                    (org-deadline-warning-days 7)
+;;                    (org-agenda-skip-function
+;;                     '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
+;;                    (org-agenda-overriding-header "\nDeadlines")))
+;;           (todo "TODO"
+;;                 ((org-agenda-skip-function
+;;                   '(org-agenda-skip-entry-if 'deadline))
+;;                  (org-agenda-prefix-format "  %i %-12:c [%e] ")
+;;                  (org-agenda-overriding-header "\nTasks\n")))
+;;           ))))
 
 
 (define-key org-mode-map (kbd "M-.") 'org-open-at-point)
@@ -1248,10 +1262,10 @@ temporarily reverses the meaning of this variable."
 (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
 (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
 
-(defun my-org-confirm-babel-evaluate (lang body)
+(defun my/org-confirm-babel-evaluate (lang body)
   (not (string= lang "plantuml")))
 
-(setq org-confirm-babel-evaluate #'my-org-confirm-babel-evaluate)
+(setq org-confirm-babel-evaluate #'my/org-confirm-babel-evaluate)
 
 ;;; seems relevant for now to jump more easily.
 (define-key org-mode-map (kbd "M-n") #'org-next-visible-heading)
@@ -1415,7 +1429,7 @@ temporarily reverses the meaning of this variable."
 (setq smtpmail-stream-type 'starttls)
 (setq smtpmail-smtp-service 587)
 
-(defun my-gnus-mailto-compose-mail (mailto-url)
+(defun my/gnus-mailto-compose-mail (mailto-url)
   "Parse MAILTO-URL and start composing mail."
   (require 'gnus)
   (unless gnus-active-hashtb (gnus))
@@ -1551,7 +1565,7 @@ temporarily reverses the meaning of this variable."
                               :query "date:today..now AND NOT maildir:/Junk/ AND NOT maildir:/Trash/ AND NOT maildir:/Spam/"
                               :key ?t)))
 
-(defun my-mu4e-quit()
+(defun my/mu4e-quit()
   (interactive)
   (if (and (derived-mode-p 'mu4e-main-mode))
       (progn
@@ -1559,7 +1573,7 @@ temporarily reverses the meaning of this variable."
         (delete-frame (selected-frame)))
     (mu4e-quit)))
 
-(defun my-mu4e-update-index()
+(defun my/mu4e-update-index()
   (interactive)
   (message "Updating mu4e index ...")
   (mu4e-update-index-nonlazy)
@@ -1577,27 +1591,27 @@ temporarily reverses the meaning of this variable."
   (define-key mu4e-headers-mode-map (kbd "M") #'mu4e-headers-mark-all)
   (define-key mu4e-headers-mode-map (kbd "N") #'mu4e-headers-mark-all-unread-read)
   (define-key mu4e-compose-mode-map (kbd "M-q") #'fill-paragraph)
-  (define-key mu4e-main-mode-map (kbd "q") #'my-mu4e-quit)
-  (define-key mu4e-main-mode-map (kbd "g") #'my-mu4e-update-index)
+  (define-key mu4e-main-mode-map (kbd "q") #'my/mu4e-quit)
+  (define-key mu4e-main-mode-map (kbd "g") #'my/mu4e-update-index)
   (add-hook 'mu4e-view-mode-hook #'epa-mail-decrypt)
   ;; (add-hook 'mu4e-context-changed-hook (lambda ()
   ;;                                        (when (derived-mode-p 'mu4e-main-mode)
   ;;                                          (revert-buffer))))
 
-  (defun my-mu4e-browse-url-mail (url)
+  (defun my/mu4e-browse-url-mail (url)
     (if (mu4e-running-p)
         (browse-url-mail url)
       (user-error "mu4e not running. cannot compose mailto")))
 
 
-  (defun my-mu4e-update-index-if-running ()
+  (defun my/mu4e-update-index-if-running ()
     (interactive)
     (if (mu4e-running-p)
         (mu4e-update-index-nonlazy)))
 
 
 
-  (defun my-switch-to-or-open-mu4e ()
+  (defun my/switch-to-or-open-mu4e ()
     (interactive)
     (let (mu4e-main-buffer (get-buffer "*mu4e-main*"))
       (if mu4e-main-buffer
@@ -1607,7 +1621,7 @@ temporarily reverses the meaning of this variable."
   (require 'mu4e-draft)
 
 
-  (add-hook 'mu4e-compose-mode-hook #'my-message-compose-hook)
+  (add-hook 'mu4e-compose-mode-hook #'my/message-compose-hook)
 
   ;; enable bbdb in needed packages
   (bbdb-initialize 'message 'mu4e))
@@ -1662,14 +1676,14 @@ temporarily reverses the meaning of this variable."
 
 ;;; using `magit-bury-buffer-function' makes magit bury all magit
 ;;; buffers.
-(defun my-magit-kill-buffers ()
+(defun my/magit-kill-buffers ()
   "Restore window configuration and kill all Magit buffers."
   (interactive)
   (let ((buffers (magit-mode-get-buffers)))
     (magit-restore-window-configuration)
     (mapc #'kill-buffer buffers)))
 
-(define-key magit-status-mode-map [remap magit-mode-bury-buffer] #'my-magit-kill-buffers)
+(define-key magit-status-mode-map [remap magit-mode-bury-buffer] #'my/magit-kill-buffers)
 
 (add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t)
 
@@ -1762,20 +1776,20 @@ Ticket IDs should be separated with whitespaces."
 ;; only trigger send-changes on save for now. otherwise flymake seems
 ;; to check whenever changes are made despite this should have been
 ;; disabled using `flymake-no-changes-timeout'
-(setq eglot-send-changes-idle-time nil)
+;; (setq eglot-send-changes-idle-time nil)
 
 ;;; reconnect if lsp server shuts down
-(setq eglot-autoreconnect nil)
+;; (setq eglot-autoreconnect nil)
 ;;; shutdown lsp servers when not needed
 (setq eglot-autoshutdown t)
 (setq eglot-server-programs (delq (assoc '(python-mode python-ts-mode) eglot-server-programs) eglot-server-programs))
-(setq eglot-server-programs (delq (assoc '(c-mode c-ts-mode c++-mode c++-ts-mode) eglot-server-programs) eglot-server-programs))
+(setq eglot-server-programs (delq (assoc '(c-mode c++-mode) eglot-server-programs) eglot-server-programs))
 
 (add-to-list 'eglot-server-programs (list '(f90-mode) "fortls" "--notify_init" "--nthreads=4"))
 (add-to-list 'eglot-server-programs (list '(toml-ts-mode) "taplo-full" "lsp" "stdio" "--colors" "never"))
 (add-to-list 'eglot-server-programs (list '(nxml-mode) "lemminx"))
 
-(add-to-list 'eglot-server-programs (list '(c-mode c-ts-mode c++-mode c++-ts-mode) "clangd" "--limit-results=900" "--completion-style=detailed" (format "-j=%d" (num-processors)) "--header-insertion=never" "--header-insertion-decorators=false" "--pch-storage=memory"))
+;; (add-to-list 'eglot-server-programs (list '(c-mode c++-mode) "clangd" "--limit-results=900" "--completion-style=detailed" (format "-j=%d" (num-processors)) "--header-insertion=never" "--header-insertion-decorators=false" "--pch-storage=memory"))
 (add-to-list 'eglot-server-programs
              `((python-mode python-ts-mode) . ,(eglot-alternatives
                                                 '(("jedi-language-server" :initializationOptions (:diagnostics (:enable nil)
@@ -1785,7 +1799,7 @@ Ticket IDs should be separated with whitespaces."
                                                   ("pylsp")))))
 
 
-(defun my-restart-eglot-server ()
+(defun my/restart-eglot-server ()
   (interactive)
   (eglot-shutdown (eglot-current-server))
   (eglot-ensure))
@@ -1901,10 +1915,10 @@ there is no current file, eval the current buffer."
 ;;; -- c-sharp mode
 (require 'csharp-mode)
 
-(defun my-csharp-mode-hook ()
+(defun my/csharp-mode-hook ()
   (electric-pair-local-mode 1))
 
-(add-hook 'csharp-mode-hook #'my-csharp-mode-hook)
+(add-hook 'csharp-mode-hook #'my/csharp-mode-hook)
 
 
 
@@ -1918,7 +1932,7 @@ there is no current file, eval the current buffer."
 ;; --- C/C++ modes
 (require 'cc-mode)
 (require 'cc-vars)
-(require 'c-ts-mode)
+;; (require 'c-ts-mode)
 (require 'flymake-cppcheck)
 (require 'openbsd-knf-style)
 (require 'apache-c-style)
@@ -1930,8 +1944,8 @@ there is no current file, eval the current buffer."
 ;;; -sob = delete excess blank lines
 (setq gnu-indent-options '("-kr" "-nut" "-sc" "-sob" "-psl"))
 
-(setq-default c-ts-mode-indent-style 'k&r)
-(setq-default c-ts-mode-indent-offset 4)
+;; (setq-default c-ts-mode-indent-style 'k&r)
+;; (setq-default c-ts-mode-indent-offset 4)
 
 
 (require 'cl-lib)
@@ -1952,8 +1966,8 @@ there is no current file, eval the current buffer."
           ;; likely in a fluent-bit project. use gnu indent for formatting instead
           (progn
             (setq-local gnu-indent-options fluent-bit-c-gnu-indent-options)
-            (define-key c-ts-base-mode-map my-format-kbd #'gnu-indent-buffer))
-        (define-key c-ts-base-mode-map my-format-kbd #'eglot-format))
+            (define-key c-ts-base-mode-map my/format-kbd #'gnu-indent-buffer))
+        (define-key c-ts-base-mode-map my/format-kbd #'eglot-format))
 
       (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t))
       ;; manually add eglot to flymake to have it not replace
@@ -2001,9 +2015,9 @@ there is no current file, eval the current buffer."
           ;; likely in a fluent-bit project. use gnu indent for formatting instead
           (progn
             (setq-local gnu-indent-options fluent-bit-c-gnu-indent-options)
-            (define-key c-mode-map my-format-kbd #'gnu-indent-buffer)
+            (define-key c-mode-map my/format-kbd #'gnu-indent-buffer)
             (c-set-style "fluent-bit-c"))
-        (define-key c-mode-map my-format-kbd #'eglot-format))
+        (define-key c-mode-map my/format-kbd #'eglot-format))
 
       (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t))
       ;; manually add eglot to flymake to have it not replace
@@ -2040,31 +2054,31 @@ there is no current file, eval the current buffer."
     (forward-line (1- current-line))))
 
 
-(defun my-indent-whole-buffer ()
+(defun my/indent-whole-buffer ()
   (interactive)
   (delete-trailing-whitespace)
   (indent-region (point-min) (point-max) nil))
 
 
-(define-key c++-mode-map my-comment-kbd #'comment-dwim)
-(define-key c++-ts-mode-map my-comment-kbd #'comment-dwim)
-(define-key c++-ts-mode-map my-format-kbd #'eglot-format)
+(define-key c++-mode-map my/comment-kbd #'comment-dwim)
+;; (define-key c++-ts-mode-map my/comment-kbd #'comment-dwim)
+;; (define-key c++-ts-mode-map my/format-kbd #'eglot-format)
 
-(define-key c-mode-map my-format-kbd #'gnu-indent-buffer)
-(define-key c-mode-map my-compile-kbd #'recompile)
-(define-key c-mode-map my-comment-kbd #'comment-dwim)
+(define-key c-mode-map my/format-kbd #'gnu-indent-buffer)
+(define-key c-mode-map my/compile-kbd #'recompile)
+(define-key c-mode-map my/comment-kbd #'comment-dwim)
 
 
 (add-hook 'c-mode-hook #'init-c-common-mode)
 (add-hook 'c-mode-hook #'flymake-mode)
-(add-hook 'c-ts-mode-hook #'init-c-ts-common-mode)
-(add-hook 'c-ts-mode-hook #'flymake-mode)
+;; (add-hook 'c-ts-mode-hook #'init-c-ts-common-mode)
+;; (add-hook 'c-ts-mode-hook #'flymake-mode)
 (add-hook 'c++-mode-hook #'init-c-common-mode)
 (add-hook 'c++-mode-hook #'flymake-mode)
-(add-hook 'c++-ts-mode-hook #'init-c-ts-common-mode)
-(add-hook 'c++-ts-mode-hook #'flymake-mode)
+;; (add-hook 'c++-ts-mode-hook #'init-c-ts-common-mode)
+;; (add-hook 'c++-ts-mode-hook #'flymake-mode)
 
-(define-key c-mode-map my-compile-kbd #'recompile)
+(define-key c-mode-map my/compile-kbd #'recompile)
 
 
 
@@ -2121,7 +2135,7 @@ there is no current file, eval the current buffer."
 ;; eglot + bash-language-server doesn't seem to support format buffer
 (setq shfmt-arguments (list "-i" (format "%d" tab-width)))
 
-(define-key sh-mode-map my-format-kbd #'shfmt-buffer)
+(define-key sh-mode-map my/format-kbd #'shfmt-buffer)
 (add-hook 'sh-mode-hook #'flymake-mode)
 
 
@@ -2177,7 +2191,7 @@ there is no current file, eval the current buffer."
 
 (define-key python-mode-map (kbd "C-c C-n") #'numpydoc-generate)
 (define-key python-mode-map (kbd "C-c b") #'python-shell-send-buffer)
-(define-key python-mode-map my-format-kbd #'ruff-format-buffer)
+(define-key python-mode-map my/format-kbd #'ruff-format-buffer)
 
 
 (add-hook 'python-ts-mode-hook #'pyvenv-auto-run)
@@ -2187,7 +2201,7 @@ there is no current file, eval the current buffer."
 
 (define-key python-ts-mode-map (kbd "C-c C-n") #'numpydoc-generate)
 (define-key python-ts-mode-map (kbd "C-c b") 'python-shell-send-buffer)
-(define-key python-ts-mode-map my-format-kbd #'ruff-format-buffer)
+(define-key python-ts-mode-map my/format-kbd #'ruff-format-buffer)
 
 (add-to-list 'auto-mode-alist '("\\.py[iw]?\\'" . python-ts-mode))
 
@@ -2248,7 +2262,7 @@ there is no current file, eval the current buffer."
 (add-to-list 'auto-mode-alist '("\\.json" . json-ts-mode))
 (add-to-list 'auto-mode-alist '(".*/waybar/config.*" . json-ts-mode))
 
-(define-key json-ts-mode-map my-format-kbd #'python-json-tool-format-buffer)
+(define-key json-ts-mode-map my/format-kbd #'python-json-tool-format-buffer)
 (define-key json-ts-mode-map (kbd "C-c C-j") #'jq-interactively)
 
 (add-hook 'json-ts-mode-hook #'init-json-mode)
@@ -2279,7 +2293,7 @@ there is no current file, eval the current buffer."
 (add-hook 'yaml-ts-mode-hook #'flymake-mode)
 (add-hook 'yaml-ts-mode-hook #'highlight-indentation-mode)
 
-(define-key yaml-ts-mode-map my-format-kbd #'yamlfmt-buffer)
+(define-key yaml-ts-mode-map my/format-kbd #'yamlfmt-buffer)
 
 (add-to-list 'auto-mode-alist '("\\.yamllint" . yaml-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.clang-format" . yaml-ts-mode))
@@ -2342,7 +2356,7 @@ there is no current file, eval the current buffer."
   (shell-command-on-region beg end "tidy -xml -q -i" (current-buffer) t "*tidy-errors*" t))
 
 
-(define-key nxml-mode-map my-format-kbd #'xml-format-buffer)
+(define-key nxml-mode-map my/format-kbd #'xml-format-buffer)
 (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.scxml\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.xsd\\'" . nxml-mode))
@@ -2466,12 +2480,12 @@ there is no current file, eval the current buffer."
               js2-mode-show-strict-warnings nil)
 
 
-(defun my-js2-mode-hook()
+(defun my/js2-mode-hook()
   ;; no not start eglot when remote. often starts annoying LSP
   ;; backends that wants multiple tramp connections.
   (if (not (file-remote-p default-directory))
       (eglot-ensure)))
-(add-hook 'js2-mode-hook #'my-js2-mode-hook)
+(add-hook 'js2-mode-hook #'my/js2-mode-hook)
 
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
@@ -2610,7 +2624,7 @@ there is no current file, eval the current buffer."
 (require 'sql)
 
 ;; redefine key
-(define-key sql-mode-map my-format-kbd 'sqlformat-buffer)
+(define-key sql-mode-map my/format-kbd 'sqlformat-buffer)
 
 ;; sql-mode pretty much requires your psql to be uncustomised from stock settings
 (add-to-list 'sql-postgres-options "--no-psqlrc")
@@ -2688,7 +2702,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (load-file (expand-file-name "init-erc.el" user-emacs-directory))
 (require 'init-erc)
 
-(defun my-erc-channel-users (&rest ignore)
+(defun my/erc-channel-users (&rest ignore)
   "Display how many users (and ops) the current channel has."
   (let ((users 0) (ops 0))
     (if (not (hash-table-p erc-channel-users))
@@ -2704,7 +2718,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
         (_          (format "[%s (@%s)] " users ops))))))
 
 
-(defun my-erc-ignore-highlight (msg)
+(defun my/erc-ignore-highlight (msg)
   "Don't highlight me when these things happen."
   (let ((message (s-trim-left msg))
         (channel (or (erc-default-target) "")))
@@ -2715,17 +2729,17 @@ Fix for the above hasn't been released as of Emacs 25.2."
               ,(concat "*** " channel ": topic set by")))))
 
 
-(defun my-erc-log-matches (match-type nickuserhost message)
+(defun my/erc-log-matches (match-type nickuserhost message)
   "Log matches to extra buffer, unless they are annoying."
-  (unless (my-erc-ignore-highlight message)
+  (unless (my/erc-ignore-highlight message)
     (erc-log-matches match-type nickuserhost message)))
 
 
-(defun my-beep-on-match (match-type _nickuserhost message)
+(defun my/beep-on-match (match-type _nickuserhost message)
   "Beep and mark the frame as urgent on highlight."
   (let ((visible-bell nil))
-    (unless (my-erc-ignore-highlight message)
-      ;; (my-mark-emacs-urgent)
+    (unless (my/erc-ignore-highlight message)
+      ;; (my/mark-emacs-urgent)
       (erc-beep-on-match match-type _nickuserhost message))))
 
 
@@ -2735,7 +2749,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
 ;; beep on all highlights
 (setq erc-beep-match-types '(current-nick keyword))
 (setq erc-keyword-highlight-type 'message)
-(setq erc-prompt (lambda () (format "%s%s ⟩" (my-erc-channel-users) (buffer-name))))
+(setq erc-prompt (lambda () (format "%s%s ⟩" (my/erc-channel-users) (buffer-name))))
 ;;; hide stuff
 (setq erc-track-exclude-types '("JOIN" "KICK" "NICK" "PART" "QUIT" "MODE" "333" "353"))
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
@@ -2754,8 +2768,8 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (setq erc-log-write-after-send t)
 (setq erc-save-queries-on-quit t)
 
-(add-hook 'erc-text-matched-hook #'my-erc-log-matches)
-(add-hook 'erc-text-matched-hook #'my-beep-on-match)
+(add-hook 'erc-text-matched-hook #'my/erc-log-matches)
+(add-hook 'erc-text-matched-hook #'my/beep-on-match)
 
 
 ;;; --- eshell
@@ -2894,7 +2908,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (push '(important important-elfeed-entry)
       elfeed-search-face-alist)
 
-(defun my-elfeed-quit()
+(defun my/elfeed-quit()
   (interactive)
   (if (and (derived-mode-p 'elfeed-search-mode))
       (progn
@@ -2911,20 +2925,20 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (add-hook 'elfeed-search-mode-hook #'init-elfeed-search-mode)
 
 
-(defun my-elfeed-filter-first()
+(defun my/elfeed-filter-first()
   (interactive)
   (elfeed-search-set-filter "@2-week-ago +unread +first"))
 
-(defun my-elfeed-filter-second()
+(defun my/elfeed-filter-second()
   (interactive)
   (elfeed-search-set-filter "@2-week-ago +unread +second"))
 
 
 (define-key elfeed-show-mode-map (kbd "w") #'elfeed-show-yank)
-(define-key elfeed-show-mode-map (kbd "q") #'my-elfeed-quit)
-(define-key elfeed-search-mode-map (kbd "1") #'my-elfeed-filter-first)
-(define-key elfeed-search-mode-map (kbd "2") #'my-elfeed-filter-second)
-(define-key elfeed-search-mode-map (kbd "q") #'my-elfeed-quit)
+(define-key elfeed-show-mode-map (kbd "q") #'my/elfeed-quit)
+(define-key elfeed-search-mode-map (kbd "1") #'my/elfeed-filter-first)
+(define-key elfeed-search-mode-map (kbd "2") #'my/elfeed-filter-second)
+(define-key elfeed-search-mode-map (kbd "q") #'my/elfeed-quit)
 (define-key elfeed-search-mode-map (kbd "g") #'elfeed-update)
 (define-key elfeed-search-mode-map (kbd "G") #'elfeed-search-update--force)
 (define-key elfeed-search-mode-map (kbd "d") #'elfeed-youtube-dl)
@@ -2998,7 +3012,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 (require 'caddyfile-mode)
 
-(defun my-caddyfile-hook ()
+(defun my/caddyfile-hook ()
   (setq-local tab-width 4)  ;; Default: 8
   (setq-local indent-tabs-mode nil))  ;; Default: t
 
@@ -3013,9 +3027,9 @@ Fix for the above hasn't been released as of Emacs 25.2."
     (goto-char start)
     (forward-line (1- current-line))))
 
-(define-key caddyfile-mode-map my-format-kbd #'caddy-format-buffer)
+(define-key caddyfile-mode-map my/format-kbd #'caddy-format-buffer)
 
-(add-hook 'caddyfile-mode-hook #'my-caddyfile-hook)
+(add-hook 'caddyfile-mode-hook #'my/caddyfile-hook)
 
 
 
@@ -3092,7 +3106,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
 ;; TOML
 (require 'toml-ts-mode)
 
-(define-key toml-ts-mode-map my-format-kbd #'eglot-format-buffer)
+(define-key toml-ts-mode-map my/format-kbd #'eglot-format-buffer)
 
 
 (add-hook 'toml-ts-mode-hook #'eglot-ensure)
@@ -3155,7 +3169,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
      ))
 
 
-(defun my-treesit-install-language-grammar-all()
+(defun my/treesit-install-language-grammar-all()
   (interactive)
   (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist)))
 
@@ -3325,31 +3339,31 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (define-key isearch-mode-map (kbd "<f3>") 'cc-isearch-menu-transient)
 
 
-(defun my-shrink-window (arg)
+(defun my/shrink-window (arg)
   (interactive "p")
   (if (not (shrink-window arg t))
       (shrink-window arg nil)))
-(defun my-enlarge-window (arg)
+(defun my/enlarge-window (arg)
   (interactive "p")
   (if (not (enlarge-window arg t))
       (enlarge-window arg nil)))
 
 
-(transient-define-prefix my-transient-window ()
+(transient-define-prefix my/transient-window ()
   "Window navigation transient"
   :transient-suffix 'transient--do-stay
   [["Zoom"
     ("g" "in" text-scale-increase "in")
     ("l" "out" text-scale-decrease "out")]
    ["Resize"
-    ("[" "shrink" my-shrink-window "8")
-    ("]" "enlarge" my-enlarge-window "8")]
+    ("[" "shrink" my/shrink-window "8")
+    ("]" "enlarge" my/enlarge-window "8")]
    ["Main"
     ("<f10>" "quit" transient-quit-all)]
    ])
 
 
-(defun my-split-window-sensibly (&optional window)
+(defun my/split-window-sensibly (&optional window)
   "replacement `split-window-sensibly' function which prefers
 vertical splits"
   (interactive)
@@ -3361,14 +3375,14 @@ vertical splits"
              (with-selected-window window
                (split-window-below))))))
 
-(setq split-window-preferred-function #'my-split-window-sensibly)
+(setq split-window-preferred-function #'my/split-window-sensibly)
 
 
 (when (getenv "IS_GENTOO")
   (require 'flymake-pkgcheck nil t)
   (add-hook 'ebuild-mode-hook #'flymake-pkgcheck-setup))
 
-(global-set-key (kbd "<f10>") 'my-transient-window)
+(global-set-key (kbd "<f10>") 'my/transient-window)
 
 
 ;;; init.el ends here
