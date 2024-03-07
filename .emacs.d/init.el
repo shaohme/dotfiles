@@ -1116,15 +1116,6 @@ temporarily reverses the meaning of this variable."
 (mapc (lambda (elt) (add-to-list 'org-agenda-text-search-extra-files elt))
       (find-lisp-find-files (expand-file-name org-directory) "\\.org"))
 
-(setq org-id-extra-files 'org-agenda-text-search-extra-files)
-
-(org-id-update-id-locations)
-
-(defun org-id-complete-link ()
-  "Create an id: link using completion."
-  (concat "id:" (org-id-get-with-outline-path-completion org-refile-targets)))
-
-(org-link-set-parameters "id" :complete #'org-id-complete-link)
 
 ;; set timestamp when finishing
 (setq org-log-done 'time)
@@ -1283,6 +1274,22 @@ temporarily reverses the meaning of this variable."
 
 (when (display-graphic-p)
   (add-hook 'org-mode-hook #'org-download-enable))
+
+
+(setq org-id-extra-files 'org-agenda-text-search-extra-files)
+
+;; opens agenda files in buffers. if this happens 'too early' during
+;; startup not all modes are loaded with them and have to be manually
+;; reloaded again.
+;;
+;; (org-id-update-id-locations)
+
+(defun org-id-complete-link ()
+  "Create an id: link using completion."
+  (concat "id:" (org-id-get-with-outline-path-completion org-refile-targets)))
+
+(org-link-set-parameters "id" :complete #'org-id-complete-link)
+
 
 
 ;; --- bbdb
