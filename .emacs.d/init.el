@@ -1771,6 +1771,8 @@ Ticket IDs should be separated with whitespaces."
 (add-hook 'prog-mode-hook #'yas-minor-mode)
 
 
+;; --- eglot
+
 (require 'eglot)
 
 ;; only trigger send-changes on save for now. otherwise flymake seems
@@ -1929,7 +1931,7 @@ there is no current file, eval the current buffer."
 (setq gdb-many-windows t)
 
 
-;; --- C/C++ modes
+;; --- c/c++ modes
 (require 'cc-mode)
 (require 'cc-vars)
 ;; (require 'c-ts-mode)
@@ -2062,7 +2064,7 @@ there is no current file, eval the current buffer."
 
 (define-key c++-mode-map my/comment-kbd #'comment-dwim)
 ;; (define-key c++-ts-mode-map my/comment-kbd #'comment-dwim)
-;; (define-key c++-ts-mode-map my/format-kbd #'eglot-format)
+(define-key c++-mode-map my/format-kbd #'eglot-format)
 
 (define-key c-mode-map my/format-kbd #'gnu-indent-buffer)
 (define-key c-mode-map my/compile-kbd #'recompile)
