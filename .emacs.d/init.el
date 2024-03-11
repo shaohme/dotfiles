@@ -87,7 +87,7 @@
                                 (d-mode . "melpa")
                                 (haxe-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat org-tidy numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode forge gnuplot))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -1092,7 +1092,7 @@ temporarily reverses the meaning of this variable."
 (require 'ox-reveal)
 (require 'flymake-languagetool)
 ;; to remove clutter when viewing org files with lots of PROPERTIES
-(require 'org-tidy)
+;; (require 'org-tidy)
 (require 'org-chef)
 
 (setq org-agenda-inhibit-startup t)
@@ -1103,10 +1103,6 @@ temporarily reverses the meaning of this variable."
 (load-file (expand-file-name "org-shared.el" user-emacs-directory))
 (require 'org-shared)
 
-
-(setq org-refile-targets '(("gtd.org" :maxlevel . 3)
-                           ("someday.org" :level . 1)
-                           ("tickler.org" :maxlevel . 2)))
 
 (setq org-agenda-default-appointment-duration 60)
 (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "NEXT(n)" "|" "DONE(d)" "CANCELLED(c)")))
@@ -1282,7 +1278,7 @@ temporarily reverses the meaning of this variable."
 (add-hook 'org-mode-hook #'auto-fill-mode)
 (add-hook 'org-mode-hook #'corfu-mode)
 (add-hook 'org-mode-hook #'electric-pair-mode)
-(add-hook 'org-mode-hook #'org-tidy-mode)
+;; (add-hook 'org-mode-hook #'org-tidy-mode)
 ;; source block can be huge
 (add-hook 'org-mode-hook #'org-fold-hide-block-all)
 
@@ -1327,7 +1323,7 @@ temporarily reverses the meaning of this variable."
 
 
 
-;; --- gnus, mu4e, notmuch, mailing and messaging
+;; --- gnus, notmuch, mailing and messaging
 (require 'gnus-agent)
 (require 'gnus-cache)
 (require 'gnus-icalendar)
@@ -1496,6 +1492,8 @@ temporarily reverses the meaning of this variable."
 (advice-add 'mml-attach-file :around #'mml-attach-file--go-to-eob)
 
 
+;; --- mu4e
+
 (require 'mu4e nil t)
 (require 'mu4e-icalendar nil t)
 (require 'mu4e-contrib nil t)
@@ -1527,14 +1525,7 @@ temporarily reverses the meaning of this variable."
 (setq mu4e-trash-folder "/local/Trash")
 (setq mu4e-refile-folder "/local/Archive")
 (setq mu4e-drafts-folder "/local/Drafts")
-;;; WARNING if not defaulted to a context, or nil, starting emacs as
-;;; daemon could stall because mu4e will ask user for input to select
-;;; context.
-;;;
-;;; However, if no context is select, and multiple frames
-;;; are open emacs could prompt for context in a different window than
-;;; the one popped-up by a mailto: link
-(setq mu4e-context-policy 'pick-first)
+(setq mu4e-context-policy 'ask-if-none)
 (setq mu4e-compose-context-policy 'ask-if-none)
 (setq mu4e-user-agent-string nil)
 
@@ -1581,8 +1572,23 @@ temporarily reverses the meaning of this variable."
   (message "mu4e index updated"))
 
 
+(defun my/message-compose-hook ()
+  (let ((msg mu4e-compose-parent-message))
+    (when msg
+      (let ((msg-list-id (mu4e-message-field msg :list)) ; probably always string
+            (msg-list-post (mu4e-message-field msg :list-post)) ; sometimes (cons(cons))
+            (msg-to (mu4e-message-field msg :to)))
+        (when (or msg-list-id msg-list-post)
+          ;; reply inline when responding to lists
+          (setq-local message-cite-reply-position 'traditional))
+        (when (or (and msg-to (or (seq-find (lambda (elt) (string-match-p "\.*openbsd.org" (car (cdr elt)))) msg-to)
+                                  (seq-find (lambda (elt) (string-match-p "\.*opensmtpd.org" (car (cdr elt)))) msg-to)))
+                  (and msg-list-id (string-match-p "\.*gnu.org" msg-list-id))
+                  (and msg-list-post (seq-find (lambda (elt) (string-match-p "\.*gnu.org" (car (cdr elt)))) msg-list-post)))
+          (setq-local message-fill-column 72)
+          (setq-local fill-column 72))))))
 
-
+(org-save-all-org-buffers)
 
 (when (require 'mu4e nil 'noerror)
   (load-file (expand-file-name "init-mu4e.el" user-emacs-directory))
@@ -1666,6 +1672,7 @@ temporarily reverses the meaning of this variable."
 ;; basic tools for handling git files and git repos
 (require 'magit)
 (require 'magit-extras)
+(require 'forge)
 
 (setq magit-blame-echo-style 'margin)
 ;; don't require save buffers before visiting git repo
@@ -2541,6 +2548,9 @@ there is no current file, eval the current buffer."
 
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-ts-mode))
 
+(define-key dockerfile-mode-map my/format-kbd #'eglot-format)
+(define-key dockerfile-ts-mode-map my/format-kbd #'eglot-format)
+
 
 ;; --- nginx mode
 (require 'nginx-mode)
@@ -2631,23 +2641,12 @@ there is no current file, eval the current buffer."
 ;; sql-mode pretty much requires your psql to be uncustomised from stock settings
 (add-to-list 'sql-postgres-options "--no-psqlrc")
 
-(setq sql-connection-alist
-      '((localhost-unix
-         (sql-product 'postgres)
-         (sql-server "/run/postgresql")
-         (sql-user "postgres")
-         (sql-password "")
-         (sql-database "postgres")
-         (sql-port 5432))
-        (pool-b
-         (sql-product 'mysql)
-         (sql-server "1.2.3.4")
-         (sql-user "me")
-         (sql-password "mypassword")
-         (sql-database "thedb")
-         (sql-port 3307))))
-
 (setq-default sql-input-ring-file-name (locate-user-emacs-file ".sqli_history"))
+
+(load-file (expand-file-name "init-sql.el" user-emacs-directory))
+(require 'init-sql)
+
+
 
 (defun sanityinc/fix-postgres-prompt-regexp ()
   "Work around https://debbugs.gnu.org/cgi/bugreport.cgi?bug=22596.
@@ -3188,6 +3187,12 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 
 
+;; --- gnuplot
+(require 'gnuplot)
+
+(setq auto-mode-alist (append '(("\\.gp$" . gnuplot-mode)) auto-mode-alist))
+
+
 (require 'etc-sudoers-mode)
 
 
@@ -3326,6 +3331,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
   (add-hook 'Info-mode-hook #'olivetti-mode)
   (add-hook 'nxml-mode-hook #'olivetti-mode)
   (add-hook 'latex-mode-hook #'olivetti-mode)
+  (add-hook 'gnuplot-mode-hook #'olivetti-mode)
   (spacious-padding-mode t))
 
 
