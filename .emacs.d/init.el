@@ -1525,7 +1525,8 @@ temporarily reverses the meaning of this variable."
 (setq mu4e-trash-folder "/local/Trash")
 (setq mu4e-refile-folder "/local/Archive")
 (setq mu4e-drafts-folder "/local/Drafts")
-(setq mu4e-context-policy 'ask-if-none)
+;; if not `pick-first' mu4e will ask for context on first startup
+(setq mu4e-context-policy 'pick-first)
 (setq mu4e-compose-context-policy 'ask-if-none)
 (setq mu4e-user-agent-string nil)
 
