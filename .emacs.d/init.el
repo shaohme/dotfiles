@@ -2095,6 +2095,7 @@ there is no current file, eval the current buffer."
 
 
 (define-key c++-mode-map my/comment-kbd #'comment-dwim)
+(define-key c++-mode-map my/compile-kbd #'recompile)
 ;; (define-key c++-ts-mode-map my/comment-kbd #'comment-dwim)
 (define-key c++-mode-map my/format-kbd #'eglot-format)
 
