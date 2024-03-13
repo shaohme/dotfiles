@@ -87,7 +87,7 @@
                                 (d-mode . "melpa")
                                 (haxe-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode forge gnuplot))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -262,11 +262,6 @@ With argument, do this that many times."
 ;; make switching buffers more consistent
 (setq switch-to-buffer-obey-display-actions t)
 
-
-(require 'simple)
-
-;;; add indicators for newlines on both sides
-(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 
 
 (defvar my/format-kbd (kbd "C-c TAB") "Default keybind for formatting buffers.")
@@ -514,6 +509,17 @@ during reading."
 ;; show arrows and markes on margin to indicate buffer length
 (setq indicate-buffer-boundaries 'left)
 
+;; --- visual-line
+
+(require 'simple)
+
+;;; add indicators for newlines on both sides
+(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+
+(diminish 'visual-line-mode)
+
+
+
 ;; --- winner
 ;; mostly for undo window changes when accidentally hitting C-x [01]
 (require 'winner)
@@ -536,6 +542,9 @@ during reading."
 (define-key winner-mode-map (kbd "<f11>") 'winner-undo)
 (define-key winner-mode-map (kbd "<f12>") 'winner-redo)
 
+
+;; --- activities
+(require 'activities)
 
 ;; name buffers nicer names if identical
 (require 'uniquify)
@@ -561,8 +570,15 @@ during reading."
   (message "Size: %s" (image-display-size (image-get-display-property) t)))
 
 (defun my/first-image-position()
-  ;; FIXME: quick hack to get image at cursor for image mode. `point'
-  ;; have been observed to be at values like 7685
+  ;; some buffers showing image like plantuml preview buffers have
+  ;; cursors located elsewhere than the rendered image. this makes
+  ;; some image manipulation commands like `image-increase-size' not
+  ;; work unless the cursor is moved to the image position. this
+  ;; function tries to guess the image position.
+  ;;
+  ;; FIXME: quick
+  ;; hack to get image at cursor for image mode. `point' have been
+  ;; observed to be at values like 7685
   (goto-char 1))
 
 (defun my/image-mode-quit()
@@ -579,6 +595,7 @@ during reading."
   (let ((pos (my/first-image-position)))
     (image-decrease-size nil pos)))
 
+;; workout bugs, and get rid of the default "i" prefix.
 (define-key image-mode-map (kbd "p") #'my/image-mode-print-size)
 (define-key image-mode-map (kbd "+") #'my/image-increase-size)
 (define-key image-mode-map (kbd "-") #'my/image-decrease-size)
@@ -853,7 +870,10 @@ temporarily reverses the meaning of this variable."
 (setq reb-re-syntax 'string)
 
 
+
 ;; --- eldoc
+(setq-default eldoc-minor-mode-string nil)
+
 (require 'eldoc)
 
 ;; do not expand minibuffer when docstring are longer
@@ -861,6 +881,7 @@ temporarily reverses the meaning of this variable."
 (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
 
 (global-eldoc-mode 1)
+
 
 
 ;; --- isearch, grep and replace
@@ -1077,7 +1098,7 @@ temporarily reverses the meaning of this variable."
 ;; because, of course
 (require 'org)
 (require 'org-contrib)
-;; (require 'org-refile)
+(require 'org-refile)
 (require 'org-protocol)
 (require 'org-capture)
 (require 'org-agenda)
@@ -1106,6 +1127,10 @@ temporarily reverses the meaning of this variable."
 
 (setq org-agenda-default-appointment-duration 60)
 (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "NEXT(n)" "|" "DONE(d)" "CANCELLED(c)")))
+;; have `org-todo' show up in minibuffer instead of a separate buffer
+;; and windows. if not in minibuffer org-todo will rearrange windows
+;; until todo state is chosen, which is annoying.
+(setq org-use-fast-todo-selection 'expert)
 (setq org-default-notes-file (expand-file-name "notes.org" org-directory))
 ;; show full link
 (setq org-link-descriptive nil)
@@ -1129,26 +1154,24 @@ temporarily reverses the meaning of this variable."
 (setq org-log-done 'time)
 ;; %? = cursor location
 (setq org-capture-templates '(("i" "Inbox" entry (file "inbox.org")
-                               "* TODO %?\n/Entered on/ %U")
+                               "* TODO %?\n")
                               ("m" "Meeting" entry (file+headline "meetings.org" "Future")
                                "* %? :meeting:\n<%<%Y-%m-%d %a %H:00>>")
                               ("n" "Note" entry  (file "notes.org")
-                               "* Note (%a)\n/Entered on/ %U\n\n%?")
+                               "* Note (%a)\n\n%?")
                               ;; beware changing `key' as its used with bookmarks link in Firefox
                               ("w" "Temp Links from the interwebs" item
                                (file+headline "links.org" "Temporary Links")
-                               "%?\nEntered on %U\n \%i\n %a")
-                              ;; ("w" "Web Capture" entry  (file "notes.org")
-                              ;;  "* Web (%a)\n%i\n%?\n/Entered on/ %U\n\n")
+                               "%?\n \%i\n %a")
                               ("j" "Journal" entry (file+datetree "journal.org")
-                               "* %?\nEntered on %U\n  %i\n  %a")
+                               "* %?\n  %i\n  %a")
                               ("c" "Cookbook" entry (file "cookbook.org")
                                "%(org-chef-get-recipe-from-url)"
                                :empty-lines 1)
                               ("C" "Manual Cookbook" entry (file "cookbook.org")
                                "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n  :prep-time:\n  :cook-time:\n  :ready-in:\n  :END:\n** Ingredients\n   %?\n** Directions\n\n")
                               ("@" "Inbox [mu4e]" entry (file "inbox.org")
-                               "* TODO Reply to \"%a\" %?\n/Entered on/ %U")))
+                               "* TODO Reply to \"%a\" %?\n")))
 
 
 (defun my/org-export-plantuml (current-backend)
@@ -1173,36 +1196,35 @@ temporarily reverses the meaning of this variable."
 
 ;; --- org-agenda
 
-;; NOTICE. using `tags-todo' prevents `org-agenda-goto-today' and similar
-;; (setq org-agenda-custom-commands '(("n" "Agenda and all TODOs"
-;;   ((agenda "")
-;;    (alltodo "")))))
-;; (setq org-agenda-custom-commands
-;;       '(("f" occur-tree "TODO")
-;;         ("g" "Get Things Done (GTD)"
-;;          ((agenda ""
-;;                   ((org-agenda-skip-function
-;;                     '(org-agenda-skip-entry-if 'deadline))
-;;                    (org-deadline-warning-days 0)))
-;;           (agenda nil
-;;                   ((org-agenda-entry-types '(:deadline))
-;;                    (org-agenda-format-date "")
-;;                    (org-deadline-warning-days 7)
-;;                    (org-agenda-skip-function
-;;                     '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
-;;                    (org-agenda-overriding-header "\nDeadlines")))
-;;           (todo "TODO"
-;;                 ((org-agenda-skip-function
-;;                   '(org-agenda-skip-entry-if 'deadline))
-;;                  (org-agenda-prefix-format "  %i %-12:c [%e] ")
-;;                  (org-agenda-overriding-header "\nTasks\n")))
-;;           ))))
+(setq org-agenda-sorting-strategy '((agenda habit-down time-up priority-down category-keep)
+                                    (todo priority-down todo-state-down category-keep)
+                                    (tags priority-down category-keep)
+                                    (search category-keep)))
 
+(defun my/save-org-buffers ()
+  "Save `org-agenda-files' buffers without user confirmation."
+  (interactive)
+  (message "Saving org-agenda-files buffers...")
+  (save-some-buffers t (lambda ()
+                         (seq-some (lambda (x) (string-match x (buffer-file-name))) org-agenda-files)))
+  (message "Saving org-agenda-files buffers... done"))
+
+;; org buffers should save after refile to have changes available to
+;; other programs quickly.
+(advice-add 'org-refile :after (lambda (&rest _)
+                                 (my/save-org-buffers)))
+
+(defun my/org-agenda-quit()
+  "Save org buffers before agenda buries."
+  (interactive)
+  (org-save-all-org-buffers)
+  (org-agenda-quit))
 
 (define-key org-mode-map (kbd "M-.") 'org-open-at-point)
+;; have agenda save buffers after quit to make sure buffers are saved
+;; quickly for other programs to use.
+(define-key org-agenda-mode-map [remap org-agenda-quit] #'my/org-agenda-quit)
 
-;; C-c interferes with many other key bindings.
-;; trying out different prefixes
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c c") 'org-capture)
@@ -1673,7 +1695,6 @@ temporarily reverses the meaning of this variable."
 ;; basic tools for handling git files and git repos
 (require 'magit)
 (require 'magit-extras)
-(require 'forge)
 
 (setq magit-blame-echo-style 'margin)
 ;; don't require save buffers before visiting git repo
@@ -1684,14 +1705,17 @@ temporarily reverses the meaning of this variable."
 
 ;;; using `magit-bury-buffer-function' makes magit bury all magit
 ;;; buffers.
-(defun my/magit-kill-buffers ()
-  "Restore window configuration and kill all Magit buffers."
-  (interactive)
-  (let ((buffers (magit-mode-get-buffers)))
-    (magit-restore-window-configuration)
-    (mapc #'kill-buffer buffers)))
+;; (defun my/magit-kill-buffers ()
+;;   "Restore window configuration and kill all Magit buffers."
+;;   (interactive)
+;;   (let ((buffers (magit-mode-get-buffers)))
+;;     (magit-restore-window-configuration)
+;;     (mapc #'kill-buffer buffers)))
 
-(define-key magit-status-mode-map [remap magit-mode-bury-buffer] #'my/magit-kill-buffers)
+;; (define-key magit-status-mode-map [remap magit-mode-bury-buffer] #'my/magit-kill-buffers)
+
+;; restore previous window setup when burying
+(setq magit-bury-buffer-function #'magit-restore-window-configuration)
 
 (add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t)
 
@@ -3306,6 +3330,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
   (setq olivetti-body-width 1)
   (setq olivetti-minimum-body-width 180)
   (setq olivetti-recall-visual-line-mode-entry-state t)
+  (setq olivetti-lighter "")
   (add-hook 'prog-mode-hook #'olivetti-mode)
   (add-hook 'conf-mode-hook #'olivetti-mode)
   (add-hook 'shell-mode-hook #'olivetti-mode)
