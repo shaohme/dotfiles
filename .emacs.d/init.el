@@ -1973,13 +1973,33 @@ there is no current file, eval the current buffer."
 (require 'fluent-bit-c-style)
 (require 'gnu-indent)
 
+(defconst c-ts-mode--c-or-c++-regexp
+  (eval-when-compile
+    (let ((id "[a-zA-Z_][a-zA-Z0-9_]*") (ws "[ \t]+") (ws-maybe "[ \t]*")
+          (headers '("string" "chrono" "functional" "string_view" "iostream" "map" "unordered_map"
+                     "set" "unordered_set" "vector" "tuple")))
+      (concat "^" ws-maybe "\\(?:"
+              "using"     ws "\\(?:namespace" ws
+              "\\|" id "::"
+              "\\|" id ws-maybe "=\\)"
+              "\\|" "\\(?:inline" ws "\\)?namespace"
+              "\\(:?" ws "\\(?:" id "::\\)*" id "\\)?" ws-maybe "{"
+              "\\|" "class"     ws id
+              "\\(?:" ws "final" "\\)?" ws-maybe "[:{;\n]"
+              "\\|" "struct"     ws id "\\(?:" ws "final" ws-maybe "[:{\n]"
+              "\\|" ws-maybe ":\\)"
+              "\\|" "template"  ws-maybe "<.*?>"
+              "\\|" "#include"  ws-maybe "<" (regexp-opt headers) ">"
+              "\\)"))))
+
 ;;; -nut = no tabs
 ;;; -sc = add * left side of C comment start
 ;;; -sob = delete excess blank lines
 (setq gnu-indent-options '("-kr" "-nut" "-sc" "-sob" "-psl"))
 
 ;; (setq-default c-ts-mode-indent-style 'k&r)
-;; (setq-default c-ts-mode-indent-offset 4)
+;; defaults to '2'
+(setq-default c-ts-mode-indent-offset 4)
 
 
 (require 'cl-lib)
@@ -1987,6 +2007,7 @@ there is no current file, eval the current buffer."
 (defun init-c-ts-common-mode ()
   (setq-local eglot-stay-out-of '(flymake))
   (setq-local flymake-diagnostic-functions nil)
+  (setq-local compile-command "make -C build")
   (let* ((filename (buffer-file-name))
          (dom-tags-file (and filename (locate-dominating-file (file-name-directory filename) "TAGS")))
          (dom-comp-cmd-file (and filename (locate-dominating-file filename "compile_commands.json")))
@@ -2110,13 +2131,16 @@ there is no current file, eval the current buffer."
 ;; (add-hook 'c-ts-mode-hook #'flymake-mode)
 (add-hook 'c++-mode-hook #'init-c-common-mode)
 (add-hook 'c++-mode-hook #'flymake-mode)
-;; (add-hook 'c++-ts-mode-hook #'init-c-ts-common-mode)
-;; (add-hook 'c++-ts-mode-hook #'flymake-mode)
+(add-hook 'c++-ts-mode-hook #'init-c-ts-common-mode)
+(add-hook 'c++-ts-mode-hook #'flymake-mode)
 
 (define-key c-mode-map my/compile-kbd #'recompile)
+(define-key c++-ts-mode-map my/compile-kbd #'recompile)
 
-
-
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c-or-c++-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(CC?\\|HH?\\)\\'" . c++-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.[ch]\\(pp\\|xx\\|\\+\\+\\)\\'" . c++-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(cc\\|hh\\)\\'" . c++-ts-mode))
 
 ;;; protobuf inherits from cc-mode
 (require 'protobuf-mode)
