@@ -1966,7 +1966,7 @@ there is no current file, eval the current buffer."
 ;; --- c/c++ modes
 (require 'cc-mode)
 (require 'cc-vars)
-;; (require 'c-ts-mode)
+(require 'c-ts-mode)
 (require 'flymake-cppcheck)
 (require 'openbsd-knf-style)
 (require 'apache-c-style)
