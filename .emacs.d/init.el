@@ -1116,7 +1116,8 @@ temporarily reverses the meaning of this variable."
 ;; (require 'org-tidy)
 (require 'org-chef)
 
-(setq org-agenda-inhibit-startup t)
+;; usually prefer to see two weeks overview
+(setq org-agenda-span 'fortnight)
 
 (load-file (expand-file-name "init-org.el" user-emacs-directory))
 (require 'init-org)
