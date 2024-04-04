@@ -543,9 +543,6 @@ during reading."
 (define-key winner-mode-map (kbd "<f12>") 'winner-redo)
 
 
-;; --- activities
-(require 'activities)
-
 ;; name buffers nicer names if identical
 (require 'uniquify)
 
@@ -1214,6 +1211,11 @@ temporarily reverses the meaning of this variable."
 ;; other programs quickly.
 (advice-add 'org-refile :after (lambda (&rest _)
                                  (my/save-org-buffers)))
+
+
+(setq org-refile-use-outline-path 'file
+      org-outline-path-complete-in-steps nil)
+
 
 (defun my/org-agenda-quit()
   "Save org buffers before agenda buries."
