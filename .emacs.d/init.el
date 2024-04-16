@@ -88,7 +88,7 @@
                                 (haxe-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo ox-pandoc org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo ox-pandoc org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu catppuccin-theme modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -1038,6 +1038,11 @@ temporarily reverses the meaning of this variable."
 (marginalia-mode t)
 
 (define-key minibuffer-local-map (kbd "M-A") 'marginalia-cycle)
+
+
+
+;; --- activities
+(require 'activities)
 
 
 ;; --- flymake
@@ -2141,15 +2146,16 @@ there is no current file, eval the current buffer."
 
 (setq-default c-ts-mode-indent-style #'my/indent-style)
 
-
-(define-key c++-mode-map my/comment-kbd #'comment-dwim)
-(define-key c++-mode-map my/compile-kbd #'recompile)
-;; (define-key c++-ts-mode-map my/comment-kbd #'comment-dwim)
-(define-key c++-mode-map my/format-kbd #'eglot-format)
-
 (define-key c-mode-map my/format-kbd #'gnu-indent-buffer)
 (define-key c-mode-map my/compile-kbd #'recompile)
 (define-key c-mode-map my/comment-kbd #'comment-dwim)
+
+
+(define-key c++-mode-map my/comment-kbd #'comment-dwim)
+(define-key c++-mode-map my/compile-kbd #'recompile)
+(define-key c++-mode-map my/format-kbd #'eglot-format)
+(define-key c++-ts-mode-map my/format-kbd #'eglot-format)
+
 
 
 (add-hook 'c-mode-hook #'init-c-common-mode)
@@ -3339,7 +3345,8 @@ Fix for the above hasn't been released as of Emacs 25.2."
          ;; (inhibit-switch-frame . t)
          ;; (direction . leftmost)
          )
-        ("\\*\\(Help\\|Apropos\\|eldoc\\).*"
+        ("\\*\\(Apropos\\|eldoc\\).*"
+         ;; Help\\| moved out for now
          (display-buffer-in-side-window)
          (side . bottom)
          ;; (fail)
