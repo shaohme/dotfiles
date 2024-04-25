@@ -92,7 +92,8 @@
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
-  (add-to-list 'package-selected-packages 'spacious-padding))
+  ;; (add-to-list 'package-selected-packages 'spacious-padding)
+  )
 
 ;; allow for built in packages to be upgraded
 (setq package-install-upgrade-built-in t)
@@ -1167,6 +1168,8 @@ temporarily reverses the meaning of this variable."
 ;; %? = cursor location
 (setq org-capture-templates '(("i" "Inbox" entry (file "inbox.org")
                                "* TODO %?\n")
+                              ("e" "Events" entry (file+headline "events.org" "Events")
+                               "* %?\n")
                               ("m" "Meeting" entry (file+headline "meetings.org" "Future")
                                "* %? :meeting:\n<%<%Y-%m-%d %a %H:00>>")
                               ("n" "Note" entry  (file "notes.org")
@@ -1207,6 +1210,13 @@ temporarily reverses the meaning of this variable."
 
 
 ;; --- org-agenda
+
+;; `%b' is appended to have breadcrumbs on TODOs. it helps with
+;; context when reading a large list.
+(setq org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
+                                 (todo . " %i %-12:c %b")
+                                 (tags . " %i %-12:c")
+                                 (search . " %i %-12:c")))
 
 (setq org-agenda-sorting-strategy '((agenda habit-down time-up priority-down category-keep)
                                     (todo priority-down todo-state-down category-keep)
@@ -3370,13 +3380,13 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (global-unset-key (kbd "C-x e"))
 
 (require 'olivetti nil t)
-(require 'spacious-padding nil t)
-(setq-default spacious-padding-widths '( :internal-border-width 7
-                                         :header-line-width 4
-                                         :mode-line-width 6
-                                         :tab-width 4
-                                         :right-divider-width 30
-                                         :scroll-bar-width 8))
+;; (require 'spacious-padding nil t)
+;; (setq-default spacious-padding-widths '( :internal-border-width 7
+;;                                          :header-line-width 4
+;;                                          :mode-line-width 6
+;;                                          :tab-width 4
+;;                                          :right-divider-width 30
+;;                                          :scroll-bar-width 8))
 
 (when (display-graphic-p)
   ;; by enabling tab-bar-mode early workaround rendering "bug" where
@@ -3417,7 +3427,8 @@ Fix for the above hasn't been released as of Emacs 25.2."
   (add-hook 'nxml-mode-hook #'olivetti-mode)
   (add-hook 'latex-mode-hook #'olivetti-mode)
   (add-hook 'gnuplot-mode-hook #'olivetti-mode)
-  (spacious-padding-mode t))
+  ;; (spacious-padding-mode t)
+  )
 
 
 (require 'keycast nil t)
