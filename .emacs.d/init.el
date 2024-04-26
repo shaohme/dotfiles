@@ -980,6 +980,7 @@ temporarily reverses the meaning of this variable."
 (define-key global-map (kbd "M-s r") #'consult-ripgrep)
 (define-key global-map (kbd "M-s s") #'consult-outline)
 (define-key global-map (kbd "M-s m") #'consult-mark)
+(define-key global-map (kbd "M-s i") #'consult-info)
 (define-key global-map (kbd "C-x b") #'consult-buffer)
 (define-key global-map (kbd "C-c h") #'consult-history)
 (define-key global-map (kbd "C-c m") #'consult-mode-command)
@@ -1674,7 +1675,7 @@ temporarily reverses the meaning of this variable."
           (switch-to-buffer mu4e-main-buffer)
         (mu4e))))
 
-  (require 'mu4e-draft)
+  ;; (require 'mu4e-draft)
 
 
   (add-hook 'mu4e-compose-mode-hook #'my/message-compose-hook)
@@ -3355,7 +3356,8 @@ Fix for the above hasn't been released as of Emacs 25.2."
          ;; (inhibit-switch-frame . t)
          ;; (direction . leftmost)
          )
-        ("\\*\\(Apropos\\|eldoc\\).*"
+        ;; Apropos\\| removed
+        ("\\*\\(eldoc\\).*"
          ;; Help\\| moved out for now
          (display-buffer-in-side-window)
          (side . bottom)
