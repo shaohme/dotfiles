@@ -1147,8 +1147,8 @@ temporarily reverses the meaning of this variable."
 ;; until todo state is chosen, which is annoying.
 (setq org-use-fast-todo-selection 'expert)
 (setq org-default-notes-file (expand-file-name "notes.org" org-directory))
-;; show full link
-(setq org-link-descriptive nil)
+;; show full link or not. kept compact because urls are often quite long.
+(setq org-link-descriptive t)
 (setq org-id-link-to-org-use-id t)
 (setq org-agenda-text-search-extra-files nil)
 
@@ -1830,6 +1830,7 @@ Ticket IDs should be separated with whitespaces."
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook #'turn-on-hes-mode)
 (add-hook 'prog-mode-hook #'yas-minor-mode)
+
 
 
 ;; --- eglot
