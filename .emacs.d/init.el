@@ -1164,6 +1164,11 @@ temporarily reverses the meaning of this variable."
 (mapc (lambda (elt) (add-to-list 'org-agenda-text-search-extra-files elt))
       (find-lisp-find-files (expand-file-name org-directory) "\\.org"))
 
+(setq org-file-apps '((auto-mode . emacs)
+                      (directory . emacs)
+                      ("\\.mm\\'" . default)
+                      ("\\.x?html?\\'" . "firefox %s")
+                      ("\\.pdf\\'" . default)))
 
 ;; set timestamp when finishing
 (setq org-log-done 'time)
