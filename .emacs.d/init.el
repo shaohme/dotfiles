@@ -1104,9 +1104,6 @@ temporarily reverses the meaning of this variable."
 (global-set-key (kbd "C-x l l") 'languagetool-set-language)
 
 
-
-
-
 ;; --- org-mode
 ;; because, of course
 (require 'org)
@@ -3398,6 +3395,9 @@ Fix for the above hasn't been released as of Emacs 25.2."
 ;;                                          :scroll-bar-width 8))
 
 (when (display-graphic-p)
+  ;; --- pdf-tools
+  (require 'pdf-tools)
+  (pdf-tools-install t t nil nil)
   ;; by enabling tab-bar-mode early workaround rendering "bug" where
   ;; tab bar is not drawn until frame is resized
   ;; (tab-bar-mode t)
