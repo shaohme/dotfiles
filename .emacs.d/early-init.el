@@ -18,6 +18,8 @@
     (setq-default package-user-dir (locate-user-emacs-file "elpa-debian")))
 (if (string= (getenv "IS_GENTOO") "1")
     (setq-default package-user-dir (locate-user-emacs-file "elpa-gentoo")))
+(if (string= (getenv "IS_VOID") "1")
+    (setq-default package-user-dir (locate-user-emacs-file "elpa-void")))
 
 
 (when (native-comp-available-p)

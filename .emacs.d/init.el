@@ -87,7 +87,7 @@
                                 (haxe-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -329,6 +329,14 @@ With argument, do this that many times."
 (setq tramp-use-ssh-controlmaster-options nil)
 
 (setq tramp-connection-timeout 5)
+
+(connection-local-set-profile-variables
+   'guix-system
+   '((tramp-remote-path . (tramp-own-remote-path))))
+(connection-local-set-profiles
+   '(:application tramp :protocol "sudo" :machine "rw")
+   'guix-system)
+
 
 ;; --- recentf
 (require 'recentf)
@@ -773,6 +781,13 @@ during reading."
 (require 'diredfl)
 (require 'dired-x)
 (require 'image-dired)
+(require 'casual-dired)
+;; (require 'dired-preview)
+
+;; try out. sometimes previewed pictures can be convenient
+;; (dired-preview-global-mode 1)
+
+(define-key dired-mode-map (kbd "C-o") 'casual-dired-tmenu)
 
 ;;; makes `dired-single' obsolete
 ;;;
@@ -1158,8 +1173,10 @@ temporarily reverses the meaning of this variable."
 ;;; during work we most likely also need a Word file
 (setq org-odt-preferred-output-format "doc")
 
-(mapc (lambda (elt) (add-to-list 'org-agenda-text-search-extra-files elt))
-      (find-lisp-find-files (expand-file-name org-directory) "\\.org"))
+(if (file-directory-p (expand-file-name org-directory))
+    (mapc (lambda (elt) (add-to-list 'org-agenda-text-search-extra-files elt))
+          (find-lisp-find-files (expand-file-name org-directory) "\\.org")))
+
 
 (setq org-file-apps '((auto-mode . emacs)
                       (directory . emacs)
@@ -1362,17 +1379,19 @@ temporarily reverses the meaning of this variable."
 (setq bbdb-mua-pop-up-window-size 5)
 
 
-(require 'jinx)
-(setq jinx-languages "en_US en_GB da_DK")
-(global-set-key [remap ispell-word] #'jinx-correct)
-(global-set-key (kbd "C-M-$") #'jinx-languages)
+(require 'jinx nil t)
+(when (fboundp 'jinx-mode)
+  (setq jinx-languages "en_US en_GB da_DK")
+  (global-set-key [remap ispell-word] #'jinx-correct)
+  (global-set-key (kbd "C-M-$") #'jinx-languages)
 
-;; want pink for spelling errors
-(set-face-underline 'jinx-misspelled "#f677e9")
+  ;; want pink for spelling errors
+  (set-face-underline 'jinx-misspelled "#f677e9")
 
-(diminish 'jinx-mode)
+  (diminish 'jinx-mode)
 
-(global-jinx-mode 1)
+  (global-jinx-mode 1))
+
 
 
 
@@ -1839,7 +1858,7 @@ Ticket IDs should be separated with whitespaces."
 
 (require 'eglot)
 
-;; only trigger send-changes on save for now. otherwise flymake seems
+;; only trigger send-changes on save for now. otherwise make seems
 ;; to check whenever changes are made despite this should have been
 ;; disabled using `flymake-no-changes-timeout'
 ;; (setq eglot-send-changes-idle-time nil)
@@ -2000,7 +2019,7 @@ there is no current file, eval the current buffer."
 (require 'cc-mode)
 (require 'cc-vars)
 (require 'c-ts-mode)
-(require 'flymake-cppcheck)
+(require 'flymake-cppcheck nil t)
 (require 'openbsd-knf-style)
 (require 'apache-c-style)
 (require 'fluent-bit-c-style)
@@ -2339,7 +2358,7 @@ there is no current file, eval the current buffer."
 (require 'json-ts-mode)
 
 ;; --- json mode
-(require 'flymake-jsonlint)
+(require 'flymake-jsonlint nil t)
 (require 'jq-mode)
 
 (defun init-json-mode()
@@ -2373,14 +2392,15 @@ there is no current file, eval the current buffer."
 (define-key json-ts-mode-map (kbd "C-c C-j") #'jq-interactively)
 
 (add-hook 'json-ts-mode-hook #'init-json-mode)
-(add-hook 'json-ts-mode-hook #'flymake-jsonlint-setup)
+(if (fboundp 'flymake-jsonlint-setup)
+    (add-hook 'json-ts-mode-hook #'flymake-jsonlint-setup))
 (add-hook 'json-ts-mode-hook #'flymake-mode)
 
 (require 'yaml-ts-mode)
 ;; used for yaml mainly
 (require 'highlight-indentation)
 
-(require 'flymake-yamllint)
+(require 'flymake-yamllint nil t)
 
 (defun init-yaml-mode()
   ;; tabs are outlawed
@@ -2396,7 +2416,10 @@ there is no current file, eval the current buffer."
 
 
 (add-hook 'yaml-ts-mode-hook #'init-yaml-mode)
-(add-hook 'yaml-ts-mode-hook #'flymake-yamllint-setup)
+
+(if (fboundp 'flymake-yamllint-setup)
+    (add-hook 'yaml-ts-mode-hook #'flymake-yamllint-setup))
+
 (add-hook 'yaml-ts-mode-hook #'flymake-mode)
 (add-hook 'yaml-ts-mode-hook #'highlight-indentation-mode)
 
@@ -2424,7 +2447,8 @@ there is no current file, eval the current buffer."
 
 
 (add-hook 'nxml-mode-hook #'hs-minor-mode)
-(add-hook 'nxml-mode-hook #'flymake-xmllint-setup)
+(if (fboundp 'flymake-xmllint-setup)
+    (add-hook 'nxml-mode-hook #'flymake-xmllint-setup))
 (add-hook 'nxml-mode-hook #'flymake-mode)
 
 
@@ -2614,7 +2638,7 @@ there is no current file, eval the current buffer."
 ;; --- markdown
 (require 'markdown-mode)
 (require 'markdown-preview-mode)
-(require 'flymake-markdownlint)
+(require 'flymake-markdownlint nil t)
 
 ;; https://github.com/fletcher/MultiMarkdown-6 should be used instead
 ;; of perl version
@@ -2625,7 +2649,8 @@ there is no current file, eval the current buffer."
   ;; from `markdown-mode' and set to `major-mode' when used. hence why
   ;; use buffer name instead
   (when (not (string-prefix-p "*ellama" (buffer-name)))
-    (flymake-markdownlint-setup)
+    (if (fboundp 'flymake-markdownlint-setup)
+        (flymake-markdownlint-setup))
     (flymake-mode t)))
 
 (add-hook 'markdown-mode-hook #'auto-fill-mode)
@@ -2683,7 +2708,7 @@ there is no current file, eval the current buffer."
 
 ;; --- plantuml mode
 (require 'plantuml-mode)
-(require 'flymake-plantuml)
+(require 'flymake-plantuml nil t)
 
 
 (setq plantuml-default-exec-mode 'jar)
@@ -2698,17 +2723,19 @@ there is no current file, eval the current buffer."
 (setq plantuml-java-args (list "-Djava.awt.headless=true" "-jar"))
 (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
 
-(add-hook 'plantuml-mode-hook 'flymake-plantuml-setup)
+(if (fboundp 'flymake-plantuml-setup)
+    (add-hook 'plantuml-mode-hook 'flymake-plantuml-setup))
+
 (add-hook 'plantuml-mode-hook 'flymake-mode)
 
 
 
 ;; --- monitrc mode
-(require 'monitrc-mode)
+(require 'monitrc-mode nil t)
 
 
 ;; --- fluent-bit-config mode
-(require 'fluent-bit-config-mode)
+(require 'fluent-bit-config-mode nil t)
 
 ;; --- csv mode
 (require 'csv-mode)
@@ -3396,8 +3423,10 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 (when (display-graphic-p)
   ;; --- pdf-tools
-  (require 'pdf-tools)
-  (pdf-tools-install t t nil nil)
+  (require 'pdf-tools nil t)
+  (if (fboundp 'pdf-tools-install)
+      (pdf-tools-install t t nil nil))
+
   ;; by enabling tab-bar-mode early workaround rendering "bug" where
   ;; tab bar is not drawn until frame is resized
   ;; (tab-bar-mode t)
@@ -3493,7 +3522,8 @@ vertical splits"
 
 (when (getenv "IS_GENTOO")
   (require 'flymake-pkgcheck nil t)
-  (add-hook 'ebuild-mode-hook #'flymake-pkgcheck-setup))
+  (if (fboundp 'flymake-pkgcheck-setup)
+      (add-hook 'ebuild-mode-hook #'flymake-pkgcheck-setup)))
 
 (global-set-key (kbd "<f10>") 'my/transient-window)
 
