@@ -1163,6 +1163,9 @@ temporarily reverses the meaning of this variable."
 (setq org-link-descriptive t)
 (setq org-id-link-to-org-use-id t)
 (setq org-agenda-text-search-extra-files nil)
+;; its convenient to list more headings in imenu. so far no
+;; performance issues.
+(setq org-imenu-depth 9)
 
 ;; force new page after toc
 (setq org-latex-toc-command "\\tableofcontents \\clearpage")
