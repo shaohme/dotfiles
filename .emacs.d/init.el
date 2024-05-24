@@ -1,7 +1,7 @@
 ;;; package --- init file
 ;;; Commentary:
 ;;; Code:
-
+(pp-emacs-lisp-code)
 (when (getenv "IS_GENTOO")
   (require 'site-gentoo))
 
