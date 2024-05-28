@@ -1,7 +1,7 @@
 ;;; package --- init file
 ;;; Commentary:
 ;;; Code:
-(pp-emacs-lisp-code)
+
 (when (getenv "IS_GENTOO")
   (require 'site-gentoo))
 
@@ -87,13 +87,16 @@
                                 (haxe-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
   (add-to-list 'package-selected-packages 'ox-pandoc)
   ;; (add-to-list 'package-selected-packages 'spacious-padding)
   )
+
+(when (getenv "IS_VOID")
+  (add-to-list 'package-selected-packages 'jinx))
 
 ;; allow for built in packages to be upgraded
 (setq package-install-upgrade-built-in t)
@@ -2399,7 +2402,11 @@ there is no current file, eval the current buffer."
     (add-hook 'json-ts-mode-hook #'flymake-jsonlint-setup))
 (add-hook 'json-ts-mode-hook #'flymake-mode)
 
-(require 'yaml-ts-mode)
+
+;;; --- yaml
+;; yaml-mode does some commands better than yaml-ts-mode, line newline-indent
+(require 'yaml-mode)
+(require 'yaml-imenu)
 ;; used for yaml mainly
 (require 'highlight-indentation)
 
@@ -2418,18 +2425,18 @@ there is no current file, eval the current buffer."
 
 
 
-(add-hook 'yaml-ts-mode-hook #'init-yaml-mode)
+(add-hook 'yaml-mode-hook #'init-yaml-mode)
 
 (if (fboundp 'flymake-yamllint-setup)
-    (add-hook 'yaml-ts-mode-hook #'flymake-yamllint-setup))
+    (add-hook 'yaml-mode-hook #'flymake-yamllint-setup))
 
-(add-hook 'yaml-ts-mode-hook #'flymake-mode)
-(add-hook 'yaml-ts-mode-hook #'highlight-indentation-mode)
+(add-hook 'yaml-mode-hook #'flymake-mode)
+(add-hook 'yaml-mode-hook #'highlight-indentation-mode)
 
-(define-key yaml-ts-mode-map my/format-kbd #'yamlfmt-buffer)
+(define-key yaml-mode-map my/format-kbd #'yamlfmt-buffer)
 
-(add-to-list 'auto-mode-alist '("\\.yamllint" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.clang-format" . yaml-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.yamllint" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.clang-format" . yaml-mode))
 
 
 
@@ -3277,16 +3284,16 @@ Fix for the above hasn't been released as of Emacs 25.2."
         (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+        ;; (yaml "https://github.com/ikatyang/tree-sitter-yaml")
         (c "https://github.com/tree-sitter/tree-sitter-c")
         (kotlin "https://github.com/fwcd/tree-sitter-kotlin")
         (cpp "https://github.com/tree-sitter/tree-sitter-cpp")))
 
 ;; (c-mode . c-ts-mode)
 ;; (c++-mode . c++-ts-mode)
+;; (yaml-mode . yaml-ts-mode)
 (setq major-mode-remap-alist
       '(
-        (yaml-mode . yaml-ts-mode)
         (bash-mode . bash-ts-mode)
         (conf-toml-mode . toml-ts-mode)
         (go-mode . go-ts-mode)
