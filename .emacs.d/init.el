@@ -87,7 +87,7 @@
                                 (haxe-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -1060,6 +1060,14 @@ temporarily reverses the meaning of this variable."
 
 (define-key minibuffer-local-map (kbd "M-A") 'marginalia-cycle)
 
+
+
+;; --- embark
+(require 'embark)
+(require 'embark-consult)
+
+(define-key global-map (kbd "C-.") #'embark-act)
+(define-key global-map (kbd "M-.") #'embark-dwim)
 
 
 ;; --- activities
@@ -3333,6 +3341,9 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 (setq display-buffer-alist
       `(
+        ("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+         nil
+         (window-parameters (mode-line-format . none)))
         ;; place occur in a 'smaller' buffer below window. It often
         ;; takes up too much place in another window
         ("\\*Occur\\*"
