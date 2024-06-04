@@ -31,6 +31,7 @@
 (maybe-load-dir-recursively (expand-file-name "~/dev/flymake-xmllint"))
 (maybe-load-dir-recursively (expand-file-name "~/dev/ready-made-regexp"))
 (maybe-load-dir-recursively (expand-file-name "~/dev/openhab-mode"))
+(maybe-load-dir-recursively (expand-file-name "~/dev/yank-indent"))
 
 
 (defvar emacs-host-local (expand-file-name (format "local-%s.el" (system-name)) user-emacs-directory))
@@ -923,6 +924,16 @@ temporarily reverses the meaning of this variable."
 
 (add-hook 'occur-mode-hook #'hl-line-mode)
 
+(require 'warnings)
+
+
+;; --- tree-sitter
+(require 'treesit)
+
+;; ignore warning from missing grammas for now.
+(add-to-list 'warning-suppress-log-types '(treesit))
+(add-to-list 'warning-suppress-types '(treesit))
+
 
 
 ;; --- completion and minibuffer
@@ -1484,6 +1495,7 @@ temporarily reverses the meaning of this variable."
 ;; according to docs, set to `t' should default to `mail-user-agent'
 (setq message-mail-user-agent t)
 (setq send-mail-function 'smtpmail-send-it)
+(setq smtpmail-queue-dir (expand-file-name "~/.mail/queue"))
 ;; debug sending email
 (setq mm-default-directory (expand-file-name "~/dwl"))
 (setq mm-tmp-directory (expand-file-name "~/tmp"))
@@ -1823,6 +1835,12 @@ Ticket IDs should be separated with whitespaces."
 
 (setq editorconfig-mode-lighter " ec")
 
+;; --- yank
+(require 'yank-indent nil t)
+
+(when (fboundp 'yank-indent-mode)
+  (add-hook 'prog-mode-hook #'yank-indent-mode))
+
 
 ;; color delimiters differently
 (require 'rainbow-delimiters)
@@ -1969,6 +1987,14 @@ there is no current file, eval the current buffer."
 (require 'ielm)
 
 
+
+;; --- shell-script
+(require 'sh-script)
+
+;; void linux package templates are shell scripts according to manual
+(add-to-list 'auto-mode-alist '("/template\\'" . shell-script-mode))
+
+
 ;; --- common lisp
 (require 'slime)
 
@@ -2030,6 +2056,7 @@ there is no current file, eval the current buffer."
 
 
 ;; --- c/c++ modes
+
 (require 'cc-mode)
 (require 'cc-vars)
 (require 'c-ts-mode)
@@ -2208,8 +2235,8 @@ there is no current file, eval the current buffer."
 
 (add-hook 'c-mode-hook #'init-c-common-mode)
 (add-hook 'c-mode-hook #'flymake-mode)
-;; (add-hook 'c-ts-mode-hook #'init-c-ts-common-mode)
-;; (add-hook 'c-ts-mode-hook #'flymake-mode)
+(add-hook 'c-ts-mode-hook #'init-c-ts-common-mode)
+(add-hook 'c-ts-mode-hook #'flymake-mode)
 (add-hook 'c++-mode-hook #'init-c-common-mode)
 (add-hook 'c++-mode-hook #'flymake-mode)
 (add-hook 'c++-ts-mode-hook #'init-c-ts-common-mode)
@@ -2252,7 +2279,8 @@ there is no current file, eval the current buffer."
     :program "goimports"
     :args '("/dev/stdin"))
   (add-hook 'go-ts-mode-hook #'eglot-ensure)
-  (add-to-list 'auto-mode-alist '("/go\\.mod\\'" . go-mod-ts-mode)))
+  ;; (add-to-list 'auto-mode-alist '("/go\\.mod\\'" . go-mod-ts-mode))
+  )
 
 
 (add-hook 'go-mode-hook #'eglot-ensure)
@@ -2682,15 +2710,15 @@ there is no current file, eval the current buffer."
 
 ;; --- dockerfile
 (require 'dockerfile-mode)
-(require 'dockerfile-ts-mode)
+;; (require 'dockerfile-ts-mode)
 
 (add-hook 'dockerfile-mode-hook #'eglot-ensure)
-(add-hook 'dockerfile-ts-mode-hook #'eglot-ensure)
+;; (add-hook 'dockerfile-ts-mode-hook #'eglot-ensure)
 
-(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-ts-mode))
+(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
 (define-key dockerfile-mode-map my/format-kbd #'eglot-format)
-(define-key dockerfile-ts-mode-map my/format-kbd #'eglot-format)
+;; (define-key dockerfile-ts-mode-map my/format-kbd #'eglot-format)
 
 
 ;; --- nginx mode
@@ -3247,13 +3275,13 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (require 'openhab-thing-mode nil t)
 
 
-;; TOML
-(require 'toml-ts-mode)
+;; --- TOML
+;; (require 'toml-ts-mode)
 
-(define-key toml-ts-mode-map my/format-kbd #'eglot-format-buffer)
+;; (define-key toml-ts-mode-map my/format-kbd #'eglot-format-buffer)
 
 
-(add-hook 'toml-ts-mode-hook #'eglot-ensure)
+;; (add-hook 'toml-ts-mode-hook #'eglot-ensure)
 
 
 ;; --- restclient
@@ -3299,17 +3327,19 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 ;; (c-mode . c-ts-mode)
 ;; (c++-mode . c++-ts-mode)
+;; (conf-toml-mode . toml-ts-mode)
+;; (dockerfile-mode . dockerfile-ts-mode)
+;;
+;; yaml-ts-mode is a bit more annoying or inferior than yaml-mode
 ;; (yaml-mode . yaml-ts-mode)
 (setq major-mode-remap-alist
       '(
+        (python-mode . python-ts-mode)
         (bash-mode . bash-ts-mode)
-        (conf-toml-mode . toml-ts-mode)
         (go-mode . go-ts-mode)
         (css-mode . css-ts-mode)
-        (dockerfile-mode . dockerfile-ts-mode)
         (js2-mode . js-ts-mode)
         (json-mode . json-ts-mode)
-        (python-mode . python-ts-mode)
      ))
 
 
