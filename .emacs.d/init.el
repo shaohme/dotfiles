@@ -2221,10 +2221,8 @@ there is no current file, eval the current buffer."
 
 (setq-default c-ts-mode-indent-style #'my/indent-style)
 
-(define-key c-mode-map my/format-kbd #'gnu-indent-buffer)
 (define-key c-mode-map my/compile-kbd #'recompile)
 (define-key c-mode-map my/comment-kbd #'comment-dwim)
-(define-key c-ts-mode-map my/format-kbd #'gnu-indent-buffer)
 (define-key c-ts-mode-map my/compile-kbd #'recompile)
 (define-key c-ts-mode-map my/comment-kbd #'comment-dwim)
 
