@@ -3388,6 +3388,9 @@ Fix for the above hasn't been released as of Emacs 25.2."
         ("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
          nil
          (window-parameters (mode-line-format . none)))
+        ("\\*eshell\\*"
+         (display-buffer-reuse-mode-window display-buffer-in-previous-window)
+         )
         ;; place occur in a 'smaller' buffer below window. It often
         ;; takes up too much place in another window
         ("\\*Occur\\*"
@@ -3459,6 +3462,10 @@ Fix for the above hasn't been released as of Emacs 25.2."
          (side . bottom)
          ;; (fail)
          )
+        ((or . ((derived-mode . Man-mode)
+                (derived-mode . woman-mode)
+                "\\*\\(Man\\|woman\\).*"))
+         (display-buffer-same-window))
         ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|Compilation\\|Messages\\|Flymake log\\)\\*"
          (display-buffer-in-side-window)
          (window-height . 0.20)
