@@ -2259,10 +2259,10 @@ there is no current file, eval the current buffer."
 (define-key c-mode-map my/compile-kbd #'recompile)
 (define-key c++-ts-mode-map my/compile-kbd #'recompile)
 
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c-or-c++-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.\\(CC?\\|HH?\\)\\'" . c++-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.[ch]\\(pp\\|xx\\|\\+\\+\\)\\'" . c++-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.\\(cc\\|hh\\)\\'" . c++-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c-or-c++-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(CC?\\|HH?\\)\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.[ch]\\(pp\\|xx\\|\\+\\+\\)\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(cc\\|hh\\)\\'" . c++-mode))
 
 ;;; protobuf inherits from cc-mode
 (require 'protobuf-mode)
