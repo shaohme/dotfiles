@@ -68,7 +68,7 @@
                                 ;; build on pdf-tools 0.9x and version
                                 ;; 1.0 from nongnu fails to find
                                 ;; build-directory
-                                ;; (pdf-tools . "melpa")
+                                (pdf-tools . "melpa")
                                 (citre . "melpa")
                                 (rg . "melpa")
                                 (modus-themes . "melpa-stable")
@@ -88,7 +88,7 @@
                                 (haxe-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard cc-isearch-menu d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult pdf-tools))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -388,6 +388,10 @@ With argument, do this that many times."
 (setq comint-scroll-to-bottom-on-output 'this)
 (setq compilation-scroll-output t)
 (setq compilation-auto-jump-to-first-error t)
+
+;; do not ask about saving buffers before compiling/building/etc.
+;; this will save all unsaved buffers though.
+(setq compilation-ask-about-save nil)
 
 ;;; programs like make/cmake sometimes produces ansi escape sequences,
 ;;; garbling the output.
@@ -3382,7 +3386,6 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 (require 'etc-sudoers-mode)
 
-
 (setq display-buffer-alist
       `(
         ("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
@@ -3548,9 +3551,9 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 (require 'transient)
 
-(require 'cc-isearch-menu)
+(require 'casual-isearch)
 
-(define-key isearch-mode-map (kbd "<f3>") 'cc-isearch-menu-transient)
+(define-key isearch-mode-map (kbd "<f3>") 'casual-isearch-menu-transient)
 
 
 (defun my/shrink-window (arg)
