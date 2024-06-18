@@ -97,6 +97,7 @@
   )
 
 (when (getenv "IS_VOID")
+  (setq source-directory (format "/usr/src/emacs-%s/" emacs-version))
   (add-to-list 'package-selected-packages 'jinx))
 
 ;; allow for built in packages to be upgraded
@@ -1095,7 +1096,10 @@ temporarily reverses the meaning of this variable."
 (require 'embark-consult)
 
 (define-key global-map (kbd "C-.") #'embark-act)
-(define-key global-map (kbd "M-.") #'embark-dwim)
+;; not set because `embark-dwim' shows flymake-diagnostics buffer when
+;; M-. on a line with flymake error.
+;;
+;; (define-key global-map (kbd "M-.") #'embark-dwim)
 
 
 ;; --- activities
