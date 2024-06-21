@@ -78,6 +78,7 @@
                                 (consult-eglot . "melpa")
                                 (caddyfile-mode . "melpa")
                                 (org-tree-slide . "melpa")
+                                (prettier . "melpa")
                                 ;; only exists in melpa for now
                                 ;; (clj-refactor . "melpa")
                                 ;; stable version incompatible with >27.2
@@ -88,7 +89,7 @@
                                 (haxe-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult pdf-tools))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult pdf-tools prettier))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -349,11 +350,11 @@ With argument, do this that many times."
 (setq tramp-connection-timeout 5)
 
 (connection-local-set-profile-variables
-   'guix-system
-   '((tramp-remote-path . (tramp-own-remote-path))))
+ 'guix-system
+ '((tramp-remote-path . (tramp-own-remote-path))))
 (connection-local-set-profiles
-   '(:application tramp :protocol "sudo" :machine "rw")
-   'guix-system)
+ '(:application tramp :protocol "sudo" :machine "rw")
+ 'guix-system)
 
 
 ;; --- recentf
@@ -2008,6 +2009,7 @@ there is no current file, eval the current buffer."
 (require 'ielm)
 
 
+(require 'prettier)
 
 ;; --- shell-script
 (require 'sh-script)
@@ -2139,8 +2141,8 @@ there is no current file, eval the current buffer."
         (define-key c-ts-base-mode-map my/format-kbd #'eglot-format))
 
       (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t))
-      ;; manually add eglot to flymake to have it not replace
-      ;; existing functions.
+    ;; manually add eglot to flymake to have it not replace
+    ;; existing functions.
     (if dom-tags-file
         (add-to-list 'tags-table-list dom-tags-file))))
 
@@ -2189,8 +2191,8 @@ there is no current file, eval the current buffer."
         (define-key c-mode-map my/format-kbd #'eglot-format))
 
       (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t))
-      ;; manually add eglot to flymake to have it not replace
-      ;; existing functions.
+    ;; manually add eglot to flymake to have it not replace
+    ;; existing functions.
     (if dom-tags-file
         (add-to-list 'tags-table-list dom-tags-file))
     ;; Enable kernel mode for the appropriate files
@@ -2238,7 +2240,7 @@ there is no current file, eval the current buffer."
     ((parent-is "parameter_list") prev-sibling 0)
 
     ;; Append here the indent style you want as base
-   ,@(alist-get 'bsd (c-ts-mode--indent-styles 'cpp))))
+    ,@(alist-get 'bsd (c-ts-mode--indent-styles 'cpp))))
 
 (setq-default c-ts-mode-indent-style #'my/indent-style)
 
@@ -2267,14 +2269,18 @@ there is no current file, eval the current buffer."
 (define-key c-mode-map my/compile-kbd #'recompile)
 (define-key c++-ts-mode-map my/compile-kbd #'recompile)
 
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c-or-c++-mode))
-(add-to-list 'auto-mode-alist '("\\.\\(CC?\\|HH?\\)\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.[ch]\\(pp\\|xx\\|\\+\\+\\)\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.\\(cc\\|hh\\)\\'" . c++-mode))
+;; (add-to-list 'auto-mode-alist '("\\.h\\'" . c-or-c++-mode))
+;; (add-to-list 'auto-mode-alist '("\\.\\(CC?\\|HH?\\)\\'" . c++-mode))
+;; (add-to-list 'auto-mode-alist '("\\.[ch]\\(pp\\|xx\\|\\+\\+\\)\\'" . c++-mode))
+;; (add-to-list 'auto-mode-alist '("\\.\\(cc\\|hh\\)\\'" . c++-mode))
+
+;; disable -ts-modes for now. too many issue on different OS platforms
+(setf (cdr (rassoc 'c++-ts-mode auto-mode-alist)) 'c++-mode)
+(setf (cdr (rassoc 'c-or-c++-ts-mode auto-mode-alist)) 'c-or-c++-mode)
+
 
 ;;; protobuf inherits from cc-mode
 (require 'protobuf-mode)
-
 
 
 ;; --- rust
@@ -3362,7 +3368,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
         (css-mode . css-ts-mode)
         (js2-mode . js-ts-mode)
         (json-mode . json-ts-mode)
-     ))
+        ))
 
 
 (defun my/treesit-install-language-grammar-all()
