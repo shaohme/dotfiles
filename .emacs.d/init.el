@@ -69,7 +69,6 @@
                                 ;; 1.0 from nongnu fails to find
                                 ;; build-directory
                                 (pdf-tools . "melpa")
-                                (citre . "melpa")
                                 (rg . "melpa")
                                 (modus-themes . "melpa-stable")
                                 (org . "gnu")
@@ -89,7 +88,7 @@
                                 (haxe-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult pdf-tools prettier))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult pdf-tools prettier gtags-mode citre))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -1482,6 +1481,9 @@ temporarily reverses the meaning of this variable."
 ;; set date format
 (setq gnus-user-date-format-alist '((t . "%d.%m.%Y %H:%M")))
 
+;; often slow at rendering and when scrolling, especially when large
+(setq gnus-inhibit-images t)
+
 (setq gnus-icalendar-org-capture-file (expand-file-name "meetings.org" org-directory))
 (setq gnus-icalendar-org-capture-headline '("Calendar"))
 (gnus-icalendar-org-setup)
@@ -2078,7 +2080,7 @@ there is no current file, eval the current buffer."
 (setq gdb-debuginfod-enable-setting nil)
 
 
-;; --- c/c++ modes
+;; --- c/cpp modes
 
 (require 'cc-mode)
 (require 'cc-vars)
@@ -2120,31 +2122,31 @@ there is no current file, eval the current buffer."
 
 (require 'cl-lib)
 
-(defun init-c-ts-common-mode ()
-  (setq-local eglot-stay-out-of '(flymake))
-  (setq-local flymake-diagnostic-functions nil)
-  (setq-local compile-command "make -C build")
-  (let* ((filename (buffer-file-name))
-         (dom-tags-file (and filename (locate-dominating-file (file-name-directory filename) "TAGS")))
-         (dom-comp-cmd-file (and filename (locate-dominating-file filename "compile_commands.json")))
-         (dom-kconfig-file (and filename (or (locate-dominating-file filename "Kbuild")
-		                                     (locate-dominating-file filename "Kconfig")
-		                                     (save-excursion (goto-char 0)
-				                                             (search-forward-regexp "^#include <linux/\\(module\\|kernel\\)\\.h>$" nil t))))))
-    (when (and dom-comp-cmd-file (not dom-kconfig-file))
-      (eglot-ensure)
-      (if (string-match-p "fluent-bit" (file-name-directory (buffer-file-name)))
-          ;; likely in a fluent-bit project. use gnu indent for formatting instead
-          (progn
-            (setq-local gnu-indent-options fluent-bit-c-gnu-indent-options)
-            (define-key c-ts-base-mode-map my/format-kbd #'gnu-indent-buffer))
-        (define-key c-ts-base-mode-map my/format-kbd #'eglot-format))
+;; (defun init-c-ts-common-mode ()
+;;   (setq-local eglot-stay-out-of '(flymake))
+;;   (setq-local flymake-diagnostic-functions nil)
+;;   (setq-local compile-command "make -C build")
+;;   (let* ((filename (buffer-file-name))
+;;          (dom-tags-file (and filename (locate-dominating-file (file-name-directory filename) "TAGS")))
+;;          (dom-comp-cmd-file (and filename (locate-dominating-file filename "compile_commands.json")))
+;;          (dom-kconfig-file (and filename (or (locate-dominating-file filename "Kbuild")
+;; 		                                     (locate-dominating-file filename "Kconfig")
+;; 		                                     (save-excursion (goto-char 0)
+;; 				                                             (search-forward-regexp "^#include <linux/\\(module\\|kernel\\)\\.h>$" nil t))))))
+;;     (when (and dom-comp-cmd-file (not dom-kconfig-file))
+;;       (eglot-ensure)
+;;       (if (string-match-p "fluent-bit" (file-name-directory (buffer-file-name)))
+;;           ;; likely in a fluent-bit project. use gnu indent for formatting instead
+;;           (progn
+;;             (setq-local gnu-indent-options fluent-bit-c-gnu-indent-options)
+;;             (define-key c-ts-base-mode-map my/format-kbd #'gnu-indent-buffer))
+;;         (define-key c-ts-base-mode-map my/format-kbd #'eglot-format))
 
-      (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t))
-    ;; manually add eglot to flymake to have it not replace
-    ;; existing functions.
-    (if dom-tags-file
-        (add-to-list 'tags-table-list dom-tags-file))))
+;;       (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t))
+;;     ;; manually add eglot to flymake to have it not replace
+;;     ;; existing functions.
+;;     (if dom-tags-file
+;;         (add-to-list 'tags-table-list dom-tags-file))))
 
 ;;; NOTE: protobuf-mode inherits from cc-mode
 (defun init-c-common-mode ()
@@ -2163,7 +2165,8 @@ there is no current file, eval the current buffer."
 
 
   (let* ((filename (buffer-file-name))
-         (dom-tags-file (and filename (locate-dominating-file (file-name-directory filename) "TAGS")))
+         (dom-etags-file (and filename (locate-dominating-file (file-name-directory filename) "TAGS")))
+         (dom-ctags-file (and filename (locate-dominating-file (file-name-directory filename) "tags")))
          (dom-comp-cmd-file (and filename (locate-dominating-file filename "compile_commands.json")))
          (dom-kconfig-file (and filename (or (locate-dominating-file filename "Kbuild")
 		                                     (locate-dominating-file filename "Kconfig")
@@ -2190,11 +2193,14 @@ there is no current file, eval the current buffer."
             (c-set-style "fluent-bit-c"))
         (define-key c-mode-map my/format-kbd #'eglot-format))
 
-      (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t))
+      (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t)
+      (flymake-mode t))
     ;; manually add eglot to flymake to have it not replace
     ;; existing functions.
-    (if dom-tags-file
+    (if dom-etags-file
         (add-to-list 'tags-table-list dom-tags-file))
+    (when dom-ctags-file
+      (citre-mode t))
     ;; Enable kernel mode for the appropriate files
     (when dom-kconfig-file
       ;; we are likely in a linux kernel source tree
@@ -2258,13 +2264,15 @@ there is no current file, eval the current buffer."
 
 
 (add-hook 'c-mode-hook #'init-c-common-mode)
-(add-hook 'c-mode-hook #'flymake-mode)
-(add-hook 'c-ts-mode-hook #'init-c-ts-common-mode)
-(add-hook 'c-ts-mode-hook #'flymake-mode)
+;; (add-hook 'c-mode-hook #'flymake-mode)
+;; (add-hook 'c-mode-hook #'breadcrumb-local-mode)
+;; (add-hook 'c-ts-mode-hook #'init-c-ts-common-mode)
+;; (add-hook 'c-ts-mode-hook #'flymake-mode)
 (add-hook 'c++-mode-hook #'init-c-common-mode)
-(add-hook 'c++-mode-hook #'flymake-mode)
-(add-hook 'c++-ts-mode-hook #'init-c-ts-common-mode)
-(add-hook 'c++-ts-mode-hook #'flymake-mode)
+;; (add-hook 'c++-mode-hook #'flymake-mode)
+;; (add-hook 'c++-mode-hook #'breadcrumb-local-mode)
+;; (add-hook 'c++-ts-mode-hook #'init-c-ts-common-mode)
+;; (add-hook 'c++-ts-mode-hook #'flymake-mode)
 
 (define-key c-mode-map my/compile-kbd #'recompile)
 (define-key c++-ts-mode-map my/compile-kbd #'recompile)

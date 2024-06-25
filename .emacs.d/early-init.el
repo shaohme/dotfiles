@@ -12,14 +12,17 @@
 ;; nil in order to control package initialization using init.el
 (setq package-enable-at-startup nil)
 
-;; maintain a different package dir for each OS. different package
-;; managers might include emacs lisp others do not.
-(if (string= (getenv "IS_DEBIANIZED") "1")
-    (setq-default package-user-dir (locate-user-emacs-file "elpa-debian")))
-(if (string= (getenv "IS_GENTOO") "1")
-    (setq-default package-user-dir (locate-user-emacs-file "elpa-gentoo")))
-(if (string= (getenv "IS_VOID") "1")
-    (setq-default package-user-dir (locate-user-emacs-file "elpa-void")))
+;; maintain a different package dir for each version and OS. different package
+;; managers might include emacs lisp and others may not.
+(let ((elpaver (format "elpa-%s" emacs-major-version)))
+  (if (string= (getenv "IS_DEBIANIZED") "1")
+      (setq-default package-user-dir (locate-user-emacs-file (format "%s-debian" elpaver))))
+  (if (string= (getenv "IS_GENTOO") "1")
+      (setq-default package-user-dir (locate-user-emacs-file (format "%s-gentoo" elpaver))))
+  (if (string= (getenv "IS_VOID") "1")
+      (setq-default package-user-dir (locate-user-emacs-file (format "%s-void" elpaver))))
+
+  )
 
 
 (when (native-comp-available-p)
