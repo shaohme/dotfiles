@@ -277,6 +277,7 @@ With argument, do this that many times."
 
 
 
+(defvar my/complete-symbol-kbd (kbd "C-M-i") "Default keybind for symbol completion.")
 (defvar my/format-kbd (kbd "C-c TAB") "Default keybind for formatting buffers.")
 (defvar my/compile-kbd (kbd "C-c C-c") "Default keybind for compiling program.")
 ;; (defvar my/lsp-code-actions-kbd (kbd "C-c e a") "Default keybind for LSP code actions.")
@@ -2810,7 +2811,7 @@ there is no current file, eval the current buffer."
 
 (add-hook 'plantuml-mode-hook 'flymake-mode)
 
-
+(define-key plantuml-mode-map my/complete-symbol-kbd #'plantuml-complete-symbol)
 
 ;; --- monitrc mode
 (require 'monitrc-mode nil t)
