@@ -82,13 +82,11 @@
                                 ;; (clj-refactor . "melpa")
                                 ;; stable version incompatible with >27.2
                                 (inflections . "melpa")
-                                (mediawiki . "melpa")
                                 (consult-dir . "melpa")
                                 (d-mode . "melpa")
-                                (haxe-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic flymake-eldev go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man haxe-mode gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult pdf-tools prettier gtags-mode citre))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult pdf-tools prettier gtags-mode citre haproxy-mode))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -1175,7 +1173,8 @@ temporarily reverses the meaning of this variable."
 (require 'org-id)
 (require 'find-lisp)
 (require 'ox-hugo)
-(require 'ox-pandoc nil t)
+(when (executable-find "pandoc")
+  (require 'ox-pandoc nil t))
 (require 'ob-plantuml)
 (require 'org-tree-slide)
 (require 'org-superstar)
@@ -1863,8 +1862,11 @@ Ticket IDs should be separated with whitespaces."
 ;; --- yank
 (require 'yank-indent nil t)
 
+;; only enable on select modes instead of `prog-mode-hook'.
+;; some modes might implement this feature already
 (when (fboundp 'yank-indent-mode)
-  (add-hook 'prog-mode-hook #'yank-indent-mode))
+  (add-hook 'c-mode-hook #'yank-indent-mode)
+  (add-hook 'c++-mode-hook #'yank-indent-mode))
 
 
 ;; color delimiters differently
@@ -1900,9 +1902,13 @@ Ticket IDs should be separated with whitespaces."
 (electric-quote-mode -1)
 
 
-;; add eletric pair on all prog modes. should not be intruding any modes.
-(add-hook 'prog-mode-hook #'electric-pair-mode)
-(add-hook 'prog-mode-hook #'electric-indent-local-mode)
+;; add eletric pair only on needed modes. elisp modes have other
+;; should not be intruding any modes.
+;;
+
+;; (add-hook 'prog-mode-hook #'electric-pair-mode)
+;; (add-hook 'prog-mode-hook #'electric-indent-local-mode)
+
 ;; show matching parenthesis
 (add-hook 'prog-mode-hook #'show-paren-mode)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
@@ -1948,6 +1954,8 @@ Ticket IDs should be separated with whitespaces."
 
 
 
+;;; --- emacs lisp
+
 (defun sanityinc/eval-last-sexp-or-region (prefix)
   "Eval region from BEG to END if active, otherwise the last sexp."
   (interactive "P")
@@ -1980,8 +1988,6 @@ there is no current file, eval the current buffer."
 
 (require 'eros)
 
-(require 'flymake-eldev)
-
 (defun init-elisp-mode()
   ;; (face-remap-add-relative 'default :height 0.8)
   (setq mode-name "ELisp")
@@ -2006,10 +2012,19 @@ there is no current file, eval the current buffer."
 ;; interested in edit it
 (add-hook 'emacs-lisp-mode-hook #'sanityinc/maybe-set-bundled-elisp-readonly)
 
+(add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+
 (global-set-key [remap eval-expression] 'pp-eval-expression)
 (define-key emacs-lisp-mode-map (kbd "C-c C-l") 'sanityinc/load-this-file)
 
 (require 'ielm)
+
+(defun init-ielm-mode-hook ()
+  (turn-on-eldoc-mode)
+  (and (featurep 'paredit) (enable-paredit-mode)))
+
+(add-hook 'ielm-mode-hook #'init-ielm-mode-hook)
+(add-hook 'ielm-mode-hook #'corfu-mode)
 
 
 (require 'prettier)
@@ -2765,6 +2780,10 @@ there is no current file, eval the current buffer."
 (add-to-list 'auto-mode-alist '("nginx.*\\.conf" . nginx-mode))
 
 
+;; --- haproxy
+(require 'haproxy-mode)
+
+
 ;; --- crontab mode
 (require 'crontab-mode)
 
@@ -3153,7 +3172,6 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (define-key elfeed-search-mode-map (kbd "d") #'elfeed-youtube-dl)
 
 
-(require 'mediawiki)
 
 
 (require 'edit-server)
@@ -3161,8 +3179,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (when (getenv "XDG_SESSION_DESKTOP")
   (setq edit-server-url-major-mode-alist '(("reddit\\.com" . markdown-mode)
                                            ("stackexchange\\.com" . markdown-mode)
-                                           ("github\\.com" . gfm-mode)
-                                           ("wiki\\.gentoo\\.org". mediawiki-mode)))
+                                           ("github\\.com" . gfm-mode)))
   ;; (window-system . x) seems to break on pgtk builds
   (setq edit-server-new-frame-alist '((name . "Edit with Emacs FRAME")
                                       (top . 200)
@@ -3335,11 +3352,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (setq-default ada-indent-backend 'none)
 (setq-default ada-xref-backend 'eglot)
 
-
-;; --- haxe mode
-
-(require 'haxe-mode)
-
+;;; --- tree-sitter
 
 (require 'treesit)
 
