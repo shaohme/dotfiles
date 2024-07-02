@@ -3,7 +3,8 @@
 ;;; Code:
 
 (when (getenv "IS_GENTOO")
-  (require 'site-gentoo))
+  ;; really only optional on gentoo systems
+  (require 'site-gentoo nil t))
 
 (defun maybe-load-dir-recursively (site-dir)
   (when (and (file-exists-p site-dir)
@@ -86,7 +87,7 @@
                                 (d-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode js2-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode yaml-imenu embark embark-consult pdf-tools prettier gtags-mode citre haproxy-mode))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode embark embark-consult pdf-tools prettier gtags-mode citre haproxy-mode))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -955,6 +956,7 @@ temporarily reverses the meaning of this variable."
 
 ;; --- completion and minibuffer
 (require 'vertico)
+(require 'vertico-multiform)
 (require 'orderless)
 (require 'marginalia)
 
@@ -963,6 +965,15 @@ temporarily reverses the meaning of this variable."
 (setq vertico-cycle t)
 
 (vertico-mode t)
+(vertico-multiform-mode t)
+
+;;; some completions are shown better in a buffer than in minibuffer
+(setq vertico-multiform-commands
+      '((consult-imenu buffer)
+        (consult-find buffer)))
+
+(setq vertico-multiform-categories
+      '((consult-grep buffer)))
 
 ;; Enable recursive minibuffers
 (setq enable-recursive-minibuffers t)
@@ -1393,7 +1404,7 @@ temporarily reverses the meaning of this variable."
 (add-hook 'org-mode-hook #'init-org-mode)
 (add-hook 'org-mode-hook #'auto-fill-mode)
 (add-hook 'org-mode-hook #'corfu-mode)
-(add-hook 'org-mode-hook #'electric-pair-mode)
+(add-hook 'org-mode-hook #'electric-pair-local-mode)
 ;; (add-hook 'org-mode-hook #'org-tidy-mode)
 ;; source block can be huge
 (add-hook 'org-mode-hook #'org-fold-hide-block-all)
@@ -2034,7 +2045,7 @@ there is no current file, eval the current buffer."
 
 ;; void linux package templates are shell scripts according to manual
 (add-to-list 'auto-mode-alist '("/template\\'" . shell-script-mode))
-
+(add-hook 'sh-mode-hook #'electric-pair-local-mode)
 
 ;; --- common lisp
 (require 'slime)
@@ -2107,24 +2118,24 @@ there is no current file, eval the current buffer."
 (require 'fluent-bit-c-style)
 (require 'gnu-indent)
 
-(defconst c-ts-mode--c-or-c++-regexp
-  (eval-when-compile
-    (let ((id "[a-zA-Z_][a-zA-Z0-9_]*") (ws "[ \t]+") (ws-maybe "[ \t]*")
-          (headers '("string" "chrono" "functional" "string_view" "iostream" "map" "unordered_map"
-                     "set" "unordered_set" "vector" "tuple")))
-      (concat "^" ws-maybe "\\(?:"
-              "using"     ws "\\(?:namespace" ws
-              "\\|" id "::"
-              "\\|" id ws-maybe "=\\)"
-              "\\|" "\\(?:inline" ws "\\)?namespace"
-              "\\(:?" ws "\\(?:" id "::\\)*" id "\\)?" ws-maybe "{"
-              "\\|" "class"     ws id
-              "\\(?:" ws "final" "\\)?" ws-maybe "[:{;\n]"
-              "\\|" "struct"     ws id "\\(?:" ws "final" ws-maybe "[:{\n]"
-              "\\|" ws-maybe ":\\)"
-              "\\|" "template"  ws-maybe "<.*?>"
-              "\\|" "#include"  ws-maybe "<" (regexp-opt headers) ">"
-              "\\)"))))
+;; (defconst c-ts-mode--c-or-c++-regexp
+;;   (eval-when-compile
+;;     (let ((id "[a-zA-Z_][a-zA-Z0-9_]*") (ws "[ \t]+") (ws-maybe "[ \t]*")
+;;           (headers '("string" "chrono" "functional" "string_view" "iostream" "map" "unordered_map"
+;;                      "set" "unordered_set" "vector" "tuple")))
+;;       (concat "^" ws-maybe "\\(?:"
+;;               "using"     ws "\\(?:namespace" ws
+;;               "\\|" id "::"
+;;               "\\|" id ws-maybe "=\\)"
+;;               "\\|" "\\(?:inline" ws "\\)?namespace"
+;;               "\\(:?" ws "\\(?:" id "::\\)*" id "\\)?" ws-maybe "{"
+;;               "\\|" "class"     ws id
+;;               "\\(?:" ws "final" "\\)?" ws-maybe "[:{;\n]"
+;;               "\\|" "struct"     ws id "\\(?:" ws "final" ws-maybe "[:{\n]"
+;;               "\\|" ws-maybe ":\\)"
+;;               "\\|" "template"  ws-maybe "<.*?>"
+;;               "\\|" "#include"  ws-maybe "<" (regexp-opt headers) ">"
+;;               "\\)"))))
 
 ;;; -nut = no tabs
 ;;; -sc = add * left side of C comment start
@@ -2173,14 +2184,16 @@ there is no current file, eval the current buffer."
   ;; disable its meddling with flymake.
   (setq-local eglot-stay-out-of '(flymake))
   (setq-local flymake-diagnostic-functions nil)
+
   ;; might as well default compile command to make
   (setq-local compile-command "make -C build")
+
   ;; macros that should or must not end with semicolon and therefore
   ;; causes indentation mistakes
   (add-to-list 'c-macro-names-with-semicolon "TAU_MAIN")
 
-
   (let* ((filename (buffer-file-name))
+         (fluent-bit-source (and filename (string-match-p "fluent-bit" (file-name-directory (buffer-file-name)))))
          (dom-etags-file (and filename (locate-dominating-file (file-name-directory filename) "TAGS")))
          (dom-ctags-file (and filename (locate-dominating-file (file-name-directory filename) "tags")))
          (dom-comp-cmd-file (and filename (locate-dominating-file filename "compile_commands.json")))
@@ -2188,42 +2201,45 @@ there is no current file, eval the current buffer."
 		                                     (locate-dominating-file filename "Kconfig")
 		                                     (save-excursion (goto-char 0)
 				                                             (search-forward-regexp "^#include <linux/\\(module\\|kernel\\)\\.h>$" nil t))))))
-    (when (or (eq major-mode 'c-mode)
-              (eq major-mode 'c-ts-mode))
-      (c-set-style "k&r"))
-    (when (eq major-mode 'c++-mode)
-      (c-set-style "stroustrup"))
 
-    (setq-local indent-tabs-mode nil)
-    (setq-local tab-width 4)
-    ;; k&r defaults to 5 but gnu-indent '-kr' defaults to 4 :-|
-    (setq c-basic-offset 4)
+    ;; set style and indentation based on conditionals.
+    (cond (dom-kconfig-file
+           ;; likely in a linux kernel source tree
+           (c-set-style "linux")
+           (setq indent-tabs-mode t)
+           (setq c-basic-offset 8)
+           (setq tab-width 8))
+          (fluent-bit-source
+           ;; likely in a fluent-bit project.
+           (c-set-style "fluent-bit-c")
+           (setq-local tab-width 4)
+           (setq c-basic-offset 4)
+           (setq-local gnu-indent-options fluent-bit-c-gnu-indent-options)
+           ;; use gnu indent for formatting.
+           (define-key c-mode-map my/format-kbd #'gnu-indent-buffer))
+          (t
+           (if (eq major-mode 'c-mode)
+               (c-set-style "k&r"))
+           (if (eq major-mode 'c++-mode)
+               (c-set-style "stroustrup"))
+           (setq-local indent-tabs-mode nil)
+           (setq-local tab-width 4)
+           ;; k&r defaults to 5 but gnu-indent '-kr' defaults to 4 :-|
+           (setq c-basic-offset 4)))
 
-    (when (and dom-comp-cmd-file (not dom-kconfig-file))
-      (eglot-ensure)
-      (if (string-match-p "fluent-bit" (file-name-directory (buffer-file-name)))
-          ;; likely in a fluent-bit project. use gnu indent for formatting instead
-          (progn
-            (setq-local gnu-indent-options fluent-bit-c-gnu-indent-options)
-            (define-key c-mode-map my/format-kbd #'gnu-indent-buffer)
-            (c-set-style "fluent-bit-c"))
-        (define-key c-mode-map my/format-kbd #'eglot-format))
-
-      (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t)
-      (flymake-mode t))
-    ;; manually add eglot to flymake to have it not replace
-    ;; existing functions.
-    (if dom-etags-file
-        (add-to-list 'tags-table-list dom-tags-file))
-    (when dom-ctags-file
-      (citre-mode t))
-    ;; Enable kernel mode for the appropriate files
-    (when dom-kconfig-file
-      ;; we are likely in a linux kernel source tree
-      (c-set-style "linux")
-      (setq indent-tabs-mode t)
-      (setq c-basic-offset 8)
-      (setq tab-width 8))))
+    ;; only enable either eglot or tags based backends based on conditionals.
+    ;; only one should be needed at a time.
+    (cond (dom-comp-cmd-file
+           (eglot-ensure)
+           (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t)
+           (if (not fluent-bit-source)
+               ;; fluent-bit source code is formatted with gnu-indent
+               (define-key c-mode-map my/format-kbd #'eglot-format))
+           (flymake-mode t))
+          (dom-ctags-file
+           (citre-mode t))
+          (dom-etags-file
+           (add-to-list 'tags-table-list dom-etags-file)))))
 
 
 (defun uncrustify-buffer ()
@@ -2280,11 +2296,15 @@ there is no current file, eval the current buffer."
 
 
 (add-hook 'c-mode-hook #'init-c-common-mode)
+(add-hook 'c-mode-hook #'electric-indent-local-mode)
+(add-hook 'c-mode-hook #'electric-pair-local-mode)
 ;; (add-hook 'c-mode-hook #'flymake-mode)
 ;; (add-hook 'c-mode-hook #'breadcrumb-local-mode)
 ;; (add-hook 'c-ts-mode-hook #'init-c-ts-common-mode)
 ;; (add-hook 'c-ts-mode-hook #'flymake-mode)
 (add-hook 'c++-mode-hook #'init-c-common-mode)
+(add-hook 'c++-mode-hook #'electric-indent-local-mode)
+(add-hook 'c++-mode-hook #'electric-pair-local-mode)
 ;; (add-hook 'c++-mode-hook #'flymake-mode)
 ;; (add-hook 'c++-mode-hook #'breadcrumb-local-mode)
 ;; (add-hook 'c++-ts-mode-hook #'init-c-ts-common-mode)
@@ -2299,8 +2319,19 @@ there is no current file, eval the current buffer."
 ;; (add-to-list 'auto-mode-alist '("\\.\\(cc\\|hh\\)\\'" . c++-mode))
 
 ;; disable -ts-modes for now. too many issue on different OS platforms
-(setf (cdr (rassoc 'c++-ts-mode auto-mode-alist)) 'c++-mode)
-(setf (cdr (rassoc 'c-or-c++-ts-mode auto-mode-alist)) 'c-or-c++-mode)
+
+;;; there are multiple associations for `c-ts-mode'
+(while-let ((mode-assoc (rassoc 'c-ts-mode auto-mode-alist)))
+  (if mode-assoc
+      (setf (cdr mode-assoc) 'c-mode)))
+
+(while-let ((mode-assoc (rassoc 'c++-ts-mode auto-mode-alist)))
+  (if mode-assoc
+      (setf (cdr mode-assoc) 'c++-mode)))
+
+(while-let ((mode-assoc (rassoc 'c-or-c++-ts-mode auto-mode-alist)))
+  (if mode-assoc
+      (setf (cdr mode-assoc) 'c-or-c++-mode)))
 
 
 ;;; protobuf inherits from cc-mode
@@ -2489,12 +2520,15 @@ there is no current file, eval the current buffer."
 (if (fboundp 'flymake-jsonlint-setup)
     (add-hook 'json-ts-mode-hook #'flymake-jsonlint-setup))
 (add-hook 'json-ts-mode-hook #'flymake-mode)
+(add-hook 'json-ts-mode-hook #'electric-indent-local-mode)
+(add-hook 'json-ts-mode-hook #'electric-pair-local-mode)
 
 
 ;;; --- yaml
 ;; yaml-mode does some commands better than yaml-ts-mode, line newline-indent
 (require 'yaml-mode)
-(require 'yaml-imenu)
+;;; 1.0.3 failed compilation with: yaml-imenu.el: Error: Wrong type argument proper-list-p
+;; (require 'yaml-imenu)
 ;; used for yaml mainly
 (require 'highlight-indentation)
 
@@ -2701,24 +2735,24 @@ there is no current file, eval the current buffer."
 
 ;; --- js/typescript mode
 (require 'js)
-(require 'js2-mode)
 (require 'typescript-mode)
 
 ;; Disable js2 mode's syntax error highlighting by default
-(setq-default js2-mode-show-parse-errors nil
-              js2-mode-show-strict-warnings nil)
+;; (setq-default js2-mode-show-parse-errors nil
+;;               js2-mode-show-strict-warnings nil)
 
 
-(defun my/js2-mode-hook()
+(defun my/js-mode-hook()
   ;; no not start eglot when remote. often starts annoying LSP
   ;; backends that wants multiple tramp connections.
   (if (not (file-remote-p default-directory))
       (eglot-ensure)))
-(add-hook 'js2-mode-hook #'my/js2-mode-hook)
+;; (add-hook 'js2-mode-hook #'my/js2-mode-hook)
+(add-hook 'js-mode-hook #'electric-indent-local-mode)
+(add-hook 'js-mode-hook #'electric-pair-local-mode)
 
-
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+;; (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
 
 
 ;;; --- HOCON files
@@ -3076,6 +3110,9 @@ Fix for the above hasn't been released as of Emacs 25.2."
 ;;; vundo
 (require 'vundo)
 
+(when (display-graphic-p)
+  (setq vundo-glyph-alist vundo-unicode-symbols))
+
 
 ;;; --- elfeed
 (require 'elfeed)
@@ -3375,11 +3412,6 @@ Fix for the above hasn't been released as of Emacs 25.2."
         (kotlin "https://github.com/fwcd/tree-sitter-kotlin")
         (cpp "https://github.com/tree-sitter/tree-sitter-cpp")))
 
-;; (c-mode . c-ts-mode)
-;; (c++-mode . c++-ts-mode)
-;; (conf-toml-mode . toml-ts-mode)
-;; (dockerfile-mode . dockerfile-ts-mode)
-;;
 ;; yaml-ts-mode is a bit more annoying or inferior than yaml-mode
 ;; (yaml-mode . yaml-ts-mode)
 (setq major-mode-remap-alist
