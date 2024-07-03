@@ -87,11 +87,12 @@
                                 (d-mode . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell deadgrep wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode groovy-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag web-mode rainbow-mode php-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint emms udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal bash-completion syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet nov kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu csharp-mode vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes eglot-java sxhkdrc-mode org-roam org-download pyvenv pyvenv-auto denote rfc-mode powerthesaurus restclient djvu modus-themes keycast company company-php eros etc-sudoers-mode journalctl-mode ellama flymake-ruff python-black reformatter eat numpydoc consult-dir mediawiki org-chef org-contrib importmagic go-dlv vcard casual-isearch d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode activities casual-dired yaml-mode embark embark-consult pdf-tools prettier gtags-mode citre haproxy-mode))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode restclient djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode dired-hacks-utils))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
   (add-to-list 'package-selected-packages 'ox-pandoc)
+  (add-to-list 'package-selected-packages 'pdf-tools)
   ;; (add-to-list 'package-selected-packages 'spacious-padding)
   )
 
@@ -757,7 +758,6 @@ during reading."
 ;; --- grep'ing
 ;; tried rg.el but it had many user questions and could not
 ;; open remote file over TRAMP automatically from the result list
-(require 'deadgrep)
 (require 'wgrep)
 
 (require 'rg)
@@ -1110,10 +1110,6 @@ temporarily reverses the meaning of this variable."
 ;; M-. on a line with flymake error.
 ;;
 ;; (define-key global-map (kbd "M-.") #'embark-dwim)
-
-
-;; --- activities
-(require 'activities)
 
 
 ;; --- flymake
@@ -2038,8 +2034,6 @@ there is no current file, eval the current buffer."
 (add-hook 'ielm-mode-hook #'corfu-mode)
 
 
-(require 'prettier)
-
 ;; --- shell-script
 (require 'sh-script)
 
@@ -2074,29 +2068,6 @@ there is no current file, eval the current buffer."
 (add-hook 'cider-repl-mode-hook #'subword-mode)
 ;; highlight parentheses
 (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode)
-
-
-
-
-
-;; --- java mode
-(require 'eglot-java)
-
-(add-hook 'java-mode-hook #'eglot-java-mode)
-(add-hook 'java-mode-hook #'subword-mode)
-
-
-
-
-
-;;; -- c-sharp mode
-(require 'csharp-mode)
-
-(defun my/csharp-mode-hook ()
-  (electric-pair-local-mode 1))
-
-(add-hook 'csharp-mode-hook #'my/csharp-mode-hook)
-
 
 
 
@@ -2369,15 +2340,7 @@ there is no current file, eval the current buffer."
 (add-hook 'go-mode-hook #'eglot-ensure)
 
 
-
-;; --- groovy mode
-(require 'groovy-mode)
-
-
-(require 'bash-completion)
-
-(bash-completion-setup)
-
+;; --- shell script
 
 (require 'shfmt)
 (require 'sh-script)
@@ -2644,92 +2607,92 @@ there is no current file, eval the current buffer."
 
 
 ;; --- web-mode
-(require 'web-mode)
+;; (require 'web-mode)
 ;; nice to have
 (require 'rainbow-mode)
 
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.tpl\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.jinja\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.tpl\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+;; ;; (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.jinja\\'" . web-mode))
 
 
-(setq web-mode-markup-indent-offset 2)
-(setq web-mode-css-indent-offset 2)
-(setq web-mode-code-indent-offset 4)
-(setq web-mode-enable-auto-pairing t)
-(setq web-mode-enable-auto-closing t)
-(setq web-mode-enable-auto-opening t)
-(setq web-mode-enable-auto-indentation t)
-(setq web-mode-enable-comment-interpolation t)
-(setq web-mode-enable-heredoc-fontification t)
-;; WARNING: these two highlights seems to mess up when in tty. nil if needed.
-(setq web-mode-enable-current-element-highlight t)
-(setq web-mode-enable-current-column-highlight t)
-(setq web-mode-engines-alist '(("php"    . "\\.phtml\\'")
-                               ("blade"  . "\\.blade\\.")
-                               ("django"  . "\\.jinja\\'")))
+;; (setq web-mode-markup-indent-offset 2)
+;; (setq web-mode-css-indent-offset 2)
+;; (setq web-mode-code-indent-offset 4)
+;; (setq web-mode-enable-auto-pairing t)
+;; (setq web-mode-enable-auto-closing t)
+;; (setq web-mode-enable-auto-opening t)
+;; (setq web-mode-enable-auto-indentation t)
+;; (setq web-mode-enable-comment-interpolation t)
+;; (setq web-mode-enable-heredoc-fontification t)
+;; ;; WARNING: these two highlights seems to mess up when in tty. nil if needed.
+;; (setq web-mode-enable-current-element-highlight t)
+;; (setq web-mode-enable-current-column-highlight t)
+;; (setq web-mode-engines-alist '(("php"    . "\\.phtml\\'")
+;;                                ("blade"  . "\\.blade\\.")
+;;                                ("django"  . "\\.jinja\\'")))
 
 
-(defun init-web-mode-hook()
-  (setq standard-indent 2)
-  (setq tab-width 2))
+;; (defun init-web-mode-hook()
+;;   (setq standard-indent 2)
+;;   (setq tab-width 2))
 
-;; (add-hook 'web-mode-hook #'rainbow-mode)
-;; (add-hook 'web-mode-hook #'flymake-mode)
-(add-hook 'web-mode-hook #'init-web-mode-hook)
+;; ;; (add-hook 'web-mode-hook #'rainbow-mode)
+;; ;; (add-hook 'web-mode-hook #'flymake-mode)
+;; (add-hook 'web-mode-hook #'init-web-mode-hook)
 
 
 ;; only needed because of php-mode
-(require 'company)
-(require 'company-php)
+;; (require 'company)
+;; (require 'company-php)
 
 ;; disable auto display after delay. triggering completion with key
 ;; strokes works better for me.
-(setq company-idle-delay nil)
+;; (setq company-idle-delay nil)
 
 
 ;; --- php mode
-(require 'php-mode)
-(require 'php-local-manual)
+;; (require 'php-mode)
+;; (require 'php-local-manual)
 
 ;; download from https://www.php.net/download-docs.php
-(setq php-manual-path "/usr/share/doc/php-manual/en/html")
-(setq php-search-documentation-function #'php-local-manual-search)
+;; (setq php-manual-path "/usr/share/doc/php-manual/en/html")
+;; (setq php-search-documentation-function #'php-local-manual-search)
 
-(defun init-php-mode()
-  (company-mode t)
-  ;; enable ElDoc support (optional)
-  (ac-php-core-eldoc-setup)
-  (set (make-local-variable 'company-backends)
-       '((company-ac-php-backend company-dabbrev-code)
-         company-capf company-files))
+;; (defun init-php-mode()
+;;   (company-mode t)
+;;   ;; enable ElDoc support (optional)
+;;   (ac-php-core-eldoc-setup)
+;;   (set (make-local-variable 'company-backends)
+;;        '((company-ac-php-backend company-dabbrev-code)
+;;          company-capf company-files))
 
-  ;; remember to mark project root for ac-php by running:
-  ;; touch .ac-php-conf.json
+;;   ;; remember to mark project root for ac-php by running:
+;;   ;; touch .ac-php-conf.json
 
-  ;; Jump to definition (optional)
-  (define-key php-mode-map (kbd "M-.")
-              'ac-php-find-symbol-at-point)
+;;   ;; Jump to definition (optional)
+;;   (define-key php-mode-map (kbd "M-.")
+;;               'ac-php-find-symbol-at-point)
 
-  ;; Return back (optional)
-  (define-key php-mode-map (kbd "M-,")
-              'ac-php-location-stack-back))
+;;   ;; Return back (optional)
+;;   (define-key php-mode-map (kbd "M-,")
+;;               'ac-php-location-stack-back))
 
-;; not sure I want camel case navigation in php
-;; (add-hook 'php-mode-hook #'subword-mode)
-(add-hook 'php-mode-hook #'flymake-mode)
-(add-hook 'php-mode-hook #'init-php-mode)
+;; ;; not sure I want camel case navigation in php
+;; ;; (add-hook 'php-mode-hook #'subword-mode)
+;; (add-hook 'php-mode-hook #'flymake-mode)
+;; (add-hook 'php-mode-hook #'init-php-mode)
 
-(define-key php-mode-map (kbd "M-<tab>") #'company-complete)
+;; (define-key php-mode-map (kbd "M-<tab>") #'company-complete)
 
 
 
@@ -2839,7 +2802,7 @@ there is no current file, eval the current buffer."
 
 ;; --- systemd mode
 (require 'systemd)
-(require 'journalctl-mode)
+
 
 
 ;; --- plantuml mode
@@ -2941,12 +2904,6 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 ;; Enable reference mangment
 (add-hook 'LaTeX-mode-map #'reftex-mode)
-
-
-;;; --- nov
-(require 'nov)
-
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 
 ;; --- pass
@@ -3066,11 +3023,11 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 
 ;; to aid eshell in case terminal programs demands a TUI
-(require 'eat)
+;; (require 'eat)
 
 
-;; for `eat-eshell-mode'.
-(add-hook 'eshell-load-hook #'eat-eshell-mode)
+;; ;; for `eat-eshell-mode'.
+;; (add-hook 'eshell-load-hook #'eat-eshell-mode)
 
 ;; for `eat-eshell-visual-command-mode'.
 
@@ -3080,28 +3037,28 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 ;; --- emms
 ;; multimedia
-(eval-and-compile
-  (require 'emms nil t)
-  (require 'emms-browser nil t)
-  (require 'emms-player-mpd nil t)
-  (require 'emms-setup nil t)
-  (require 'emms-source-file nil t)
-  (require 'emms-info-metaflac nil t)
-  (require 'emms-info-exiftool nil t)
-  (require 'emms-info-tinytag nil t)
+;; (eval-and-compile
+;;   (require 'emms nil t)
+;;   (require 'emms-browser nil t)
+;;   (require 'emms-player-mpd nil t)
+;;   (require 'emms-setup nil t)
+;;   (require 'emms-source-file nil t)
+;;   (require 'emms-info-metaflac nil t)
+;;   (require 'emms-info-exiftool nil t)
+;;   (require 'emms-info-tinytag nil t)
 
-  (when (display-graphic-p)
+;;   (when (display-graphic-p)
 
-    (emms-all)
+;;     (emms-all)
 
-    (setq emms-source-file-default-directory (expand-file-name "~/audio/"))
-    (setq emms-player-mpd-server-port nil)
-    (setq emms-browser-thumbnail-small-size 64)
-    (setq emms-browser-thumbnail-medium-size 128)
-    (setq emms-source-file-directory-tree-function #'emms-source-file-directory-tree-find)
-    (setq emms-source-playlist-default-format 'm3u)
-    (setq emms-info-functions '(emms-info-exiftool))
-    (setq emms-player-list '(emms-player-mpv))))
+;;     (setq emms-source-file-default-directory (expand-file-name "~/audio/"))
+;;     (setq emms-player-mpd-server-port nil)
+;;     (setq emms-browser-thumbnail-small-size 64)
+;;     (setq emms-browser-thumbnail-medium-size 128)
+;;     (setq emms-source-file-directory-tree-function #'emms-source-file-directory-tree-find)
+;;     (setq emms-source-playlist-default-format 'm3u)
+;;     (setq emms-info-functions '(emms-info-exiftool))
+;;     (setq emms-player-list '(emms-player-mpv))))
 
 ;; --- udev mode
 (require 'udev-mode)
@@ -3270,9 +3227,6 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (require 'ascii-table)
 
 
-(require 'sxhkdrc-mode)
-
-
 (require 'caddyfile-mode)
 
 (defun my/caddyfile-hook ()
@@ -3325,8 +3279,6 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 (setq rfc-mode-directory (expand-file-name "/var/db/rfc/"))
 
-
-(require 'powerthesaurus)
 
 ;; --- desktop mode
 ;; conveniently save buffers and window setup between sessions
