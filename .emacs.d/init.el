@@ -33,6 +33,7 @@
 (maybe-load-dir-recursively (expand-file-name "~/dev/ready-made-regexp"))
 (maybe-load-dir-recursively (expand-file-name "~/dev/openhab-mode"))
 (maybe-load-dir-recursively (expand-file-name "~/dev/yank-indent"))
+(maybe-load-dir-recursively (expand-file-name "~/dev/dired-hacks"))
 
 
 (defvar emacs-host-local (expand-file-name (format "local-%s.el" (system-name)) user-emacs-directory))
@@ -802,6 +803,7 @@ during reading."
 ;; more colors in dired
 (require 'diredfl)
 (require 'dired-x)
+(require 'dired-open nil t)
 (require 'image-dired)
 (require 'casual-dired)
 ;; (require 'dired-preview)
