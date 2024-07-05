@@ -2403,6 +2403,8 @@ there is no current file, eval the current buffer."
 (add-hook 'python-mode-hook #'subword-mode) ; become snake-case aware
 (add-hook 'python-mode-hook #'init-python-mode)
 (add-hook 'python-mode-hook #'flymake-mode)
+(add-hook 'python-mode-hook #'electric-pair-local-mode)
+(add-hook 'python-mode-hook #'electric-indent-local-mode)
 
 
 (define-key python-mode-map (kbd "C-c C-n") #'numpydoc-generate)
@@ -2414,6 +2416,8 @@ there is no current file, eval the current buffer."
 (add-hook 'python-ts-mode-hook #'flymake-ruff-load)
 (add-hook 'python-ts-mode-hook #'init-python-mode)
 (add-hook 'python-ts-mode-hook #'flymake-mode)
+(add-hook 'python-ts-mode-hook #'electric-pair-local-mode)
+(add-hook 'python-ts-mode-hook #'electric-indent-local-mode)
 
 (define-key python-ts-mode-map (kbd "C-c C-n") #'numpydoc-generate)
 (define-key python-ts-mode-map (kbd "C-c b") 'python-shell-send-buffer)
