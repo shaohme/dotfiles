@@ -60,7 +60,6 @@
 
 (setq package-pinned-packages '((protobuf-mode . "melpa")
                                 (hcl-mode . "melpa")
-                                (flymake-languagetool . "melpa")
                                 (ledger-mode . "melpa")
                                 (lua-mode . "melpa")
                                 (eglot-java . "melpa")
@@ -72,6 +71,7 @@
                                 ;; build-directory
                                 (pdf-tools . "melpa")
                                 (rg . "melpa")
+                                (elfeed . "melpa")
                                 (modus-themes . "melpa-stable")
                                 (org . "gnu")
                                 (tramp . "gnu")
@@ -86,9 +86,13 @@
                                 (inflections . "melpa")
                                 (consult-dir . "melpa")
                                 (d-mode . "melpa")
+                                ;; seems to be needed for "latest" org
+                                ;; mode. 1.3 triggers errors when
+                                ;; creating new outlines among others
+                                (org-modern . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode flymake-languagetool hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode restclient djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode restclient djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode org-modern org-link-beautify))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -1160,6 +1164,7 @@ temporarily reverses the meaning of this variable."
 (setq languagetool-server-url "http://localhost")
 (setq languagetool-server-port 8192)
 
+
 ;; used for count-page-lines which I don't need
 (global-unset-key (kbd "C-x l"))
 
@@ -1361,12 +1366,6 @@ temporarily reverses the meaning of this variable."
 
 (global-set-key (kbd "C-c o s") 'org-search)
 
-;;; no need to set url. `flymake-languagetool' defaults to localhost
-(setq flymake-languagetool-server-port "8691")
-
-;; seems to fail in latest flymake-languagetool
-(push "WHITESPACE_RULE" flymake-languagetool-disabled-rules)
-
 (defun zorg-backlinks ()
   "Search for backlinks to current entry."
   (interactive)
@@ -1426,6 +1425,22 @@ temporarily reverses the meaning of this variable."
 (org-link-set-parameters "id" :complete #'org-id-complete-link)
 
 
+
+;;; --- org beautify
+;; (require 'org-bullets)
+;;; hide italic and bold markers
+;; (setq org-hide-emphasis-markers t)
+;;; needed for `org-link-beautify' to work
+;; (require 'org-element-ast)
+(require 'org-modern)
+;; (require 'org-link-beautify)
+
+(setq org-startup-folded)
+
+(add-hook 'org-mode-hook #'org-modern-mode)
+(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+;; (add-hook 'org-mode-hook #'org-bullets-mode)
+;; (add-hook 'org-mode-hook #'org-link-beautify-mode)
 
 ;; --- bbdb
 (require 'bbdb)
@@ -1860,6 +1875,10 @@ Ticket IDs should be separated with whitespaces."
 
 
 
+(require 'expand-region)
+
+(global-set-key (kbd "C-;") 'er/contract-region)
+(global-set-key (kbd "C-'") 'er/expand-region)
 
 ;; --- prog mode
 ;; general config for programming modes
