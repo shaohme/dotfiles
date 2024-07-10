@@ -92,7 +92,7 @@
                                 (org-modern . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode restclient djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode org-modern org-link-beautify))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode restclient djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode org-modern org-link-beautify expand-region flymake-elisp-config))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -1021,6 +1021,7 @@ temporarily reverses the meaning of this variable."
 (require 'consult-kmacro)
 (require 'consult-dir)
 (require 'consult-org)
+(require 'consult-info)
 
 ;; disable preview for now. even though its a major feature, its also
 ;; annoying, and causes emacs to load major modes when previewing,
@@ -1194,7 +1195,6 @@ temporarily reverses the meaning of this variable."
 (require 'org-superstar)
 (require 'org-download)
 (require 'ox-reveal)
-(require 'flymake-languagetool)
 ;; to remove clutter when viewing org files with lots of PROPERTIES
 ;; (require 'org-tidy)
 (require 'org-chef)
@@ -1434,8 +1434,6 @@ temporarily reverses the meaning of this variable."
 ;; (require 'org-element-ast)
 (require 'org-modern)
 ;; (require 'org-link-beautify)
-
-(setq org-startup-folded)
 
 (add-hook 'org-mode-hook #'org-modern-mode)
 (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
@@ -1984,6 +1982,9 @@ Ticket IDs should be separated with whitespaces."
 
 ;;; --- emacs lisp
 
+(require 'paredit)
+(require 'flymake-elisp-config)
+
 (defun sanityinc/eval-last-sexp-or-region (prefix)
   "Eval region from BEG to END if active, otherwise the last sexp."
   (interactive "P")
@@ -2019,12 +2020,22 @@ there is no current file, eval the current buffer."
 (defun init-elisp-mode()
   ;; (face-remap-add-relative 'default :height 0.8)
   (setq mode-name "ELisp")
+
   ;; add sections. `imenu-generic-expression' is buffer local.
   ;; FIXME: create proper category instead of multiple "Sections" -prefixed entries.
   (add-to-list 'imenu-generic-expression '("Sections" "^;;;? ---?\\(.+\\)" 1))
   (make-local-variable 'hippie-expand-try-functions-list)
   (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol-partially t)
-  (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol t ))
+  (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol t)
+  (let* ((filename (buffer-file-name))
+         ;; quick way to determine whether file resides in an .emacs.d directory
+         (emacs-config (and filename (locate-dominating-file (file-name-directory filename) "init.el"))))
+    (cond (emacs-config
+
+           (flymake-elisp-config-as-config (current-buffer)))
+          (t
+
+           (flymake-elisp-config-as-default)))))
 
 ;; flymake is not populated with all relevant paths during startup
 ;; so we set it manually
@@ -2041,6 +2052,8 @@ there is no current file, eval the current buffer."
 (add-hook 'emacs-lisp-mode-hook #'sanityinc/maybe-set-bundled-elisp-readonly)
 
 (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+
+(add-hook 'emacs-lisp-mode-hook #'flymake-mode)
 
 (global-set-key [remap eval-expression] 'pp-eval-expression)
 (define-key emacs-lisp-mode-map (kbd "C-c C-l") 'sanityinc/load-this-file)
@@ -2109,6 +2122,7 @@ there is no current file, eval the current buffer."
 (require 'apache-c-style)
 (require 'fluent-bit-c-style)
 (require 'gnu-indent)
+(require 'citre)
 
 ;; (defconst c-ts-mode--c-or-c++-regexp
 ;;   (eval-when-compile
