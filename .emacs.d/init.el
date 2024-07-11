@@ -861,7 +861,7 @@ temporarily reverses the meaning of this variable."
 	    (minibuffer-auto-raise t))
 	(progn
 	  (message "")
-	  (setq this-command 'ediff-quit) ; bug#38219
+	  (setq this-command 'ediff-quit)   ; bug#38219
 	  (set-buffer ctl-buf)
 	  (ediff-really-quit reverse-default-keep-variants))))
 
@@ -999,6 +999,10 @@ temporarily reverses the meaning of this variable."
 (require 'corfu-history)
 (require 'corfu-popupinfo)
 
+;;; whitespace charater used for insertion. especially useful when
+;;; using orderless completion.
+(setq corfu-separator ?\s)
+(setq corfu-auto nil)
 (setq corfu-count 10)
 (setq corfu-cycle t)
 (setq corfu-popupinfo-delay '(1.0 . 0.5))
@@ -1009,7 +1013,34 @@ temporarily reverses the meaning of this variable."
 (add-hook 'shell-mode-hook #'corfu-mode)
 (add-hook 'eshell-mode-hook #'corfu-mode)
 
+;; insert SPC separator as set by `corfu-separator' to indicate
+;; completion is not done when using orderless. completion finished
+;; when candidate is chosen or C-g.
+(define-key corfu-mode-map (kbd "SPC") #'corfu-insert-separator)
+
 (corfu-popupinfo-mode 1)
+
+
+;;; --- activities
+
+;; (require 'activities)
+;; (require 'activities-list)
+;; (require 'edebug)
+
+;; (activities-mode)
+
+;; (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+
+;; (define-key global-map (kbd "C-x C-y C-n") #'activities-new)
+;; (define-key global-map (kbd "C-x C-y C-d") #'activities-define)
+;; (define-key global-map (kbd "C-x C-y C-a") #'activities-resume)
+;; (define-key global-map (kbd "C-x C-y C-s") #'activities-suspend)
+;; (define-key global-map (kbd "C-x C-y C-k") #'activities-kill)
+;; (define-key global-map (kbd "C-x C-y RET") #'activities-switch)
+;; (define-key global-map (kbd "C-x C-y b") #'activities-switch-buffer)
+;; (define-key global-map (kbd "C-x C-y g") #'activities-revert)
+;; (define-key global-map (kbd "C-x C-y l") #'activities-list)
+
 
 ;;; --- consult
 
