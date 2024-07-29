@@ -465,9 +465,14 @@ With argument, do this that many times."
 
 ;; --- book marks
 (require 'bookmark)
-
+(require 'casual-bookmarks)
 ;; save bookmarks to file after 1 is added
 (setq bookmark-save-flag 1)
+
+(define-key bookmark-bmenu-mode-map (kbd "C-o") #'casual-bookmarks-tmenu)
+
+(add-hook 'bookmark-bmenu-mode-hook #'hl-line-mode)
+
 
 (defun my/bookmark-set ()
   "Overwrite a given bookmark.
@@ -597,12 +602,17 @@ during reading."
 
 (add-hook 'shell-mode-hook #'rename-uniquely)
 
+
+;;; --- info mode
+
 ;; add more colors to info mode
 (require 'info)
 (require 'info-colors)
+(require 'casual-info)
 
 (add-hook 'Info-selection-hook #'info-colors-fontify-node)
 
+(define-key Info-mode-map (kbd "C-o") #'casual-info-tmenu)
 
 (require 'image-mode)
 
@@ -704,6 +714,7 @@ during reading."
 
 ;; --- ibuffer
 (require 'ibuffer)
+(require 'casual-ibuffer)
 ;;; WARNING: `ibuffer-project' seems to hurt benchmark, using vc packages
 ;; (require 'ibuffer-project)
 
@@ -719,6 +730,7 @@ during reading."
 
 ;; otherwise its bound to `ibuffer-visit-buffer-1-window'
 (define-key ibuffer-mode-map (kbd "M-o") #'my/other-window)
+(define-key ibuffer-mode-map (kbd "C-o") #'casual-ibuffer-tmenu)
 
 
 (require 'vcard)
@@ -912,8 +924,11 @@ temporarily reverses the meaning of this variable."
 
 ;; --- regex builder
 (require 're-builder)
+(require 'casual-re-builder)
 ;; Support a slightly more idiomatic quit binding in re-builder
 (define-key reb-mode-map (kbd "C-c C-k") 'reb-quit)
+
+(define-key reb-mode-map (kbd "C-o") #'casual-re-builder-tmenu)
 
 (setq reb-re-syntax 'string)
 
@@ -1272,7 +1287,7 @@ temporarily reverses the meaning of this variable."
 (setq org-file-apps '((auto-mode . emacs)
                       (directory . emacs)
                       ("\\.mm\\'" . default)
-                      ("\\.x?html?\\'" . "firefox %s")
+                      ("\\.x?html?\\'" . "librewolf %s")
                       ("\\.pdf\\'" . default)))
 
 ;; set timestamp when finishing
@@ -1993,6 +2008,7 @@ Ticket IDs should be separated with whitespaces."
 (add-to-list 'eglot-server-programs (list '(f90-mode) "fortls" "--notify_init" "--nthreads=4"))
 (add-to-list 'eglot-server-programs (list '(toml-ts-mode) "taplo-full" "lsp" "stdio" "--colors" "never"))
 (add-to-list 'eglot-server-programs (list '(nxml-mode) "lemminx"))
+(add-to-list 'eglot-server-programs (list '(markdown-mode) "marksman"))
 
 ;; (add-to-list 'eglot-server-programs (list '(c-mode c++-mode) "clangd" "--limit-results=900" "--completion-style=detailed" (format "-j=%d" (num-processors)) "--header-insertion=never" "--header-insertion-decorators=false" "--pch-storage=memory"))
 (add-to-list 'eglot-server-programs
@@ -3462,6 +3478,8 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (add-to-list 'interpreter-mode-alist '("perl5" . cperl-mode))
 (add-to-list 'interpreter-mode-alist '("miniperl" . cperl-mode))
 
+(add-hook 'cperl-mode-hook #'eglot-ensure)
+(add-hook 'perl-mode-hook #'eglot-ensure)
 
 
 ;; --- gnuplot
@@ -3639,7 +3657,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
 
 (require 'casual-isearch)
 
-(define-key isearch-mode-map (kbd "<f3>") 'casual-isearch-menu-transient)
+(define-key isearch-mode-map (kbd "C-o") #'casual-isearch-tmenu)
 
 
 (defun my/shrink-window (arg)
