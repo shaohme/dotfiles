@@ -2269,7 +2269,7 @@ there is no current file, eval the current buffer."
            (setq c-basic-offset 4)
            (setq-local gnu-indent-options fluent-bit-c-gnu-indent-options)
            ;; use gnu indent for formatting.
-           (define-key c-mode-map my/format-kbd #'gnu-indent-buffer))
+           (local-set-key my/format-kbd #'gnu-indent-buffer))
           (t
            (if (eq major-mode 'c-mode)
                (c-set-style "k&r"))
@@ -2287,13 +2287,17 @@ there is no current file, eval the current buffer."
            (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t)
            (if (not fluent-bit-source)
                ;; fluent-bit source code is formatted with gnu-indent
-               (define-key c-mode-map my/format-kbd #'eglot-format))
+               (local-set-key my/format-kbd #'eglot-format))
            (flymake-mode t))
           (dom-ctags-file
-           (citre-mode t))
+           (citre-mode t)
+           (flymake-cppcheck-setup)
+           (flymake-mode t)
+           (local-set-key (kbd "M-,") #'citre-jump-back)
+           (local-set-key (kbd "M-.") #'citre-jump)
+           (local-set-key (kbd "M-?") #'citre-jump-to-reference))
           (dom-etags-file
            (add-to-list 'tags-table-list dom-etags-file)))))
-
 
 (defun uncrustify-buffer ()
   "Run caddy formatting on the current region or buffer."
