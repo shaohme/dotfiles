@@ -92,7 +92,7 @@
                                 (org-modern . "melpa")
                                 (arduino-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode restclient djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode org-modern org-link-beautify expand-region flymake-elisp-config))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode verb djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode org-modern org-link-beautify expand-region flymake-elisp-config))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -236,6 +236,16 @@ With argument, do this that many times."
 (global-set-key [remap backward-kill-word] 'backward-delete-word)
 
 
+(defvar my/complete-symbol-kbd (kbd "C-M-i") "Default keybind for symbol completion.")
+(defvar my/format-kbd (kbd "C-c TAB") "Default keybind for formatting buffers.")
+(defvar my/compile-kbd (kbd "C-c C-c") "Default keybind for compiling program.")
+;; (defvar my/lsp-code-actions-kbd (kbd "C-c e a") "Default keybind for LSP code actions.")
+;; (defvar my/lsp-restart-kbd (kbd "C-c e r") "Default keybind for LSP restart.")
+;; (defvar my/help-at-point (kbd "C-h .") "Default keybind for showing help at point.")
+(defvar my/comment-kbd (kbd "M-;") "Default keybind for DWIM commenting code.")
+(defvar my/other-window-kbd (kbd "M-o") "Default keybind for DWIM commenting code.")
+
+
 (require 'window)
 ;;; windows
 
@@ -243,7 +253,7 @@ With argument, do this that many times."
   (interactive "p\ni\np")
   (other-window count all-frames interactive))
 
-(define-key global-map (kbd "M-o") #'my/other-window)
+(define-key global-map my/other-window-kbd #'my/other-window)
 (define-key global-map (kbd "<f9>") #'window-toggle-side-windows)
 (define-key global-map (kbd "s-[") #'(lambda () (interactive)(shrink-window 2)))
 (define-key global-map (kbd "s-]") #'(lambda () (interactive)(enlarge-window 2)))
@@ -280,15 +290,6 @@ With argument, do this that many times."
 ;; make switching buffers more consistent
 (setq switch-to-buffer-obey-display-actions t)
 
-
-
-(defvar my/complete-symbol-kbd (kbd "C-M-i") "Default keybind for symbol completion.")
-(defvar my/format-kbd (kbd "C-c TAB") "Default keybind for formatting buffers.")
-(defvar my/compile-kbd (kbd "C-c C-c") "Default keybind for compiling program.")
-;; (defvar my/lsp-code-actions-kbd (kbd "C-c e a") "Default keybind for LSP code actions.")
-;; (defvar my/lsp-restart-kbd (kbd "C-c e r") "Default keybind for LSP restart.")
-(defvar my/help-at-point (kbd "C-h .") "Default keybind for showing help at point.")
-(defvar my/comment-kbd (kbd "M-;") "Default keybind for DWIM commenting code.")
 
 
 (defun maybe-delete-trailing-whitespace ()
@@ -350,7 +351,7 @@ With argument, do this that many times."
 ;;; make TRAMP reuse ssh controlmaster
 (setq tramp-ssh-controlmaster-options (concat "-o ControlPath=~/.ssh/master-%%r-at-%%h-%%p "
                                               "-o ControlMaster=auto -o ControlPersist=yes"))
-(setq tramp-use-ssh-controlmaster-options nil)
+(setq tramp-use-connection-share nil)
 
 (setq tramp-connection-timeout 5)
 
@@ -745,7 +746,8 @@ during reading."
 
 (which-key-mode t)
 
-(global-set-key (kbd "C-h W") 'which-key-C-h-dispatch)
+;;; doesnt show keymap for current mode. hence commented out.
+;; (global-set-key (kbd "C-h W") 'which-key-C-h-dispatch)
 
 
 ;; --- mode line bell
@@ -1069,15 +1071,6 @@ temporarily reverses the meaning of this variable."
 (require 'consult-org)
 (require 'consult-info)
 
-;; disable preview for now. even though its a major feature, its also
-;; annoying, and causes emacs to load major modes when previewing,
-;; which might include LSP etc. making it slow.
-;;
-;;
-;; (setq consult-preview-key nil)
-
-;; (setq consult-narrow-key "<")
-
 (setq xref-show-xrefs-function #'consult-xref)
 (setq xref-show-definitions-function #'consult-xref)
 
@@ -1383,6 +1376,7 @@ temporarily reverses the meaning of this variable."
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c c") 'org-capture)
 
+(define-key org-mode-map (kbd "C-c C-r") verb-command-map)
 
 (defun org-search-args ()
   "Search org directory using consult-ripgrep. With live-preview."
@@ -1687,8 +1681,26 @@ temporarily reverses the meaning of this variable."
 (require 'mu4e nil t)
 (require 'mu4e-icalendar nil t)
 (require 'mu4e-contrib nil t)
+;;; it seems mu4e moved obsolete variables to this file. use it to
+;;; check their new names
+(require 'mu4e-obsolete nil t)
 
-(setq mu4e-compose-in-new-frame t)
+(require 'mu4e-config nil t)
+
+(defvar mu4e-major-version 0 "mu4e major version number.")
+(defvar mu4e-minor-version 0 "mu4e minor version number.")
+
+(when (boundp 'mu4e-mu-version)
+  (let* ((ver-list (version-to-list mu4e-mu-version))
+         (major (nth 0 ver-list))
+         (minor (nth 1 ver-list)))
+    (setq mu4e-major-version major)
+    (setq mu4e-minor-version minor)))
+
+(if (and (> mu4e-major-version 0) (> mu4e-minor-version 11))
+    (setq mu4e-compose-switch t)
+  (setq mu4e-compose-in-new-frame t))
+
 (setq mu4e-hide-index-messages t)
 (setq mu4e-index-update-status t)
 (setq mu4e-index-update-error-warning t)
@@ -1698,7 +1710,9 @@ temporarily reverses the meaning of this variable."
 (setq mu4e-change-filenames-when-moving t)
 ;; mbsync can make changes that escape a 'lazy' check
 (setq mu4e-index-lazy-check t)
-(setq mu4e-compose-dont-reply-to-self t)
+(if (and (> mu4e-major-version 0) (< mu4e-minor-version 12))
+    (setq mu4e-compose-dont-reply-to-self t))
+
 ;; more pleasant reading flow view
 (setq mu4e-compose-format-flowed nil)
 (setq mu4e-confirm-quit nil)
@@ -2412,15 +2426,14 @@ there is no current file, eval the current buffer."
 (require 'go-mode)
 (require 'go-dlv)
 
-(when (> emacs-major-version 28)
-  (require 'go-ts-mode)
-  (reformatter-define go-format
-    :group 'go-ts-mode
-    :program "goimports"
-    :args '("/dev/stdin"))
-  (add-hook 'go-ts-mode-hook #'eglot-ensure)
-  ;; (add-to-list 'auto-mode-alist '("/go\\.mod\\'" . go-mod-ts-mode))
-  )
+(require 'go-ts-mode)
+
+(reformatter-define go-format
+  :group 'go-ts-mode
+  :program "goimports"
+  :args '("/dev/stdin"))
+(add-hook 'go-ts-mode-hook #'eglot-ensure)
+;; (add-to-list 'auto-mode-alist '("/go\\.mod\\'" . go-mod-ts-mode))
 
 
 (add-hook 'go-mode-hook #'eglot-ensure)
@@ -2784,6 +2797,13 @@ there is no current file, eval the current buffer."
 
 ;; (define-key php-mode-map (kbd "M-<tab>") #'company-complete)
 
+(require 'sgml-mode)
+
+;;; this seems to need being enforced even though other-window key
+;;; might be set globally. not sure why, but it works. if not set, a
+;;; face menu gets shown in minibuffer.
+(define-key html-mode-map my/other-window-kbd #'my/other-window)
+(define-key sgml-mode-map my/other-window-kbd #'my/other-window)
 
 
 ;; --- js/typescript mode
@@ -3361,7 +3381,9 @@ Fix for the above hasn't been released as of Emacs 25.2."
              (file-directory-p (expand-file-name muhome)))
         (with-eval-after-load 'mu4e-icalendar
           ;; no need to start mu4e in background
-          (mu4e-icalendar-setup))
+          (if (and (> mu4e-major-version 0) (> mu4e-minor-version 11))
+              (gnus-icalendar-setup)
+            (mu4e-icalendar-setup)))
       (warn "mu4e not started. data directories not initialized or environment variables missing"))))
 
 
@@ -3417,10 +3439,13 @@ Fix for the above hasn't been released as of Emacs 25.2."
 ;; (add-hook 'toml-ts-mode-hook #'eglot-ensure)
 
 
-;; --- restclient
-(require 'restclient)
+;; --- verb
+(require 'verb)
 
-(add-to-list 'auto-mode-alist '("\\.rest*\\'" . restclient-mode))
+(setq verb-base-headers '(("User-Agent" . "curl/8.8.0")))
+;; (require 'restclient)
+
+;; (add-to-list 'auto-mode-alist '("\\.rest*\\'" . restclient-mode))
 
 
 ;; --- ada mode
