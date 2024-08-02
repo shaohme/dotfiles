@@ -351,7 +351,7 @@ With argument, do this that many times."
 ;;; make TRAMP reuse ssh controlmaster
 (setq tramp-ssh-controlmaster-options (concat "-o ControlPath=~/.ssh/master-%%r-at-%%h-%%p "
                                               "-o ControlMaster=auto -o ControlPersist=yes"))
-(setq tramp-use-connection-share nil)
+(setq tramp-use-connection-share t)
 
 (setq tramp-connection-timeout 5)
 
@@ -2305,8 +2305,8 @@ there is no current file, eval the current buffer."
            (flymake-mode t))
           (dom-ctags-file
            (citre-mode t)
-           (flymake-cppcheck-setup)
-           (flymake-mode t)
+           ;; (flymake-cppcheck-setup)
+           ;; (flymake-mode t)
            (local-set-key (kbd "M-,") #'citre-jump-back)
            (local-set-key (kbd "M-.") #'citre-jump)
            (local-set-key (kbd "M-?") #'citre-jump-to-reference))
