@@ -1133,13 +1133,15 @@ temporarily reverses the meaning of this variable."
 					                           #'completion--in-region)
 					                         args)))
 
-(defun my/consult-root-function (may-prompt)
+(defun my/custom-root-directory (&optional maybe-ask)
+  "Attempts to determine the project root directory using difference techniques.
+ It favors source control direcotries."
   (or (vc-root-dir)
       (locate-dominating-file "." ".git")
       (locate-dominating-file "." ".project")
       default-directory))
 
-(setq consult-project-function #'my/consult-root-function)
+(setq consult-project-function #'my/custom-root-directory)
 
 (marginalia-mode t)
 
@@ -2042,7 +2044,7 @@ Ticket IDs should be separated with whitespaces."
 
 
 ;;; --- emacs lisp
-
+(require 'etags)
 (require 'paredit)
 (require 'flymake-elisp-config)
 
@@ -2075,8 +2077,10 @@ there is no current file, eval the current buffer."
     (setq buffer-read-only t)
     (view-mode 1)))
 
+(define-key paredit-mode-map (kbd "M-?") #'xref-find-references)
 
 (require 'eros)
+
 
 (defun init-elisp-mode()
   ;; (face-remap-add-relative 'default :height 0.8)
@@ -2088,15 +2092,19 @@ there is no current file, eval the current buffer."
   (make-local-variable 'hippie-expand-try-functions-list)
   (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol-partially t)
   (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol t)
+  ;; use Makefile to generate TAGS file from Emacs Lisp from both
+  ;; system installed lisp and user packages
+  (setq tags-table-list '("~/.emacs.d/"))
   (let* ((filename (buffer-file-name))
          ;; quick way to determine whether file resides in an .emacs.d directory
-         (emacs-config (and filename (locate-dominating-file (file-name-directory filename) "init.el"))))
+         (emacs-config (and filename (locate-dominating-file (file-name-directory filename) "init.el")))
+         (dom-etags-file (and filename (locate-dominating-file (file-name-directory filename) "TAGS"))))
     (cond (emacs-config
-
            (flymake-elisp-config-as-config (current-buffer)))
           (t
-
-           (flymake-elisp-config-as-default)))))
+           (flymake-elisp-config-as-default)))
+    (when dom-etags-file
+      (add-to-list 'tags-table-list dom-etags-file))))
 
 ;; flymake is not populated with all relevant paths during startup
 ;; so we set it manually
@@ -2305,8 +2313,8 @@ there is no current file, eval the current buffer."
            (flymake-mode t))
           (dom-ctags-file
            (citre-mode t)
-           ;; (flymake-cppcheck-setup)
-           ;; (flymake-mode t)
+           (flymake-cppcheck-setup)
+           (flymake-mode t)
            (local-set-key (kbd "M-,") #'citre-jump-back)
            (local-set-key (kbd "M-.") #'citre-jump)
            (local-set-key (kbd "M-?") #'citre-jump-to-reference))
@@ -2430,7 +2438,7 @@ there is no current file, eval the current buffer."
 
 (reformatter-define go-format
   :group 'go-ts-mode
-  :program "goimports"
+  :program "ts"
   :args '("/dev/stdin"))
 (add-hook 'go-ts-mode-hook #'eglot-ensure)
 ;; (add-to-list 'auto-mode-alist '("/go\\.mod\\'" . go-mod-ts-mode))
