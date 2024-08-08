@@ -292,12 +292,13 @@ With argument, do this that many times."
 
 
 
-(defun maybe-delete-trailing-whitespace ()
-  (when (not (derived-mode-p 'fundamental-mode))
-    (delete-trailing-whitespace)))
+;; (defun maybe-delete-trailing-whitespace ()
+;;   (when (not (derived-mode-p 'fundamental-mode))
+;;     (delete-trailing-whitespace)))
 
-;; might as well delete trailing whitespace
-(add-hook 'before-save-hook #'maybe-delete-trailing-whitespace)
+;; might as well delete trailing whitespace. strictly speaking not
+;; needed if the source formatting tool supports whitespace removal.
+;; (add-hook 'before-save-hook #'maybe-delete-trailing-whitespace)
 
 ;;; --- so-long
 ;;; this mode steps in and disable the intended major mode
