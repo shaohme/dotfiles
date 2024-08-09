@@ -90,9 +90,10 @@
                                 ;; mode. 1.3 triggers errors when
                                 ;; creating new outlines among others
                                 (org-modern . "melpa")
-                                (arduino-mode . "melpa")))
+                                (arduino-mode . "melpa")
+                                (cargo-mode . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode verb djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode org-modern org-link-beautify expand-region flymake-elisp-config))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode cargo-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode verb djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode org-modern org-link-beautify expand-region flymake-elisp-config))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -244,7 +245,8 @@ With argument, do this that many times."
 ;; (defvar my/help-at-point (kbd "C-h .") "Default keybind for showing help at point.")
 (defvar my/comment-kbd (kbd "M-;") "Default keybind for DWIM commenting code.")
 (defvar my/other-window-kbd (kbd "M-o") "Default keybind for DWIM commenting code.")
-
+;;; defined as custom to make it visible in `add-dir-local-variable'
+(defcustom my/delete-trailing-whitespace t "Instructs whether tailing whitespaces should be deleted on save." :type '(choice (const t) (const nil)))
 
 (require 'window)
 ;;; windows
@@ -292,13 +294,14 @@ With argument, do this that many times."
 
 
 
-;; (defun maybe-delete-trailing-whitespace ()
-;;   (when (not (derived-mode-p 'fundamental-mode))
-;;     (delete-trailing-whitespace)))
+(defun maybe-delete-trailing-whitespace ()
+  (when (and (not (derived-mode-p 'fundamental-mode))
+             my/delete-trailing-whitespace)
+    (delete-trailing-whitespace)))
 
 ;; might as well delete trailing whitespace. strictly speaking not
 ;; needed if the source formatting tool supports whitespace removal.
-;; (add-hook 'before-save-hook #'maybe-delete-trailing-whitespace)
+(add-hook 'before-save-hook #'maybe-delete-trailing-whitespace)
 
 ;;; --- so-long
 ;;; this mode steps in and disable the intended major mode
@@ -2420,6 +2423,7 @@ there is no current file, eval the current buffer."
 
 ;; --- rust
 (require 'rust-mode)
+(require 'cargo-mode)
 
 (defun init-rust-mode ()
   ;; use white space according to rust standards
@@ -2429,7 +2433,8 @@ there is no current file, eval the current buffer."
 
 (add-hook 'rust-mode-hook #'init-rust-mode)
 (add-hook 'rust-mode-hook #'eglot-ensure)
-
+(add-hook 'rust-mode-hook #'cargo-minor-mode)
+(add-hook 'rust-mode-hook #'electric-pair-local-mode)
 
 ;; --- golang
 (require 'go-mode)
