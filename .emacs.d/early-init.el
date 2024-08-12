@@ -24,6 +24,18 @@
 
   )
 
+(defvar my/minimal-emacs-gc-cons-threshold (* 16 1024 1024)
+  "The value of `gc-cons-threshold' after Emacs startup.")
+
+;;; Garbage collection
+;; Garbage collection significantly affects startup times. This setting delays
+;; garbage collection during startup but will be reset later.
+
+(setq gc-cons-threshold most-positive-fixnum)
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold my/minimal-emacs-gc-cons-threshold)))
 
 (when (native-comp-available-p)
   ;; enable all CPU cores when compiling

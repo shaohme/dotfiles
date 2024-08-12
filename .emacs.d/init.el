@@ -91,9 +91,10 @@
                                 ;; creating new outlines among others
                                 (org-modern . "melpa")
                                 (arduino-mode . "melpa")
-                                (cargo-mode . "melpa")))
+                                (cargo-mode . "melpa")
+                                (clang-format . "melpa")))
 
-(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode cargo-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode verb djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode org-modern org-link-beautify expand-region flymake-elisp-config))
+(setq package-selected-packages '(gnu-indent tramp orderless vertico diminish ef-themes info-colors which-key mode-line-bell wgrep diredfl marginalia consult flymake project eldoc flymake-proselint notmuch bbdb magit git-modes gitignore-templates languagetool editorconfig rainbow-delimiters highlight-escape-sequences yasnippet eglot slime cider flymake-kondor rust-mode cargo-mode go-mode shfmt lua-mode pip-requirements jq-mode highlight-indentation xml-format auto-rename-tag rainbow-mode typescript-mode markdown-mode markdown-preview-mode dockerfile-mode nginx-mode crontab-mode ssh-config-mode systemd plantuml-mode csv-mode meson-mode cmake-mode cmake-font-lock sqlformat auctex password-store password-store-otp package-lint udev-mode edit-server clj-refactor org ox-hugo org-tree-slide org-superstar ox-reveal syslog-mode pulsar elfeed rg yasnippet-snippets consult-yasnippet kconfig-mode hcl-mode nhexl-mode saveplace-pdf-view i3wm-config-mode protobuf-mode erc html5-schema jsonrpc relint eshell-toggle corfu vundo ledger-mode ascii-table caddyfile-mode nftables-mode standard-themes org-roam org-download pyvenv pyvenv-auto rfc-mode verb djvu modus-themes keycast eros etc-sudoers-mode ellama flymake-ruff python-black reformatter numpydoc consult-dir org-chef org-contrib importmagic go-dlv vcard casual-suite d-mode ada-mode ada-ts-mode ada-ref-man gnuplot snow fireplace arduino-mode yaml-mode embark embark-consult citre haproxy-mode org-modern org-link-beautify expand-region flymake-elisp-config clang-format))
 
 (when (display-graphic-p)
   (add-to-list 'package-selected-packages 'olivetti)
@@ -137,7 +138,7 @@
 (setq confirm-kill-emacs nil)
 (setq confirm-kill-processes nil)
 ;; needed for hungry el packages, like lsp
-(setq gc-cons-threshold 134217728)
+;; (setq gc-cons-threshold 134217728)
 ;; always follow symlinks to source controls
 (setq vc-follow-symlinks t)
 ;; scroll one line at a time using keyboard
@@ -178,8 +179,11 @@
 ;; disable # files for now. not needed for a long while and often
 ;; transfered by mistake
 (setq auto-save-default nil)
-
+;; Skip confirmation prompts when creating a new file or buffer
+(setq confirm-nonexistent-file-or-buffer nil)
 (setq max-mini-window-height 0.40)
+;; Remove duplicates from the kill ring to reduce clutter
+(setq kill-do-not-save-duplicates t)
 
 ;; open URL with default browser instead of EWW
 (setq browse-url-generic-program "xdg-open")
@@ -511,11 +515,18 @@ during reading."
 (require 'autorevert)
 
 (setq auto-revert-verbose t)
+(setq auto-revert-stop-on-user-input nil)
+(setq revert-without-query (list "."))
 ;;; auto revert non-file buffers, like Dired.
 ;;; this could cause a performance hit
-(setq global-auto-revert-non-file-buffers t)
+;; (setq global-auto-revert-non-file-buffers t)
 
 (global-auto-revert-mode t)
+
+
+
+;; Revert other buffers (e.g, Dired)
+(setq global-auto-revert-non-file-buffers t)
 
 ;; --- cosmetics
 (require 'diminish)
@@ -1874,10 +1885,6 @@ temporarily reverses the meaning of this variable."
 
 
 
-;; useful to define small reformatter tools when code editing
-(require 'reformatter)
-
-
 
 ;; --- git
 ;; basic tools for handling git files and git repos
@@ -2185,6 +2192,11 @@ there is no current file, eval the current buffer."
 (setq gdb-debuginfod-enable-setting nil)
 
 
+;; useful to define small reformatter tools when code editing
+(require 'reformatter)
+
+
+
 ;; --- c/cpp modes
 
 (require 'cc-mode)
@@ -2196,6 +2208,7 @@ there is no current file, eval the current buffer."
 (require 'fluent-bit-c-style)
 (require 'gnu-indent)
 (require 'citre)
+(require 'clang-format)
 
 ;; (defconst c-ts-mode--c-or-c++-regexp
 ;;   (eval-when-compile
@@ -2254,6 +2267,10 @@ there is no current file, eval the current buffer."
 ;;     (if dom-tags-file
 ;;         (add-to-list 'tags-table-list dom-tags-file))))
 
+
+(setq citre-tags-completion-case-sensitive nil)
+(setq citre-global-completion-case-sensitive nil)
+
 ;;; NOTE: protobuf-mode inherits from cc-mode
 (defun init-c-common-mode ()
   ;; (face-remap-add-relative 'default :height 0.8)
@@ -2270,6 +2287,9 @@ there is no current file, eval the current buffer."
   ;; macros that should or must not end with semicolon and therefore
   ;; causes indentation mistakes
   (add-to-list 'c-macro-names-with-semicolon "TAU_MAIN")
+
+  ;; make clang-format the default formatter
+  (local-set-key my/format-kbd #'clang-format-buffer)
 
   (let* ((filename (buffer-file-name))
          (fluent-bit-source (and filename (string-match-p "fluent-bit" (file-name-directory (buffer-file-name)))))
@@ -2312,7 +2332,9 @@ there is no current file, eval the current buffer."
            (eglot-ensure)
            (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t)
            (if (not fluent-bit-source)
-               ;; fluent-bit source code is formatted with gnu-indent
+               ;; use eglot backed formatter when eglot is used,
+               ;; except fluent-bit source code which is formatted
+               ;; with gnu-indent
                (local-set-key my/format-kbd #'eglot-format))
            (flymake-mode t))
           (dom-ctags-file
