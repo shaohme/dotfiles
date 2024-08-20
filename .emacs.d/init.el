@@ -2331,11 +2331,11 @@ there is no current file, eval the current buffer."
     (cond (dom-comp-cmd-file
            (eglot-ensure)
            (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend -100 t)
-           (if (not fluent-bit-source)
+           (when (not fluent-bit-source)
                ;; use eglot backed formatter when eglot is used,
                ;; except fluent-bit source code which is formatted
                ;; with gnu-indent
-               (local-set-key my/format-kbd #'eglot-format))
+             (local-set-key my/format-kbd #'eglot-format))
            (flymake-mode t))
           (dom-ctags-file
            (citre-mode t)
