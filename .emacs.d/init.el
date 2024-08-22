@@ -150,6 +150,11 @@
 ;; this should make the scrolling experience more smooth instead of
 ;; `paginated'
 (setq scroll-conservatively 101)
+;;; keep cursor from hitting window border while scrolling. this can
+;;; be annoying when spell correction, navigation, or jumps places the
+;;; cursor at the borders where the lack of text around cursor makes
+;;; the context harder to see.
+(setq scroll-margin 5)
 (setq read-process-output-max (* 1024 1024))
 ;; limit mini buffer size
 ;; max-mini-window-height 0.10
@@ -437,24 +442,6 @@ With argument, do this that many times."
 ;; change directory immediately to make sure it is enabled
 (ispell-change-dictionary "british")
 
-;;; WARNING: use names from `ispell-dicts-name2locale-equivs-alist' to
-;;; avoid .aff/.dic file names differences on hunspell package
-;;; distributions.
-(defun switch-dictionary()
-  (interactive)
-  (let* ((dic ispell-current-dictionary)
-    	 (change (if (string= dic "british") "dansk" "british")))
-    (ispell-change-dictionary change)
-    (if (featurep 'languagetool)
-        (languagetool-set-language (replace-regexp-in-string "\_" "-" change)))
-    ;; Dont check whole buffer as it can be of several languages, and large
-    (if (bound-and-true-p flyspell-mode)
-        (flyspell-buffer))
-    (message "Dictionary switched from %s to %s" dic change)))
-
-
-;;; easier dictionary switching
-(global-set-key (kbd "<f8>") 'switch-dictionary)
 
 ;; --- dictionary
 (require 'dictionary)
@@ -1506,18 +1493,42 @@ temporarily reverses the meaning of this variable."
 
 (require 'jinx nil t)
 (when (fboundp 'jinx-mode)
-  (setq jinx-languages "en_US en_GB da_DK")
+  (setq jinx-languages "en_GB")
+  ;; if 'ask jinx will ask if
+  (setq jinx-save-languages nil)
   (global-set-key [remap ispell-word] #'jinx-correct)
   (global-set-key (kbd "C-M-$") #'jinx-languages)
 
   ;; want pink for spelling errors
   (set-face-underline 'jinx-misspelled "#f677e9")
 
-  (diminish 'jinx-mode)
+  ;; (diminish 'jinx-mode)
 
   (global-jinx-mode 1))
 
 
+;;; WARNING: use names from `ispell-dicts-name2locale-equivs-alist' to
+;;; avoid .aff/.dic file names differences on hunspell package
+;;; distributions.
+(defun switch-dictionary()
+  (interactive)
+  (let* ((dic ispell-current-dictionary)
+    	 (change (if (string= dic "british") "dansk" "british")))
+    (ispell-change-dictionary change)
+    (if (featurep 'languagetool)
+        (languagetool-set-language (replace-regexp-in-string "\_" "-" change)))
+    ;; Dont check whole buffer as it can be of several languages, and large
+    (if (bound-and-true-p flyspell-mode)
+        (flyspell-buffer))
+    (when (bound-and-true-p jinx-mode)
+      (jinx-languages (cond ((string= change "dansk") "da_DK")
+                            ((string= change "british") "en_GB"))))
+
+    (message "Dictionary switched from %s to -> \" %s \"" dic change)))
+
+
+;;; easier dictionary switching
+(global-set-key (kbd "<f8>") 'switch-dictionary)
 
 
 ;; --- gnus, notmuch, mailing and messaging
@@ -3285,6 +3296,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
     (progn
       (elfeed-kill-buffer)
       (delete-window))))
+
 
 (defun init-elfeed-search-mode()
   ;; annoying to have to move cursor to top before scrolling
